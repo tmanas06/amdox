@@ -121,17 +121,6 @@ const LoginPage = () => {
               Access saved jobs, applications, and recommendations
             </p>
 
-            {/* Info note */}
-            <div className="info-note-dark">
-              <svg className="info-icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <circle cx="12" cy="12" r="10" strokeWidth="2"/>
-                <path d="M12 16v-4M12 8h.01" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
-              <p className="info-text-dark">
-                <strong>Note:</strong> Using a company email (non-Gmail) will automatically sign you in as an <strong>Employer</strong>. Gmail accounts will sign in as <strong>Job Seeker</strong>.
-              </p>
-            </div>
-
             {/* Error message */}
             {displayError && (
               <div className="error-message-dark" role="alert">

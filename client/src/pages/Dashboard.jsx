@@ -1,277 +1,342 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import './Dashboard.css';
 
 /**
  * Dashboard Component - Amdox Jobs
- * Role-based dashboard for Job Seekers and Employers
+ * Professional role-based dashboard with glassmorphism navigation
  */
 const Dashboard = () => {
   const { user, logout } = useAuth();
+  const [activeTab, setActiveTab] = useState('overview');
 
   const isJobSeeker = user?.role === 'job_seeker';
   const isEmployer = user?.role === 'employer';
 
+  const jobSeekerTabs = [
+    { id: 'overview', label: 'Overview', icon: '📊' },
+    { id: 'jobs', label: 'Browse Jobs', icon: '💼' },
+    { id: 'applications', label: 'Applications', icon: '📝' },
+    { id: 'saved', label: 'Saved Jobs', icon: '⭐' },
+    { id: 'profile', label: 'Profile', icon: '👤' }
+  ];
+
+  const employerTabs = [
+    { id: 'overview', label: 'Overview', icon: '📊' },
+    { id: 'postings', label: 'Job Postings', icon: '📋' },
+    { id: 'applications', label: 'Applications', icon: '📥' },
+    { id: 'candidates', label: 'Candidates', icon: '👥' },
+    { id: 'company', label: 'Company', icon: '🏢' }
+  ];
+
+  const tabs = isJobSeeker ? jobSeekerTabs : employerTabs;
+
   return (
     <div className="dashboard-page">
-      {/* Header */}
-      <header className="dashboard-header">
-        <div className="header-content">
-          <div className="header-brand">
-            <div className="logo-box">
-              <img src="/logo/logo.png" alt="Amdox Jobs Logo" className="logo-image" />
+      {/* Top Navigation Bar - Glassmorphism */}
+      <nav className="dashboard-nav">
+        <div className="nav-container">
+          <div className="nav-brand">
+            <div className="nav-logo">
+              <img src="/logo/logo.png" alt="Amdox Jobs" className="nav-logo-img" />
             </div>
-            <div className="brand-text">
-              <h1 className="brand-title">Amdox Jobs™</h1>
+            <div className="nav-brand-text">
+              <h1 className="nav-title">Amdox Jobs</h1>
+              <span className="nav-subtitle">Tech Hiring Platform</span>
             </div>
           </div>
 
-          <div className="header-actions">
-            <div className="user-profile">
+          <div className="nav-tabs">
+            {tabs.map(tab => (
+              <button
+                key={tab.id}
+                className={`nav-tab ${activeTab === tab.id ? 'active' : ''}`}
+                onClick={() => setActiveTab(tab.id)}
+              >
+                <span className="nav-tab-icon">{tab.icon}</span>
+                <span className="nav-tab-label">{tab.label}</span>
+              </button>
+            ))}
+          </div>
+
+          <div className="nav-user">
+            <div className="nav-user-info">
               {user?.profile?.photoURL && (
                 <img 
                   src={user.profile.photoURL} 
                   alt={user.profile.name || user.email}
-                  className="profile-avatar"
+                  className="nav-user-avatar"
                 />
               )}
-              <div className="user-details">
-                <p className="user-name">{user?.profile?.name || user?.email}</p>
-                <p className="user-role">
-                  {isJobSeeker ? '👤 Job Seeker' : isEmployer ? '👔 Employer' : 'User'}
-                </p>
+              <div className="nav-user-details">
+                <span className="nav-user-name">{user?.profile?.name || user?.email}</span>
+                <span className="nav-user-role">
+                  {isJobSeeker ? 'Job Seeker' : isEmployer ? 'Employer' : 'User'}
+                </span>
               </div>
             </div>
-            <button onClick={logout} className="logout-btn-dashboard">
+            <button onClick={logout} className="nav-logout-btn">
               Logout
             </button>
           </div>
         </div>
-      </header>
+      </nav>
 
-      {/* Main Content */}
-      <main className="dashboard-main">
-        <div className="dashboard-container">
-          {/* Welcome Section */}
-          <div className="welcome-section">
-            <h2 className="welcome-title">
-              {isJobSeeker 
-                ? `Welcome back, ${user?.profile?.name || 'Job Seeker'}! 👋`
-                : isEmployer
-                ? `Welcome, ${user?.profile?.name || 'Employer'}! 👔`
-                : 'Welcome!'
-              }
-            </h2>
-            <p className="welcome-subtitle">
-              {isJobSeeker
-                ? 'Discover your next tech opportunity from 500+ live jobs'
-                : isEmployer
-                ? 'Manage your job postings and find the best tech talent'
-                : 'Get started with Amdox Jobs'
-              }
-            </p>
-          </div>
-
-          {/* Stats Cards */}
-          <div className="stats-grid">
-            {isJobSeeker ? (
-              <>
-                <div className="stat-card">
-                  <div className="stat-icon job-icon">💼</div>
-                  <div className="stat-content">
-                    <h3 className="stat-value">500+</h3>
-                    <p className="stat-label">Live Tech Jobs</p>
-                  </div>
-                </div>
-                <div className="stat-card">
-                  <div className="stat-icon application-icon">📝</div>
-                  <div className="stat-content">
-                    <h3 className="stat-value">0</h3>
-                    <p className="stat-label">Applications</p>
-                  </div>
-                </div>
-                <div className="stat-card">
-                  <div className="stat-icon saved-icon">⭐</div>
-                  <div className="stat-content">
-                    <h3 className="stat-value">0</h3>
-                    <p className="stat-label">Saved Jobs</p>
-                  </div>
-                </div>
-                <div className="stat-card">
-                  <div className="stat-icon match-icon">🎯</div>
-                  <div className="stat-content">
-                    <h3 className="stat-value">85%</h3>
-                    <p className="stat-label">Match Rate</p>
-                  </div>
-                </div>
-              </>
-            ) : isEmployer ? (
-              <>
-                <div className="stat-card">
-                  <div className="stat-icon job-icon">📋</div>
-                  <div className="stat-content">
-                    <h3 className="stat-value">0</h3>
-                    <p className="stat-label">Active Jobs</p>
-                  </div>
-                </div>
-                <div className="stat-card">
-                  <div className="stat-icon application-icon">📥</div>
-                  <div className="stat-content">
-                    <h3 className="stat-value">0</h3>
-                    <p className="stat-label">Applications</p>
-                  </div>
-                </div>
-                <div className="stat-card">
-                  <div className="stat-icon candidate-icon">👥</div>
-                  <div className="stat-content">
-                    <h3 className="stat-value">0</h3>
-                    <p className="stat-label">Candidates</p>
-                  </div>
-                </div>
-                <div className="stat-card">
-                  <div className="stat-icon views-icon">👁️</div>
-                  <div className="stat-content">
-                    <h3 className="stat-value">0</h3>
-                    <p className="stat-label">Total Views</p>
-                  </div>
-                </div>
-              </>
-            ) : null}
-          </div>
-
-          {/* Quick Actions */}
-          <div className="quick-actions-section">
-            <h3 className="section-title">Quick Actions</h3>
-            <div className="actions-grid">
-              {isJobSeeker ? (
-                <>
-                  <button className="action-card">
-                    <div className="action-icon">🔍</div>
-                    <h4 className="action-title">Browse Jobs</h4>
-                    <p className="action-desc">Explore 500+ tech jobs</p>
-                  </button>
-                  <button className="action-card">
-                    <div className="action-icon">💾</div>
-                    <h4 className="action-title">Saved Jobs</h4>
-                    <p className="action-desc">View your saved positions</p>
-                  </button>
-                  <button className="action-card">
-                    <div className="action-icon">📄</div>
-                    <h4 className="action-title">My Applications</h4>
-                    <p className="action-desc">Track your applications</p>
-                  </button>
-                  <button className="action-card">
-                    <div className="action-icon">⚙️</div>
-                    <h4 className="action-title">Profile Settings</h4>
-                    <p className="action-desc">Update your profile</p>
-                  </button>
-                </>
-              ) : isEmployer ? (
-                <>
-                  <button className="action-card">
-                    <div className="action-icon">➕</div>
-                    <h4 className="action-title">Post a Job</h4>
-                    <p className="action-desc">Create a new job listing</p>
-                  </button>
-                  <button className="action-card">
-                    <div className="action-icon">📋</div>
-                    <h4 className="action-title">My Jobs</h4>
-                    <p className="action-desc">Manage your job postings</p>
-                  </button>
-                  <button className="action-card">
-                    <div className="action-icon">📥</div>
-                    <h4 className="action-title">Applications</h4>
-                    <p className="action-desc">Review candidate applications</p>
-                  </button>
-                  <button className="action-card">
-                    <div className="action-icon">⚙️</div>
-                    <h4 className="action-title">Company Settings</h4>
-                    <p className="action-desc">Update company profile</p>
-                  </button>
-                </>
-              ) : null}
+      {/* Main Content Area */}
+      <main className="dashboard-content">
+        <div className="dashboard-wrapper">
+          {/* Page Header */}
+          <div className="page-header">
+            <div>
+              <h2 className="page-title">
+                {activeTab === 'overview' && 'Dashboard Overview'}
+                {activeTab === 'jobs' && 'Browse Jobs'}
+                {activeTab === 'applications' && isJobSeeker && 'My Applications'}
+                {activeTab === 'applications' && isEmployer && 'Job Applications'}
+                {activeTab === 'saved' && 'Saved Jobs'}
+                {activeTab === 'postings' && 'Job Postings'}
+                {activeTab === 'candidates' && 'Candidates'}
+                {activeTab === 'profile' && 'Profile Settings'}
+                {activeTab === 'company' && 'Company Profile'}
+              </h2>
+              <p className="page-subtitle">
+                {activeTab === 'overview' && (isJobSeeker 
+                  ? 'Track your job search progress and discover opportunities'
+                  : 'Manage your hiring pipeline and track performance')}
+                {activeTab === 'jobs' && 'Explore 500+ tech jobs from top companies'}
+                {activeTab === 'applications' && isJobSeeker && 'Track and manage your job applications'}
+                {activeTab === 'applications' && isEmployer && 'Review and manage candidate applications'}
+                {activeTab === 'saved' && 'Your saved job listings'}
+                {activeTab === 'postings' && 'Manage your active job postings'}
+                {activeTab === 'candidates' && 'Browse and connect with candidates'}
+                {activeTab === 'profile' && 'Update your profile information'}
+                {activeTab === 'company' && 'Manage your company profile and settings'}
+              </p>
             </div>
+            {activeTab === 'overview' && (
+              <div className="header-actions">
+                {isJobSeeker ? (
+                  <button className="primary-btn">Browse Jobs</button>
+                ) : (
+                  <button className="primary-btn">Post New Job</button>
+                )}
+              </div>
+            )}
           </div>
 
-          {/* Recent Activity / Featured Jobs */}
-          <div className="content-section">
-            {isJobSeeker ? (
-              <div className="featured-jobs">
-                <h3 className="section-title">Featured Tech Jobs</h3>
-                <div className="jobs-list">
-                  <div className="job-card">
-                    <div className="job-header">
-                      <h4 className="job-title">Senior Full Stack Developer</h4>
-                      <span className="job-badge">New</span>
-                    </div>
-                    <p className="job-company">Tech Corp India</p>
-                    <div className="job-meta">
-                      <span className="job-location">📍 Bangalore</span>
-                      <span className="job-type">💼 Full-time</span>
-                      <span className="job-salary">💰 ₹15-25 LPA</span>
-                    </div>
-                    <button className="job-apply-btn">Apply Now</button>
-                  </div>
-                  <div className="job-card">
-                    <div className="job-header">
-                      <h4 className="job-title">React.js Developer</h4>
-                      <span className="job-badge">Hot</span>
-                    </div>
-                    <p className="job-company">StartupXYZ</p>
-                    <div className="job-meta">
-                      <span className="job-location">📍 Remote</span>
-                      <span className="job-type">💼 Full-time</span>
-                      <span className="job-salary">💰 ₹12-20 LPA</span>
-                    </div>
-                    <button className="job-apply-btn">Apply Now</button>
-                  </div>
-                  <div className="job-card">
-                    <div className="job-header">
-                      <h4 className="job-title">Node.js Backend Engineer</h4>
-                      <span className="job-badge">Popular</span>
-                    </div>
-                    <p className="job-company">CloudTech Solutions</p>
-                    <div className="job-meta">
-                      <span className="job-location">📍 Hyderabad</span>
-                      <span className="job-type">💼 Full-time</span>
-                      <span className="job-salary">💰 ₹18-30 LPA</span>
-                    </div>
-                    <button className="job-apply-btn">Apply Now</button>
-                  </div>
+          {/* Content Based on Active Tab */}
+          {activeTab === 'overview' && (
+            <div className="overview-content">
+              {/* Stats Grid */}
+              <div className="stats-section">
+                <div className="stats-grid">
+                  {isJobSeeker ? (
+                    <>
+                      <div className="stat-card">
+                        <div className="stat-header">
+                          <span className="stat-label">Active Jobs</span>
+                          <span className="stat-trend positive">+12%</span>
+                        </div>
+                        <div className="stat-value">500+</div>
+                        <div className="stat-description">Tech positions available</div>
+                      </div>
+                      <div className="stat-card">
+                        <div className="stat-header">
+                          <span className="stat-label">My Applications</span>
+                          <span className="stat-trend">0</span>
+                        </div>
+                        <div className="stat-value">0</div>
+                        <div className="stat-description">Applications submitted</div>
+                      </div>
+                      <div className="stat-card">
+                        <div className="stat-header">
+                          <span className="stat-label">Saved Jobs</span>
+                          <span className="stat-trend">0</span>
+                        </div>
+                        <div className="stat-value">0</div>
+                        <div className="stat-description">Jobs saved for later</div>
+                      </div>
+                      <div className="stat-card">
+                        <div className="stat-header">
+                          <span className="stat-label">Profile Completion</span>
+                          <span className="stat-trend">40%</span>
+                        </div>
+                        <div className="stat-value">40%</div>
+                        <div className="stat-description">Complete your profile</div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="stat-card">
+                        <div className="stat-header">
+                          <span className="stat-label">Active Postings</span>
+                          <span className="stat-trend">0</span>
+                        </div>
+                        <div className="stat-value">0</div>
+                        <div className="stat-description">Jobs currently live</div>
+                      </div>
+                      <div className="stat-card">
+                        <div className="stat-header">
+                          <span className="stat-label">Total Applications</span>
+                          <span className="stat-trend">0</span>
+                        </div>
+                        <div className="stat-value">0</div>
+                        <div className="stat-description">Applications received</div>
+                      </div>
+                      <div className="stat-card">
+                        <div className="stat-header">
+                          <span className="stat-label">Active Candidates</span>
+                          <span className="stat-trend">0</span>
+                        </div>
+                        <div className="stat-value">0</div>
+                        <div className="stat-description">Candidates in pipeline</div>
+                      </div>
+                      <div className="stat-card">
+                        <div className="stat-header">
+                          <span className="stat-label">Profile Views</span>
+                          <span className="stat-trend">0</span>
+                        </div>
+                        <div className="stat-value">0</div>
+                        <div className="stat-description">Company profile views</div>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
-            ) : isEmployer ? (
-              <div className="employer-dashboard">
-                <h3 className="section-title">Get Started</h3>
-                <div className="get-started-card">
-                  <div className="get-started-content">
-                    <h4 className="get-started-title">Post Your First Job</h4>
-                    <p className="get-started-desc">
-                      Start attracting top tech talent by posting your first job listing. 
-                      Reach 10K+ active developers on our platform.
+
+              {/* Main Content Cards */}
+              <div className="content-grid">
+                {isJobSeeker ? (
+                  <>
+                    <div className="content-card">
+                      <div className="card-header">
+                        <h3 className="card-title">Recommended Jobs</h3>
+                        <button className="card-action">View All</button>
+                      </div>
+                      <div className="card-content">
+                        <div className="job-item">
+                          <div className="job-item-header">
+                            <h4 className="job-item-title">Senior Full Stack Developer</h4>
+                            <span className="job-item-badge">New</span>
+                          </div>
+                          <p className="job-item-company">Tech Corp India</p>
+                          <div className="job-item-meta">
+                            <span>Bangalore</span>
+                            <span>•</span>
+                            <span>Full-time</span>
+                            <span>•</span>
+                            <span>₹15-25 LPA</span>
+                          </div>
+                          <div className="job-item-actions">
+                            <button className="btn-secondary">Save</button>
+                            <button className="btn-primary">Apply</button>
+                          </div>
+                        </div>
+                        <div className="job-item">
+                          <div className="job-item-header">
+                            <h4 className="job-item-title">React.js Developer</h4>
+                            <span className="job-item-badge hot">Hot</span>
+                          </div>
+                          <p className="job-item-company">StartupXYZ</p>
+                          <div className="job-item-meta">
+                            <span>Remote</span>
+                            <span>•</span>
+                            <span>Full-time</span>
+                            <span>•</span>
+                            <span>₹12-20 LPA</span>
+                          </div>
+                          <div className="job-item-actions">
+                            <button className="btn-secondary">Save</button>
+                            <button className="btn-primary">Apply</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="content-card">
+                      <div className="card-header">
+                        <h3 className="card-title">Application Status</h3>
+                      </div>
+                      <div className="card-content">
+                        <div className="empty-state">
+                          <p className="empty-state-text">No applications yet</p>
+                          <p className="empty-state-subtext">Start applying to jobs to track your progress</p>
+                          <button className="btn-primary">Browse Jobs</button>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="content-card">
+                      <div className="card-header">
+                        <h3 className="card-title">Quick Actions</h3>
+                      </div>
+                      <div className="card-content">
+                        <div className="quick-actions-list">
+                          <button className="quick-action-item">
+                            <div className="quick-action-icon">➕</div>
+                            <div className="quick-action-content">
+                              <h4>Post a New Job</h4>
+                              <p>Create a job listing to attract top talent</p>
+                            </div>
+                          </button>
+                          <button className="quick-action-item">
+                            <div className="quick-action-icon">📋</div>
+                            <div className="quick-action-content">
+                              <h4>Manage Postings</h4>
+                              <p>View and edit your active job postings</p>
+                            </div>
+                          </button>
+                          <button className="quick-action-item">
+                            <div className="quick-action-icon">👥</div>
+                            <div className="quick-action-content">
+                              <h4>Browse Candidates</h4>
+                              <p>Search and connect with qualified candidates</p>
+                            </div>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="content-card">
+                      <div className="card-header">
+                        <h3 className="card-title">Recent Activity</h3>
+                      </div>
+                      <div className="card-content">
+                        <div className="empty-state">
+                          <p className="empty-state-text">No activity yet</p>
+                          <p className="empty-state-subtext">Start posting jobs to see activity here</p>
+                          <button className="btn-primary">Post Your First Job</button>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Other Tab Content */}
+          {activeTab !== 'overview' && (
+            <div className="tab-content">
+              <div className="content-card">
+                <div className="card-header">
+                  <h3 className="card-title">
+                    {tabs.find(t => t.id === activeTab)?.label}
+                  </h3>
+                </div>
+                <div className="card-content">
+                  <div className="empty-state">
+                    <p className="empty-state-text">Coming Soon</p>
+                    <p className="empty-state-subtext">
+                      This section is under development
                     </p>
-                    <button className="primary-action-btn">
-                      Post a Job
-                    </button>
-                  </div>
-                  <div className="get-started-stats">
-                    <div className="mini-stat">
-                      <span className="mini-stat-value">10K+</span>
-                      <span className="mini-stat-label">Active Developers</span>
-                    </div>
-                    <div className="mini-stat">
-                      <span className="mini-stat-value">500+</span>
-                      <span className="mini-stat-label">Companies</span>
-                    </div>
-                    <div className="mini-stat">
-                      <span className="mini-stat-value">85%</span>
-                      <span className="mini-stat-label">Placement Rate</span>
-                    </div>
                   </div>
                 </div>
               </div>
-            ) : null}
-          </div>
+            </div>
+          )}
         </div>
       </main>
     </div>
