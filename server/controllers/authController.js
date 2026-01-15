@@ -14,6 +14,30 @@ const generateToken = (userId) => {
 };
 
 /**
+ * Determine user role based on email domain
+ * @param {string} email - User's email address
+ * @param {string} providedRole - Role provided by frontend (optional)
+ * @returns {string} - 'employer' or 'job_seeker'
+ */
+const determineRole = (email, providedRole = null) => {
+  // If role is explicitly provided and valid, use it
+  if (providedRole && ['job_seeker', 'employer'].includes(providedRole)) {
+    return providedRole;
+  }
+  
+  // Extract domain from email
+  const emailDomain = email.toLowerCase().split('@')[1];
+  
+  // If email is NOT @gmail.com, set as employer (company email)
+  if (emailDomain && emailDomain !== 'gmail.com') {
+    return 'employer';
+  }
+  
+  // Default to job_seeker for @gmail.com emails
+  return 'job_seeker';
+};
+
+/**
  * POST /api/auth/firebase-login
  * Handles Firebase authentication
  * Accepts: { firebaseUid, email, name, photoURL, role }
@@ -35,9 +59,30 @@ exports.firebaseLogin = async (req, res) => {
 
     if (user) {
       // User exists - update profile information
-      user.email = email.toLowerCase().trim();
+      const emailLower = email.toLowerCase().trim();
+      user.email = emailLower;
       if (name) user.profile.name = name;
       if (photoURL) user.profile.photoURL = photoURL;
+      
+      // Update role based on current email domain
+      // Priority: Explicit role > Email domain detection
+      const emailDomain = emailLower.split('@')[1];
+      
+      if (role && ['job_seeker', 'employer'].includes(role)) {
+        // Explicit role provided in request - use it
+        user.role = role;
+      } else if (emailDomain && emailDomain !== 'gmail.com') {
+        // Company email (not gmail.com) → set as employer
+        user.role = 'employer';
+      } else if (emailDomain === 'gmail.com') {
+        // Gmail email → set as job_seeker (unless already employer, then keep employer)
+        if (user.role !== 'employer') {
+          user.role = 'job_seeker';
+        }
+      } else {
+        // Fallback: use determineRole function
+        user.role = determineRole(emailLower, role);
+      }
       
       await user.save();
 
@@ -57,13 +102,12 @@ exports.firebaseLogin = async (req, res) => {
       });
     } else {
       // User doesn't exist - create new user
-      const userRole = role && ['job_seeker', 'employer'].includes(role) 
-        ? role 
-        : 'job_seeker';
+      const emailLower = email.toLowerCase().trim();
+      const userRole = determineRole(emailLower, role);
 
       user = new User({
         firebaseUid,
-        email: email.toLowerCase().trim(),
+        email: emailLower,
         role: userRole,
         profile: {
           name: name || '',
@@ -161,10 +205,8 @@ exports.register = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Determine role
-    const userRole = role && ['job_seeker', 'employer'].includes(role) 
-      ? role 
-      : 'job_seeker';
+    // Determine role based on email domain
+    const userRole = determineRole(email.toLowerCase().trim(), role);
 
     // Create new user
     const user = new User({

@@ -106,6 +106,18 @@ const RegisterPage = () => {
           <h1 className="register-title">Create Account</h1>
           <p className="register-subtitle">Sign up to get started with your job search or hiring.</p>
 
+          {/* Info note about company emails */}
+          <div className="info-note">
+            <svg className="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <circle cx="12" cy="12" r="10" strokeWidth="2"/>
+              <path d="M12 16v-4M12 8h.01" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
+            <p>
+              <strong>Note:</strong> Using a company email (non-Gmail) will automatically sign you up as an <strong>Employer</strong>. 
+              Gmail accounts will sign up as <strong>Job Seeker</strong>.
+            </p>
+          </div>
+
           {/* Error message */}
           {displayError && (
             <div className="error-message" role="alert">
