@@ -87,6 +87,11 @@ app.use((err, req, res, next) => {
 // Connect to MongoDB
 const connectDB = async () => {
   try {
+    if (!process.env.MONGODB_URI) {
+      console.error('MongoDB URI is not defined in environment variables');
+      throw new Error('MongoDB URI is missing');
+    }
+    
     const conn = await mongoose.connect(process.env.MONGODB_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true
@@ -94,7 +99,10 @@ const connectDB = async () => {
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
     console.error('MongoDB connection error:', error);
-    process.exit(1);
+    // Don't exit in serverless environment (Vercel)
+    if (process.env.VERCEL !== '1') {
+      process.exit(1);
+    }
   }
 };
 

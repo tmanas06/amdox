@@ -133,6 +133,9 @@ exports.firebaseLogin = async (req, res) => {
       });
     }
   } catch (error) {
+    // Log error for debugging
+    console.error('Firebase login error:', error);
+    
     // Handle duplicate email error
     if (error.code === 11000) {
       const field = Object.keys(error.keyPattern)[0];
@@ -142,10 +145,20 @@ exports.firebaseLogin = async (req, res) => {
       });
     }
 
+    // Handle MongoDB connection errors
+    if (error.name === 'MongoServerError' || error.name === 'MongooseError') {
+      console.error('MongoDB error:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Database connection error',
+        error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+      });
+    }
+
     res.status(500).json({
       success: false,
       message: 'Authentication failed',
-      error: error.message
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
     });
   }
 };
