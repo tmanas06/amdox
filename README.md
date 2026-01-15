@@ -212,6 +212,22 @@ router.get('/employer-only',
 );
 ```
 
+## Deployment Architecture
+```bash
+GitHub Repository
+    ↓ (push to main)
+GitHub Actions
+    ↓
+┌─────────────┬─────────────┐
+│   Backend   │  Frontend   │
+│   Vercel    │   Vercel    │
+└──────┬──────┴──────┬───────┘
+       │            │
+       └─────┬──────┘
+             ↓
+      MongoDB Atlas
+```
+
 ## Security Notes
 
 - Always use HTTPS in production
