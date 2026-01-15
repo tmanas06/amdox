@@ -13,9 +13,43 @@ const authRoutes = require('./routes/auth');
 const app = express();
 
 // Middleware
+// CORS configuration - allow requests from frontend
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  'http://localhost:3000',
+  'https://client-six-fawn-39.vercel.app',
+  'https://client-six-fawn-39.vercel.app/',
+  /^https:\/\/.*\.vercel\.app$/
+].filter(Boolean);
+
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:3000',
-  credentials: true
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    // Check if origin is in allowed list
+    if (allowedOrigins.some(allowed => {
+      if (typeof allowed === 'string') {
+        return origin === allowed || origin === allowed.replace(/\/$/, '');
+      }
+      if (allowed instanceof RegExp) {
+        return allowed.test(origin);
+      }
+      return false;
+    })) {
+      callback(null, true);
+    } else {
+      // For development, allow all origins
+      if (process.env.NODE_ENV !== 'production') {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
