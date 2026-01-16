@@ -20,19 +20,19 @@ const Dashboard = () => {
   const isEmployer = user?.role === 'employer';
 
   const jobSeekerTabs = [
-    { id: 'overview', label: 'Overview', icon: '📊' },
-    { id: 'jobs', label: 'Browse Jobs', icon: '💼' },
-    { id: 'applications', label: 'Applications', icon: '📝' },
-    { id: 'saved', label: 'Saved Jobs', icon: '⭐' },
-    { id: 'profile', label: 'Profile', icon: '👤' }
+    { id: 'overview', label: 'Overview' },
+    { id: 'jobs', label: 'Browse Jobs' },
+    { id: 'applications', label: 'Applications' },
+    { id: 'saved', label: 'Saved Jobs' },
+    { id: 'profile', label: 'Profile' }
   ];
 
   const employerTabs = [
-    { id: 'overview', label: 'Overview', icon: '📊' },
-    { id: 'postings', label: 'Job Postings', icon: '📋' },
-    { id: 'applications', label: 'Applications', icon: '📥' },
-    { id: 'candidates', label: 'Candidates', icon: '👥' },
-    { id: 'company', label: 'Company', icon: '🏢' }
+    { id: 'overview', label: 'Overview' },
+    { id: 'postings', label: 'Job Postings' },
+    { id: 'applications', label: 'Applications' },
+    { id: 'candidates', label: 'Candidates' },
+    { id: 'company', label: 'Company' }
   ];
 
   const tabs = isJobSeeker ? jobSeekerTabs : employerTabs;
@@ -59,7 +59,6 @@ const Dashboard = () => {
                 className={`nav-tab ${activeTab === tab.id ? 'active' : ''}`}
                 onClick={() => setActiveTab(tab.id)}
               >
-                <span className="nav-tab-icon">{tab.icon}</span>
                 <span className="nav-tab-label">{tab.label}</span>
               </button>
             ))}
@@ -291,21 +290,18 @@ const Dashboard = () => {
                       <div className="card-content">
                         <div className="quick-actions-list">
                           <button className="quick-action-item">
-                            <div className="quick-action-icon">➕</div>
                             <div className="quick-action-content">
                               <h4>Post a New Job</h4>
                               <p>Create a job listing to attract top talent</p>
                             </div>
                           </button>
                           <button className="quick-action-item">
-                            <div className="quick-action-icon">📋</div>
                             <div className="quick-action-content">
                               <h4>Manage Postings</h4>
                               <p>View and edit your active job postings</p>
                             </div>
                           </button>
                           <button className="quick-action-item">
-                            <div className="quick-action-icon">👥</div>
                             <div className="quick-action-content">
                               <h4>Browse Candidates</h4>
                               <p>Search and connect with qualified candidates</p>
