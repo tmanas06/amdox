@@ -298,9 +298,7 @@ const RegisterPage = () => {
 
       {/* Footer */}
       <footer className="amdox-footer">
-        <p className="footer-text-dark">
-          Trusted by <strong>India's Top 200 Tech Companies</strong>
-        </p>
+        {/* Footer content can be added here in the future */}
       </footer>
     </div>
   );
