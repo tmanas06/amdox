@@ -2,6 +2,12 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import './Dashboard.css';
 
+// Import components
+import Jobs from '../components/dashboard/Jobs';
+import Applications from '../components/dashboard/Applications';
+import SavedJobs from '../components/dashboard/SavedJobs';
+import Profile from '../components/dashboard/Profile';
+
 /**
  * Dashboard Component - Amdox Jobs
  * Professional role-based dashboard with glassmorphism navigation
@@ -116,9 +122,19 @@ const Dashboard = () => {
             {activeTab === 'overview' && (
               <div className="header-actions">
                 {isJobSeeker ? (
-                  <button className="primary-btn">Browse Jobs</button>
+                  <button 
+                    className="primary-btn"
+                    onClick={() => setActiveTab('jobs')}
+                  >
+                    Browse Jobs
+                  </button>
                 ) : (
-                  <button className="primary-btn">Post New Job</button>
+                  <button 
+                    className="primary-btn"
+                    onClick={() => setActiveTab('postings')}
+                  >
+                    Post New Job
+                  </button>
                 )}
               </div>
             )}
@@ -317,24 +333,64 @@ const Dashboard = () => {
             </div>
           )}
 
-          {/* Other Tab Content */}
+          {/* Tab Content */}
           {activeTab !== 'overview' && (
             <div className="tab-content">
-              <div className="content-card">
-                <div className="card-header">
-                  <h3 className="card-title">
-                    {tabs.find(t => t.id === activeTab)?.label}
-                  </h3>
-                </div>
-                <div className="card-content">
-                  <div className="empty-state">
-                    <p className="empty-state-text">Coming Soon</p>
-                    <p className="empty-state-subtext">
-                      This section is under development
-                    </p>
+              {activeTab === 'jobs' && isJobSeeker && <Jobs />}
+              {activeTab === 'applications' && isJobSeeker && <Applications />}
+              {activeTab === 'saved' && isJobSeeker && <SavedJobs />}
+              {activeTab === 'profile' && isJobSeeker && <Profile />}
+              
+              {/* Employer Tabs */}
+              {activeTab === 'postings' && isEmployer && (
+                <div className="content-card">
+                  <div className="card-header">
+                    <h3 className="card-title">Job Postings</h3>
+                  </div>
+                  <div className="card-content">
+                    <div className="empty-state">
+                      <p className="empty-state-text">No job postings yet</p>
+                      <p className="empty-state-subtext">
+                        Create your first job posting to get started
+                      </p>
+                      <button className="btn-primary">Post a Job</button>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
+              
+              {activeTab === 'candidates' && isEmployer && (
+                <div className="content-card">
+                  <div className="card-header">
+                    <h3 className="card-title">Candidates</h3>
+                  </div>
+                  <div className="card-content">
+                    <div className="empty-state">
+                      <p className="empty-state-text">No candidates yet</p>
+                      <p className="empty-state-subtext">
+                        Candidates will appear here when they apply to your jobs
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {activeTab === 'company' && isEmployer && (
+                <div className="content-card">
+                  <div className="card-header">
+                    <h3 className="card-title">Company Profile</h3>
+                  </div>
+                  <div className="card-content">
+                    <div className="empty-state">
+                      <p className="empty-state-text">Company Profile</p>
+                      <p className="empty-state-subtext">
+                        Set up your company profile to attract top talent
+                      </p>
+                      <button className="btn-primary">Edit Company Profile</button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
