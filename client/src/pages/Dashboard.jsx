@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Dashboard.css';
 
@@ -7,6 +8,7 @@ import Jobs from '../components/dashboard/Jobs';
 import Applications from '../components/dashboard/Applications';
 import SavedJobs from '../components/dashboard/SavedJobs';
 import Profile from '../components/dashboard/Profile';
+import PostJob from '../components/dashboard/PostJob';
 
 /**
  * Dashboard Component - Amdox Jobs
@@ -14,6 +16,7 @@ import Profile from '../components/dashboard/Profile';
  */
 const Dashboard = () => {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
 
   const isJobSeeker = user?.role === 'job_seeker';
@@ -340,8 +343,14 @@ const Dashboard = () => {
               {/* Employer Tabs */}
               {activeTab === 'postings' && isEmployer && (
                 <div className="content-card">
-                  <div className="card-header">
+                  <div className="card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <h3 className="card-title">Job Postings</h3>
+                    <button 
+                      className="btn-primary"
+                      onClick={() => navigate('/post-job')}
+                    >
+                      + Post New Job
+                    </button>
                   </div>
                   <div className="card-content">
                     <div className="empty-state">
@@ -349,7 +358,12 @@ const Dashboard = () => {
                       <p className="empty-state-subtext">
                         Create your first job posting to get started
                       </p>
-                      <button className="btn-primary">Post a Job</button>
+                      <button 
+                        className="btn-primary"
+                        onClick={() => navigate('/post-job')}
+                      >
+                        Post Your First Job
+                      </button>
                     </div>
                   </div>
                 </div>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { jobs as jobService } from '../../services/api';
 import './Jobs.css';
 
 const Jobs = () => {
@@ -13,101 +14,33 @@ const Jobs = () => {
   const [appliedJobs, setAppliedJobs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalJobs, setTotalJobs] = useState(0);
+  const [jobs, setJobs] = useState([]);
   const jobsPerPage = 5;
-  
-  // Mock job data - in a real app, this would come from an API
-  const [jobs, setJobs] = useState([
-    {
-      id: 1,
-      title: 'Senior Full Stack Developer',
-      company: 'Tech Corp India',
-      logo: 'https://logo.clearbit.com/techcorp.com',
-      location: 'Bangalore',
-      type: 'Full-time',
-      salary: '₹15-25 LPA',
-      posted: '2 days ago',
-      description: 'We are looking for an experienced Full Stack Developer to join our team. You will be responsible for developing and maintaining web applications using modern technologies.',
-      skills: ['React', 'Node.js', 'MongoDB', 'AWS'],
-      experience: '3-5 years',
-      jobId: 'TCI-FS-001',
-      isRemote: false,
-      companySize: '501-1000',
-      industry: 'Information Technology',
-      benefits: ['Health Insurance', 'Flexible Hours', 'WFH Options', 'Learning Budget']
-    },
-    {
-      id: 2,
-      title: 'React.js Developer',
-      company: 'StartupXYZ',
-      logo: 'https://logo.clearbit.com/startupxyz.com',
-      location: 'Remote',
-      type: 'Full-time',
-      salary: '₹12-20 LPA',
-      posted: '1 week ago',
-      description: 'Join our fast-growing startup as a React.js Developer. Work on exciting projects and help shape the future of our product.',
-      skills: ['React', 'Redux', 'JavaScript', 'REST APIs'],
-      experience: '2-4 years',
-      jobId: 'SXYZ-REACT-002',
-      isRemote: true,
-      companySize: '11-50',
-      industry: 'SaaS',
-      benefits: ['Remote Work', 'Equity', 'Flexible PTO', 'Wellness Stipend']
-    },
-    {
-      id: 3,
-      title: 'Backend Engineer',
-      company: 'DataSystems',
-      logo: 'https://logo.clearbit.com/datasystems.com',
-      location: 'Pune',
-      type: 'Full-time',
-      salary: '₹18-30 LPA',
-      posted: '3 days ago',
-      description: 'Looking for a Backend Engineer with strong experience in distributed systems and cloud infrastructure.',
-      skills: ['Python', 'Django', 'PostgreSQL', 'Docker', 'Kubernetes'],
-      experience: '4-6 years',
-      jobId: 'DS-BE-003',
-      isRemote: false,
-      companySize: '201-500',
-      industry: 'Data & Analytics',
-      benefits: ['Health Insurance', 'Gym Membership', 'Meal Vouchers', 'Team Outings']
-    },
-    {
-      id: 4,
-      title: 'Frontend Developer',
-      company: 'WebCraft',
-      logo: 'https://logo.clearbit.com/webcraft.io',
-      location: 'Hyderabad',
-      type: 'Contract',
-      salary: '₹10-15 LPA',
-      posted: '5 days ago',
-      description: 'Seeking a talented Frontend Developer to create beautiful and responsive user interfaces.',
-      skills: ['JavaScript', 'React', 'CSS3', 'HTML5'],
-      experience: '1-3 years',
-      jobId: 'WC-FE-004',
-      isRemote: true,
-      companySize: '51-200',
-      industry: 'Web Development',
-      benefits: ['Remote Work', 'Flexible Schedule', 'Project Bonuses']
-    },
-    {
-      id: 5,
-      title: 'DevOps Engineer',
-      company: 'CloudScale',
-      logo: 'https://logo.clearbit.com/cloudscale.com',
-      location: 'Bangalore',
-      type: 'Full-time',
-      salary: '₹20-35 LPA',
-      posted: '1 day ago',
-      description: 'Looking for a DevOps Engineer to automate and optimize our infrastructure and deployment processes.',
-      skills: ['AWS', 'Terraform', 'Kubernetes', 'CI/CD', 'Docker'],
-      experience: '3-5 years',
-      jobId: 'CS-DEVOPS-005',
-      isRemote: false,
-      companySize: '1001-5000',
-      industry: 'Cloud Computing',
-      benefits: ['Health Insurance', 'Stock Options', 'Learning Budget', 'WFH Allowance']
+
+  // Fetch jobs from API
+  const fetchJobs = async () => {
+    try {
+      setIsLoading(true);
+      const params = {
+        search: searchTerm,
+        location: location,
+        type: jobType,
+        remote: location === 'remote' ? 'true' : '',
+        page: currentPage,
+        limit: jobsPerPage
+      };
+      
+      const response = await jobService.getAll(params);
+      setJobs(response.data.data || []);
+      setTotalJobs(response.data.total || 0);
+    } catch (error) {
+      console.error('Error fetching jobs:', error);
+      toast.error(error.message || 'Failed to load jobs');
+    } finally {
+      setIsLoading(false);
     }
-  ]);
+  };
 
   // Load saved and applied jobs from localStorage on component mount
   useEffect(() => {
@@ -116,13 +49,16 @@ const Jobs = () => {
     setSavedJobs(saved);
     setAppliedJobs(applied);
     
-    // Simulate API loading
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-    
-    return () => clearTimeout(timer);
-  }, []);
+    // Fetch jobs from API
+    fetchJobs();
+  }, [currentPage]);
+  
+  // Handle search and filter changes
+  useEffect(() => {
+    // Reset to first page when filters change
+    setCurrentPage(1);
+    fetchJobs();
+  }, [searchTerm, jobType, location]);
 
   // Save to localStorage when savedJobs or appliedJobs change
   useEffect(() => {
@@ -163,31 +99,14 @@ const Jobs = () => {
     }
   };
 
-  // Filter jobs based on search and filters
-  const filteredJobs = jobs.filter(job => {
-    const searchLower = searchTerm.toLowerCase();
-    const matchesSearch = searchTerm === '' || 
-      job.title.toLowerCase().includes(searchLower) ||
-      job.company.toLowerCase().includes(searchLower) ||
-      job.skills.some(skill => skill.toLowerCase().includes(searchLower)) ||
-      job.description.toLowerCase().includes(searchLower);
-    
-    const matchesType = !jobType || job.type.toLowerCase() === jobType.toLowerCase();
-    const matchesLocation = !location || 
-      job.location.toLowerCase().includes(location.toLowerCase()) ||
-      (location.toLowerCase() === 'remote' && job.isRemote);
-    
-    return matchesSearch && matchesType && matchesLocation;
-  });
-
-  // Get current jobs for pagination
-  const indexOfLastJob = currentPage * jobsPerPage;
-  const indexOfFirstJob = indexOfLastJob - jobsPerPage;
-  const currentJobs = filteredJobs.slice(indexOfFirstJob, indexOfLastJob);
-  const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
+  // Calculate total pages for pagination
+  const totalPages = Math.ceil(totalJobs / jobsPerPage);
 
   // Change page
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const paginate = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    // Don't need to call fetchJobs here as the useEffect will trigger it
+  };
 
   if (isLoading) {
     return (
@@ -207,7 +126,7 @@ const Jobs = () => {
       <div className="jobs-header">
         <div className="header-content">
           <h1>Find Your Dream Job</h1>
-          <p className="jobs-subtitle">Browse through {filteredJobs.length} available positions</p>
+          <p className="jobs-subtitle">Browse through {jobs.length} available positions</p>
         </div>
 
         <div className="search-container">
@@ -302,8 +221,8 @@ const Jobs = () => {
 
       <div className="jobs-content">
         <div className="jobs-list">
-          {currentJobs.length > 0 ? (
-            currentJobs.map(job => (
+          {jobs.length > 0 ? (
+            jobs.map((job) => (
               <article key={job.id} className="job-card">
                 <div className="job-card-header">
                   <div className="company-logo">

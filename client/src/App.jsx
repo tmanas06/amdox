@@ -5,6 +5,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import Dashboard from './pages/Dashboard';
+import PostJob from './components/dashboard/PostJob';
 import './App.css';
 
 /**
@@ -25,6 +26,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/post-job"
+            element={
+              <ProtectedRoute>
+                <PostJob />
               </ProtectedRoute>
             }
           />

@@ -51,6 +51,26 @@ const userSchema = new mongoose.Schema({
       type: String,
       trim: true
     }
+  },
+  employer: {
+    postedJobs: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Job'
+    }],
+    savedApplications: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Application'
+    }]
+  },
+  jobSeeker: {
+    applications: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Application'
+    }],
+    savedJobs: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Job'
+    }]
   }
 }, {
   timestamps: true // Adds createdAt and updatedAt fields

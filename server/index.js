@@ -8,6 +8,7 @@ dotenv.config();
 
 // Import routes
 const authRoutes = require('./routes/auth');
+const jobRoutes = require('./routes/jobs');
 
 // Initialize Express app
 const app = express();
@@ -65,6 +66,7 @@ app.get('/health', (req, res) => {
 
 // API routes
 app.use('/api/auth', authRoutes);
+app.use('/api/jobs', jobRoutes);
 
 // 404 handler
 app.use((req, res) => {
