@@ -98,19 +98,26 @@ const Jobs = () => {
       toast.info('You have already applied to this job');
       return;
     }
+
+    const newAppliedJobs = [...appliedJobs, job.jobId];
+    setAppliedJobs(newAppliedJobs);
+    localStorage.setItem('appliedJobs', JSON.stringify(newAppliedJobs));
     
-    setAppliedJobs([...appliedJobs, job.jobId]);
-    
-    // In a real app, this would be an API call
-    console.log('Applying to job:', job.jobId);
-    
-    // Show success message
-    toast.success(`Application submitted for ${job.title} at ${job.company}`);
-    
-    // Remove from saved jobs if it was saved
+    // Remove from saved jobs when applied
     if (savedJobs.includes(job.jobId)) {
-      setSavedJobs(savedJobs.filter(id => id !== job.jobId));
+      const updatedSavedJobs = savedJobs.filter(id => id !== job.jobId);
+      setSavedJobs(updatedSavedJobs);
+      localStorage.setItem('savedJobs', JSON.stringify(updatedSavedJobs));
     }
+
+    toast.success('Successfully applied to the job!');
+  };
+
+  // Get job button state
+  const getJobButtonState = (jobId) => {
+    if (appliedJobs.includes(jobId)) return 'applied';
+    if (savedJobs.includes(jobId)) return 'saved';
+    return 'default';
   };
 
   // Calculate total pages for pagination

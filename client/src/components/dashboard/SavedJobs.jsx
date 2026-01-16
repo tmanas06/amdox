@@ -50,6 +50,15 @@ const SavedJobs = () => {
       ? savedJobs 
       : appliedJobs;
 
+  const getJobStatus = (job) => {
+    const inSaved = savedJobs.find(j => j._id === job._id);
+    const inApplied = appliedJobs.find(j => j._id === job._id);
+    
+    if (inApplied) return 'applied';
+    if (inSaved) return 'saved';
+    return 'unknown';
+  };
+
   const handleRemoveJob = async (jobId) => {
     try {
       await jobService.unsaveJob(jobId);
@@ -143,7 +152,7 @@ const SavedJobs = () => {
                 </div>
                 
                 <div className="saved-job-actions">
-                  {savedJobs.includes(job) && (
+                  {getJobStatus(job) === 'saved' && (
                     <button 
                       className="btn-apply"
                       onClick={() => handleApplyJob(job._id)}
@@ -151,7 +160,7 @@ const SavedJobs = () => {
                       Apply Now
                     </button>
                   )}
-                  {appliedJobs.includes(job) && (
+                  {getJobStatus(job) === 'applied' && (
                     <span className="applied-badge">
                       Applied ✓
                     </span>

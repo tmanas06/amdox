@@ -179,10 +179,14 @@ const Applications = () => {
                 <button className="btn-outline">Add Note</button>
                 <select 
                   className="btn-outline"
-                  onChange={(e) => handleUpdateStatus(application._id, e.target.value)}
-                  defaultValue={application.status}
+                  value={application.status}
+                  onChange={(e) => {
+                    if (e.target.value !== application.status) {
+                      handleUpdateStatus(application._id, e.target.value);
+                    }
+                  }}
                 >
-                  <option value={application.status}>{application.status}</option>
+                  <option value={application.status} disabled hidden>{application.status}</option>
                   <option value="Applied">Applied</option>
                   <option value="Interview Scheduled">Interview Scheduled</option>
                   <option value="Offer Received">Offer Received</option>
