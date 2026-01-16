@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { jobs as jobService } from '../services/api';
+import { toast } from 'react-toastify';
 import './Dashboard.css';
 
 // Import components
@@ -24,6 +25,18 @@ const Dashboard = () => {
 
   const isJobSeeker = user?.role === 'job_seeker';
   const isEmployer = user?.role === 'employer';
+  const [savedJobs, setSavedJobs] = useState([]);
+
+  // Load saved jobs from localStorage on component mount
+  useEffect(() => {
+    const saved = JSON.parse(localStorage.getItem('savedJobs') || '[]');
+    setSavedJobs(saved);
+  }, []);
+
+  // Save to localStorage when savedJobs change
+  useEffect(() => {
+    localStorage.setItem('savedJobs', JSON.stringify(savedJobs));
+  }, [savedJobs]);
 
   // Fetch recommended jobs on component mount
   useEffect(() => {
@@ -44,6 +57,17 @@ const Dashboard = () => {
       setRecommendedJobs([]);
     } finally {
       setLoadingJobs(false);
+    }
+  };
+
+  // Handle save job
+  const handleSaveJob = (jobId) => {
+    if (savedJobs.includes(jobId)) {
+      setSavedJobs(savedJobs.filter(id => id !== jobId));
+      toast.success('Job removed from saved');
+    } else {
+      setSavedJobs([...savedJobs, jobId]);
+      toast.success('Job saved successfully!');
     }
   };
 
@@ -277,7 +301,7 @@ const Dashboard = () => {
                                 <span>{job.salary}</span>
                               </div>
                               <div className="job-item-actions">
-                                <button className="btn-secondary">Save</button>
+                                <button className="btn-secondary" onClick={() => handleSaveJob(job._id)}>Save</button>
                                 <button className="btn-primary" onClick={() => navigate(`/jobs/${job._id}`)}>View</button>
                               </div>
                             </div>
@@ -299,7 +323,7 @@ const Dashboard = () => {
                         <div className="empty-state">
                           <p className="empty-state-text">No applications yet</p>
                           <p className="empty-state-subtext">Start applying to jobs to track your progress</p>
-                          <button className="btn-primary">Browse Jobs</button>
+                          <button className="btn-primary" onClick={() => setActiveTab('jobs')}>Browse Jobs</button>
                         </div>
                       </div>
                     </div>
