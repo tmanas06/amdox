@@ -32,11 +32,19 @@ const Jobs = () => {
       };
       
       const response = await jobService.getAll(params);
-      setJobs(response.data.data || []);
-      setTotalJobs(response.data.total || 0);
+      if (response && response.data) {
+        setJobs(response.data.data || []);
+        setTotalJobs(response.data.total || 0);
+      } else {
+        console.error('Invalid response format:', response);
+        setJobs([]);
+        setTotalJobs(0);
+      }
     } catch (error) {
       console.error('Error fetching jobs:', error);
       toast.error(error.message || 'Failed to load jobs');
+      setJobs([]);
+      setTotalJobs(0);
     } finally {
       setIsLoading(false);
     }
@@ -49,15 +57,14 @@ const Jobs = () => {
     setSavedJobs(saved);
     setAppliedJobs(applied);
     
-    // Fetch jobs from API
     fetchJobs();
   }, [currentPage]);
-  
+
   // Handle search and filter changes
   useEffect(() => {
+    fetchJobs();
     // Reset to first page when filters change
     setCurrentPage(1);
-    fetchJobs();
   }, [searchTerm, jobType, location]);
 
   // Save to localStorage when savedJobs or appliedJobs change
@@ -69,14 +76,21 @@ const Jobs = () => {
     localStorage.setItem('appliedJobs', JSON.stringify(appliedJobs));
   }, [appliedJobs]);
 
-  const handleSaveJob = (jobId) => {
-    if (savedJobs.includes(jobId)) {
-      setSavedJobs(savedJobs.filter(id => id !== jobId));
-      toast.success('Job removed from saved jobs');
+  // Toggle save job
+  const toggleSaveJob = (jobId) => {
+    const isSaved = savedJobs.includes(jobId);
+    let updatedSavedJobs;
+    
+    if (isSaved) {
+      updatedSavedJobs = savedJobs.filter(id => id !== jobId);
     } else {
-      setSavedJobs([...savedJobs, jobId]);
-      toast.success('Job saved successfully!');
+      updatedSavedJobs = [...savedJobs, jobId];
     }
+    
+    setSavedJobs(updatedSavedJobs);
+    localStorage.setItem('savedJobs', JSON.stringify(updatedSavedJobs));
+    
+    toast.success(isSaved ? 'Job removed from saved' : 'Job saved successfully');
   };
 
   const handleApplyJob = (job) => {
@@ -247,7 +261,7 @@ const Jobs = () => {
                   <div className="job-actions">
                     <button
                       className={`btn-save ${savedJobs.includes(job.jobId) ? 'saved' : ''}`}
-                      onClick={() => handleSaveJob(job.jobId)}
+                      onClick={() => toggleSaveJob(job.jobId)}
                       aria-label={savedJobs.includes(job.jobId) ? 'Remove from saved jobs' : 'Save job'}
                     >
                       <svg width="20" height="20" viewBox="0 0 24 24" fill={savedJobs.includes(job.jobId) ? "#3b82f6" : "none"} stroke="currentColor" strokeWidth="2">
