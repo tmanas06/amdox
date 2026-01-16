@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { jobs as jobService } from '../services/api';
 import './Dashboard.css';
 
 // Import components
@@ -18,9 +19,33 @@ const Dashboard = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
+  const [recommendedJobs, setRecommendedJobs] = useState([]);
+  const [loadingJobs, setLoadingJobs] = useState(false);
 
   const isJobSeeker = user?.role === 'job_seeker';
   const isEmployer = user?.role === 'employer';
+
+  // Fetch recommended jobs on component mount
+  useEffect(() => {
+    if (isJobSeeker) {
+      fetchRecommendedJobs();
+    }
+  }, [isJobSeeker]);
+
+  const fetchRecommendedJobs = async () => {
+    try {
+      setLoadingJobs(true);
+      const response = await jobService.getAll({ limit: 2 });
+      if (response.data && response.data.data) {
+        setRecommendedJobs(response.data.data.slice(0, 2));
+      }
+    } catch (error) {
+      console.error('Error fetching recommended jobs:', error);
+      setRecommendedJobs([]);
+    } finally {
+      setLoadingJobs(false);
+    }
+  };
 
   const jobSeekerTabs = [
     { id: 'overview', label: 'Overview' },
@@ -229,45 +254,40 @@ const Dashboard = () => {
                     <div className="content-card">
                       <div className="card-header">
                         <h3 className="card-title">Recommended Jobs</h3>
-                        <button className="card-action">View All</button>
+                        <button className="card-action" onClick={() => setActiveTab('jobs')}>View All</button>
                       </div>
                       <div className="card-content">
-                        <div className="job-item">
-                          <div className="job-item-header">
-                            <h4 className="job-item-title">Senior Full Stack Developer</h4>
-                            <span className="job-item-badge">New</span>
+                        {loadingJobs ? (
+                          <div style={{ textAlign: 'center', padding: '2rem', color: '#94a3b8' }}>
+                            <p>Loading jobs...</p>
                           </div>
-                          <p className="job-item-company">Tech Corp India</p>
-                          <div className="job-item-meta">
-                            <span>Bangalore</span>
-                            <span>•</span>
-                            <span>Full-time</span>
-                            <span>•</span>
-                            <span>₹15-25 LPA</span>
+                        ) : recommendedJobs.length > 0 ? (
+                          recommendedJobs.map((job) => (
+                            <div className="job-item" key={job._id}>
+                              <div className="job-item-header">
+                                <h4 className="job-item-title">{job.title}</h4>
+                                <span className="job-item-badge">{job.isRemote ? 'Remote' : 'On-site'}</span>
+                              </div>
+                              <p className="job-item-company">{job.company}</p>
+                              <div className="job-item-meta">
+                                <span>{job.location}</span>
+                                <span>•</span>
+                                <span>{job.type}</span>
+                                <span>•</span>
+                                <span>{job.salary}</span>
+                              </div>
+                              <div className="job-item-actions">
+                                <button className="btn-secondary">Save</button>
+                                <button className="btn-primary" onClick={() => navigate(`/jobs/${job._id}`)}>View</button>
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="empty-state">
+                            <p className="empty-state-text">No jobs available</p>
+                            <p className="empty-state-subtext">Check back soon for new opportunities</p>
                           </div>
-                          <div className="job-item-actions">
-                            <button className="btn-secondary">Save</button>
-                            <button className="btn-primary">Apply</button>
-                          </div>
-                        </div>
-                        <div className="job-item">
-                          <div className="job-item-header">
-                            <h4 className="job-item-title">React.js Developer</h4>
-                            <span className="job-item-badge hot">Hot</span>
-                          </div>
-                          <p className="job-item-company">StartupXYZ</p>
-                          <div className="job-item-meta">
-                            <span>Remote</span>
-                            <span>•</span>
-                            <span>Full-time</span>
-                            <span>•</span>
-                            <span>₹12-20 LPA</span>
-                          </div>
-                          <div className="job-item-actions">
-                            <button className="btn-secondary">Save</button>
-                            <button className="btn-primary">Apply</button>
-                          </div>
-                        </div>
+                        )}
                       </div>
                     </div>
 
