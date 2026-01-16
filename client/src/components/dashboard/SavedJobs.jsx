@@ -1,59 +1,77 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { jobs as jobService } from '../../services/api';
+import { toast } from 'react-toastify';
+import './SavedJobs.css';
 
 const SavedJobs = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('all');
-  
-  // Mock saved jobs data
-  const savedJobs = [
-    {
-      id: 1,
-      title: 'Senior Full Stack Developer',
-      company: 'Tech Corp India',
-      location: 'Bangalore',
-      type: 'Full-time',
-      salary: '₹15-25 LPA',
-      savedDate: '2025-01-10',
-      status: 'saved',
-      skills: ['React', 'Node.js', 'MongoDB', 'AWS']
-    },
-    {
-      id: 2,
-      title: 'React.js Developer',
-      company: 'StartupXYZ',
-      location: 'Remote',
-      type: 'Full-time',
-      salary: '₹12-20 LPA',
-      savedDate: '2025-01-08',
-      status: 'applied',
-      skills: ['React', 'Redux', 'JavaScript', 'REST APIs']
-    },
-    {
-      id: 3,
-      title: 'Backend Engineer',
-      company: 'DataSystems',
-      location: 'Pune',
-      type: 'Full-time',
-      salary: '₹18-30 LPA',
-      savedDate: '2025-01-05',
-      status: 'saved',
-      skills: ['Python', 'Django', 'PostgreSQL', 'Docker']
+  const [savedJobs, setSavedJobs] = useState([]);
+  const [appliedJobs, setAppliedJobs] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  // Fetch saved and applied jobs
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        setIsLoading(true);
+        setError('');
+        
+        // Fetch all jobs and filter by user's saved status
+        const response = await jobService.getAll({ limit: 100 });
+        const allJobs = response.data?.data || [];
+        
+        // Filter saved jobs (in real app, backend would handle this)
+        const saved = allJobs.filter(job => user?.jobSeeker?.savedJobs?.includes(job._id));
+        const applied = allJobs.filter(job => user?.jobSeeker?.applications?.includes(job._id));
+        
+        setSavedJobs(saved);
+        setAppliedJobs(applied);
+      } catch (err) {
+        console.error('Error fetching saved jobs:', err);
+        setError(err.message || 'Failed to load saved jobs');
+        toast.error(err.message || 'Failed to load saved jobs');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (user) {
+      fetchJobs();
     }
-  ];
+  }, [user]);
 
+  const allJobs = [...savedJobs, ...appliedJobs];
   const filteredJobs = activeTab === 'all' 
-    ? savedJobs 
-    : savedJobs.filter(job => job.status === activeTab);
+    ? allJobs
+    : activeTab === 'saved' 
+      ? savedJobs 
+      : appliedJobs;
 
-  const handleRemoveJob = (jobId) => {
-    // In a real app, this would make an API call to remove the job
-    console.log(`Removing job ${jobId} from saved jobs`);
+  const handleRemoveJob = async (jobId) => {
+    try {
+      await jobService.unsaveJob(jobId);
+      setSavedJobs(prev => prev.filter(job => job._id !== jobId));
+      toast.success('Job removed from saved');
+    } catch (err) {
+      console.error('Error removing job:', err);
+      toast.error(err.message || 'Failed to remove job');
+    }
   };
 
-  const handleApplyJob = (jobId) => {
-    // In a real app, this would navigate to the application page
-    console.log(`Applying to job ${jobId}`);
+  const handleApplyJob = async (jobId) => {
+    try {
+      await jobService.applyJob(jobId);
+      const job = savedJobs.find(j => j._id === jobId);
+      setSavedJobs(prev => prev.filter(j => j._id !== jobId));
+      setAppliedJobs(prev => [...prev, job]);
+      toast.success('Applied to job successfully!');
+    } catch (err) {
+      console.error('Error applying to job:', err);
+      toast.error(err.message || 'Failed to apply to job');
+    }
   };
 
   return (
@@ -82,16 +100,25 @@ const SavedJobs = () => {
         </div>
       </div>
 
-      {filteredJobs.length === 0 ? (
+      {isLoading ? (
         <div className="empty-state">
-          <p>No saved jobs found.</p>
+          <p>Loading your saved jobs...</p>
+        </div>
+      ) : error ? (
+        <div className="empty-state">
+          <p>Error: {error}</p>
+          <button className="btn-primary" onClick={() => window.location.reload()}>Retry</button>
+        </div>
+      ) : filteredJobs.length === 0 ? (
+        <div className="empty-state">
+          <p>No {activeTab === 'all' ? 'saved' : activeTab} jobs found.</p>
           <p>Save jobs to keep track of positions you're interested in.</p>
           <button className="btn-primary">Browse Jobs</button>
         </div>
       ) : (
         <div className="saved-jobs-list">
           {filteredJobs.map(job => (
-            <div key={job.id} className="saved-job-card">
+            <div key={job._id} className="saved-job-card">
               <div className="saved-job-content">
                 <div className="saved-job-info">
                   <h3 className="job-title">{job.title}</h3>
@@ -104,33 +131,34 @@ const SavedJobs = () => {
                   </div>
                   
                   <div className="job-skills">
-                    {job.skills.map((skill, index) => (
+                    {job.skills?.slice(0, 4).map((skill, index) => (
                       <span key={index} className="skill-tag">{skill}</span>
                     ))}
+                    {job.skills?.length > 4 && <span className="skill-tag more">+{job.skills.length - 4}</span>}
                   </div>
                   
                   <div className="saved-date">
-                    Saved on {job.savedDate}
+                    Posted on {new Date(job.createdAt).toLocaleDateString()}
                   </div>
                 </div>
                 
                 <div className="saved-job-actions">
-                  {job.status === 'saved' && (
+                  {savedJobs.includes(job) && (
                     <button 
                       className="btn-apply"
-                      onClick={() => handleApplyJob(job.id)}
+                      onClick={() => handleApplyJob(job._id)}
                     >
                       Apply Now
                     </button>
                   )}
-                  {job.status === 'applied' && (
+                  {appliedJobs.includes(job) && (
                     <span className="applied-badge">
                       Applied ✓
                     </span>
                   )}
                   <button 
                     className="btn-remove"
-                    onClick={() => handleRemoveJob(job.id)}
+                    onClick={() => handleRemoveJob(job._id)}
                   >
                     Remove
                   </button>

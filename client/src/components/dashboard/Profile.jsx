@@ -1,31 +1,57 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { toast } from 'react-toastify';
+import './Profile.css';
 
 const Profile = () => {
   const { user, updateProfile } = useAuth();
   
-  // Form state
+  // Form state - initialized from user data
   const [formData, setFormData] = useState({
-    name: user?.profile?.name || '',
-    email: user?.email || '',
-    phone: user?.profile?.phone || '',
-    location: user?.profile?.location || '',
-    headline: user?.profile?.headline || '',
-    summary: user?.profile?.summary || '',
-    experience: user?.profile?.experience || [
+    name: '',
+    email: '',
+    phone: '',
+    location: '',
+    headline: '',
+    summary: '',
+    experience: [
       { id: 1, title: '', company: '', from: '', to: '', current: false, description: '' }
     ],
-    education: user?.profile?.education || [
+    education: [
       { id: 1, school: '', degree: '', field: '', from: '', to: '' }
     ],
-    skills: user?.profile?.skills || [],
+    skills: [],
     newSkill: ''
   });
   
   const [isEditing, setIsEditing] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  // Load user profile data on mount or when user changes
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        name: user.profile?.name || user.name || '',
+        email: user.email || '',
+        phone: user.profile?.phone || '',
+        location: user.profile?.location || '',
+        headline: user.profile?.headline || '',
+        summary: user.profile?.summary || '',
+        experience: user.profile?.experience?.length > 0 
+          ? user.profile.experience 
+          : [{ id: 1, title: '', company: '', from: '', to: '', current: false, description: '' }],
+        education: user.profile?.education?.length > 0 
+          ? user.profile.education 
+          : [{ id: 1, school: '', degree: '', field: '', from: '', to: '' }],
+        skills: user.profile?.skills || [],
+        newSkill: ''
+      });
+      setIsLoading(false);
+    }
+  }, [user]);
   
   // Handle input changes
   const handleChange = (e) => {
@@ -100,26 +126,29 @@ const Profile = () => {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
+    setIsSaving(true);
     setError('');
     setSuccess('');
     
     try {
-      // In a real app, this would make an API call to update the profile
+      // Update profile through auth context
       await updateProfile(formData);
       setSuccess('Profile updated successfully!');
       setIsEditing(false);
+      toast.success('Profile updated successfully!');
     } catch (err) {
-      setError(err.message || 'Failed to update profile');
+      const errorMsg = err.message || 'Failed to update profile';
+      setError(errorMsg);
+      toast.error(errorMsg);
     } finally {
-      setIsLoading(false);
+      setIsSaving(false);
     }
   };
   
   // Calculate profile completion percentage
   const calculateCompletion = () => {
     let completedFields = 0;
-    const totalFields = 7; // Adjust based on actual required fields
+    const totalFields = 7;
     
     if (formData.name) completedFields++;
     if (formData.email) completedFields++;
@@ -133,6 +162,16 @@ const Profile = () => {
   };
   
   const completionPercentage = calculateCompletion();
+
+  if (isLoading) {
+    return (
+      <div className="profile-container">
+        <div className="empty-state">
+          <p>Loading your profile...</p>
+        </div>
+      </div>
+    );
+  }
   
   return (
     <div className="profile-container">
@@ -166,19 +205,16 @@ const Profile = () => {
             <div className="edit-actions">
               <button 
                 className="btn-cancel"
-                onClick={() => {
-                  setIsEditing(false);
-                  // Reset form data here if needed
-                }}
+                onClick={() => setIsEditing(false)}
               >
                 Cancel
               </button>
               <button 
                 className="btn-save"
                 onClick={handleSubmit}
-                disabled={isLoading}
+                disabled={isSaving}
               >
-                {isLoading ? 'Saving...' : 'Save Changes'}
+                {isSaving ? 'Saving...' : 'Save Changes'}
               </button>
             </div>
           )}

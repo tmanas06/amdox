@@ -1,57 +1,60 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { jobs as jobService } from '../../services/api';
+import { toast } from 'react-toastify';
+import './Applications.css';
 
 const Applications = () => {
   const { user } = useAuth();
-  
-  // Mock applications data
-  const applications = [
-    {
-      id: 1,
-      jobTitle: 'Senior Full Stack Developer',
-      company: 'Tech Corp India',
-      status: 'Applied',
-      appliedDate: '2025-01-10',
-      lastUpdated: '2025-01-10',
-      nextSteps: 'Application under review',
-      notes: 'Good match with my skills',
-      jobDetails: {
-        location: 'Bangalore',
-        type: 'Full-time',
-        salary: '₹15-25 LPA'
+  const [applications, setApplications] = useState([]);
+  const [filteredApplications, setFilteredApplications] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [sortFilter, setSortFilter] = useState('newest');
+
+  // Fetch user applications
+  useEffect(() => {
+    const fetchApplications = async () => {
+      try {
+        setIsLoading(true);
+        setError('');
+        
+        // Fetch applications from user's profile
+        const response = await jobService.getUserApplications();
+        setApplications(response.data?.data || []);
+      } catch (err) {
+        console.error('Error fetching applications:', err);
+        setError(err.message || 'Failed to load applications');
+        toast.error(err.message || 'Failed to load applications');
+      } finally {
+        setIsLoading(false);
       }
-    },
-    {
-      id: 2,
-      jobTitle: 'React.js Developer',
-      company: 'StartupXYZ',
-      status: 'Interview Scheduled',
-      appliedDate: '2025-01-05',
-      lastUpdated: '2025-01-12',
-      nextSteps: 'Technical interview on 2025-01-20',
-      notes: 'Prepare for React and Redux questions',
-      jobDetails: {
-        location: 'Remote',
-        type: 'Full-time',
-        salary: '₹12-20 LPA'
-      }
-    },
-    {
-      id: 3,
-      jobTitle: 'Backend Engineer',
-      company: 'DataSystems',
-      status: 'Rejected',
-      appliedDate: '2024-12-20',
-      lastUpdated: '2025-01-08',
-      nextSteps: 'Try again in 6 months',
-      notes: 'Need to improve system design skills',
-      jobDetails: {
-        location: 'Pune',
-        type: 'Full-time',
-        salary: '₹18-30 LPA'
-      }
+    };
+
+    if (user) {
+      fetchApplications();
     }
-  ];
+  }, [user]);
+
+  // Apply filters and sorting
+  useEffect(() => {
+    let filtered = [...applications];
+
+    // Status filter
+    if (statusFilter) {
+      filtered = filtered.filter(app => app.status.toLowerCase() === statusFilter.toLowerCase());
+    }
+
+    // Sorting
+    if (sortFilter === 'oldest') {
+      filtered.sort((a, b) => new Date(a.appliedDate) - new Date(b.appliedDate));
+    } else {
+      filtered.sort((a, b) => new Date(b.appliedDate) - new Date(a.appliedDate));
+    }
+
+    setFilteredApplications(filtered);
+  }, [applications, statusFilter, sortFilter]);
 
   const getStatusBadge = (status) => {
     const statusClasses = {
@@ -63,10 +66,25 @@ const Applications = () => {
     };
     
     return (
-      <span className={`status-badge ${statusClasses[status] || ''}`}>
+      <span className={`status-badge ${statusClasses[status] || 'status-applied'}`}>
         {status}
       </span>
     );
+  };
+
+  const handleUpdateStatus = async (applicationId, newStatus) => {
+    try {
+      await jobService.updateApplicationStatus(applicationId, newStatus);
+      setApplications(prev =>
+        prev.map(app =>
+          app._id === applicationId ? { ...app, status: newStatus } : app
+        )
+      );
+      toast.success('Application status updated');
+    } catch (err) {
+      console.error('Error updating status:', err);
+      toast.error(err.message || 'Failed to update status');
+    }
   };
 
   return (
@@ -74,14 +92,23 @@ const Applications = () => {
       <div className="applications-header">
         <h2>My Applications</h2>
         <div className="applications-filters">
-          <select className="filter-select">
+          <select 
+            className="filter-select"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >
             <option value="">All Status</option>
             <option value="applied">Applied</option>
-            <option value="interview">Interview</option>
-            <option value="offer">Offer</option>
+            <option value="interview scheduled">Interview</option>
+            <option value="offer received">Offer</option>
             <option value="rejected">Rejected</option>
+            <option value="hired">Hired</option>
           </select>
-          <select className="filter-select">
+          <select 
+            className="filter-select"
+            value={sortFilter}
+            onChange={(e) => setSortFilter(e.target.value)}
+          >
             <option value="newest">Most Recent</option>
             <option value="oldest">Oldest</option>
           </select>
@@ -89,14 +116,23 @@ const Applications = () => {
       </div>
 
       <div className="applications-list">
-        {applications.length === 0 ? (
+        {isLoading ? (
+          <div className="empty-state">
+            <p>Loading your applications...</p>
+          </div>
+        ) : error ? (
+          <div className="empty-state">
+            <p>Error: {error}</p>
+            <button className="btn-primary" onClick={() => window.location.reload()}>Retry</button>
+          </div>
+        ) : filteredApplications.length === 0 ? (
           <div className="empty-state">
             <p>You haven't applied to any jobs yet.</p>
             <button className="btn-primary">Browse Jobs</button>
           </div>
         ) : (
-          applications.map(application => (
-            <div key={application.id} className="application-card">
+          filteredApplications.map(application => (
+            <div key={application._id} className="application-card">
               <div className="application-card-header">
                 <div>
                   <h3 className="job-title">{application.jobTitle}</h3>
@@ -110,36 +146,49 @@ const Applications = () => {
               <div className="application-details">
                 <div className="detail-item">
                   <span className="detail-label">Applied:</span>
-                  <span>{application.appliedDate}</span>
+                  <span>{new Date(application.appliedDate).toLocaleDateString()}</span>
                 </div>
                 <div className="detail-item">
                   <span className="detail-label">Last Updated:</span>
-                  <span>{application.lastUpdated}</span>
+                  <span>{new Date(application.lastUpdated).toLocaleDateString()}</span>
                 </div>
                 <div className="detail-item">
                   <span className="detail-label">Location:</span>
-                  <span>{application.jobDetails.location}</span>
+                  <span>{application.jobDetails?.location || 'N/A'}</span>
                 </div>
                 <div className="detail-item">
                   <span className="detail-label">Type:</span>
-                  <span>{application.jobDetails.type}</span>
+                  <span>{application.jobDetails?.type || 'N/A'}</span>
                 </div>
               </div>
               
               <div className="application-next-steps">
                 <h4>Next Steps:</h4>
-                <p>{application.nextSteps}</p>
+                <p>{application.nextSteps || 'Waiting for response from recruiter'}</p>
               </div>
               
-              <div className="application-notes">
-                <h4>My Notes:</h4>
-                <p>{application.notes}</p>
-              </div>
+              {application.notes && (
+                <div className="application-notes">
+                  <h4>My Notes:</h4>
+                  <p>{application.notes}</p>
+                </div>
+              )}
               
               <div className="application-actions">
                 <button className="btn-outline">View Job</button>
                 <button className="btn-outline">Add Note</button>
-                <button className="btn-outline">Update Status</button>
+                <select 
+                  className="btn-outline"
+                  onChange={(e) => handleUpdateStatus(application._id, e.target.value)}
+                  defaultValue={application.status}
+                >
+                  <option value={application.status}>{application.status}</option>
+                  <option value="Applied">Applied</option>
+                  <option value="Interview Scheduled">Interview Scheduled</option>
+                  <option value="Offer Received">Offer Received</option>
+                  <option value="Rejected">Rejected</option>
+                  <option value="Hired">Hired</option>
+                </select>
               </div>
             </div>
           ))
