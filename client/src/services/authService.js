@@ -1,5 +1,10 @@
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
+// Log API URL for debugging (only in development)
+if (process.env.NODE_ENV === 'development') {
+  console.log('API Base URL:', API_BASE_URL);
+}
+
 /**
  * Auth Service
  * Handles all authentication API calls
@@ -48,10 +53,16 @@ export const firebaseLogin = async (firebaseUser, role = null) => {
       }),
     });
 
-    const data = await response.json();
+    let data;
+    try {
+      data = await response.json();
+    } catch (parseError) {
+      // If response is not JSON, throw network error
+      throw new Error('Server returned an invalid response. Please check if the server is running.');
+    }
 
     if (!response.ok) {
-      throw new Error(data.message || 'Firebase login failed');
+      throw new Error(data.message || data.error || `Firebase login failed: ${response.status} ${response.statusText}`);
     }
 
     // Store token
@@ -62,7 +73,12 @@ export const firebaseLogin = async (firebaseUser, role = null) => {
     return data;
   } catch (error) {
     console.error('Firebase login error:', error);
-    throw error;
+    // If it's already an Error with a message, rethrow it
+    if (error instanceof Error) {
+      throw error;
+    }
+    // Otherwise, wrap it in an Error
+    throw new Error(error.message || 'Network error. Please check your connection and try again.');
   }
 };
 
@@ -81,10 +97,16 @@ export const register = async (userData) => {
       body: JSON.stringify(userData),
     });
 
-    const data = await response.json();
+    let data;
+    try {
+      data = await response.json();
+    } catch (parseError) {
+      // If response is not JSON, throw network error
+      throw new Error('Server returned an invalid response. Please check if the server is running.');
+    }
 
     if (!response.ok) {
-      throw new Error(data.message || 'Registration failed');
+      throw new Error(data.message || data.error || `Registration failed: ${response.status} ${response.statusText}`);
     }
 
     // Store token
@@ -95,7 +117,12 @@ export const register = async (userData) => {
     return data;
   } catch (error) {
     console.error('Registration error:', error);
-    throw error;
+    // If it's already an Error with a message, rethrow it
+    if (error instanceof Error) {
+      throw error;
+    }
+    // Otherwise, wrap it in an Error
+    throw new Error(error.message || 'Network error. Please check your connection and try again.');
   }
 };
 
@@ -115,10 +142,16 @@ export const login = async (email, password) => {
       body: JSON.stringify({ email, password }),
     });
 
-    const data = await response.json();
+    let data;
+    try {
+      data = await response.json();
+    } catch (parseError) {
+      // If response is not JSON, throw network error
+      throw new Error('Server returned an invalid response. Please check if the server is running.');
+    }
 
     if (!response.ok) {
-      throw new Error(data.message || 'Login failed');
+      throw new Error(data.message || data.error || `Login failed: ${response.status} ${response.statusText}`);
     }
 
     // Store token
@@ -129,7 +162,12 @@ export const login = async (email, password) => {
     return data;
   } catch (error) {
     console.error('Login error:', error);
-    throw error;
+    // If it's already an Error with a message, rethrow it
+    if (error instanceof Error) {
+      throw error;
+    }
+    // Otherwise, wrap it in an Error
+    throw new Error(error.message || 'Network error. Please check your connection and try again.');
   }
 };
 
@@ -152,20 +190,31 @@ export const getCurrentUser = async () => {
       },
     });
 
-    const data = await response.json();
+    let data;
+    try {
+      data = await response.json();
+    } catch (parseError) {
+      // If response is not JSON, throw network error
+      throw new Error('Server returned an invalid response. Please check if the server is running.');
+    }
 
     if (!response.ok) {
       // If token is invalid, remove it
       if (response.status === 401) {
         removeToken();
       }
-      throw new Error(data.message || 'Failed to get user');
+      throw new Error(data.message || data.error || `Failed to get user: ${response.status} ${response.statusText}`);
     }
 
     return data;
   } catch (error) {
     console.error('Get current user error:', error);
-    throw error;
+    // If it's already an Error with a message, rethrow it
+    if (error instanceof Error) {
+      throw error;
+    }
+    // Otherwise, wrap it in an Error
+    throw new Error(error.message || 'Network error. Please check your connection and try again.');
   }
 };
 

@@ -4,11 +4,15 @@
   "description": "Frontend client for AMDox job listing portal",
   "private": true,
   "dependencies": {
-    "firebase": "^10.5.0",
+    "axios": "^1.13.2",
+    "firebase": "^10.14.1",
+    "mongodb": "^7.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.17.0",
-    "react-scripts": "5.0.1"
+    "react-scripts": "5.0.1",
+    "react-toastify": "^11.0.5",
+    "url": "^0.11.4"
   },
   "scripts": {
     "start": "react-scripts start",

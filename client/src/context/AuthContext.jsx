@@ -30,59 +30,89 @@ export const AuthProvider = ({ children }) => {
    * Initialize auth state on mount
    */
   useEffect(() => {
-    initializeAuth();
-  }, []);
+    let unsubscribe = null;
+    let isMounted = true;
 
-  /**
-   * Initialize authentication state
-   * Checks for existing token and Firebase auth state
-   */
-  const initializeAuth = async () => {
-    try {
-      setLoading(true);
-      
-      // Check if we have a token
-      const token = getToken();
-      if (token) {
-        // Try to get user from backend
-        try {
-          const response = await getCurrentUser();
-          setUser(response.user);
-        } catch (err) {
-          // Token might be invalid, remove it
-          removeToken();
+    const initializeAuth = async () => {
+      try {
+        setLoading(true);
+        
+        // Check if we have a token
+        const token = getToken();
+        if (token) {
+          // Try to get user from backend
+          try {
+            const response = await getCurrentUser();
+            if (isMounted) {
+              setUser(response.user);
+            }
+          } catch (err) {
+            console.error('Failed to get current user:', err);
+            // Token might be invalid, remove it
+            removeToken();
+            if (isMounted) {
+              setUser(null);
+            }
+          }
+        }
+
+        // Listen to Firebase auth state changes
+        // This handles Firebase Google sign-in
+        unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+          if (!isMounted) return;
+
+          if (firebaseUser) {
+            // User is signed in with Firebase
+            // Only sync with backend if we don't already have a user from email/password
+            if (!getToken()) {
+              try {
+                const response = await firebaseLogin(firebaseUser);
+                if (isMounted) {
+                  setUser(response.user);
+                }
+              } catch (err) {
+                console.error('Failed to sync Firebase user with backend:', err);
+                if (isMounted) {
+                  setError(err.message || 'Failed to sync with backend');
+                }
+              }
+            }
+          } else {
+            // User is signed out from Firebase
+            // Only clear user if we don't have a token (email/password user)
+            if (!getToken() && isMounted) {
+              setUser(null);
+            }
+          }
+          
+          if (isMounted) {
+            setLoading(false);
+          }
+        });
+
+        // If we loaded user from token and Firebase has no user, we're done
+        if (token && !auth.currentUser && isMounted) {
+          setLoading(false);
+        }
+      } catch (err) {
+        console.error('Auth initialization error:', err);
+        if (isMounted) {
+          setError(err.message || 'Failed to initialize authentication');
+          setLoading(false);
         }
       }
+    };
 
-      // Listen to Firebase auth state changes
-      const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-        if (firebaseUser) {
-          // User is signed in with Firebase
-          // Sync with backend
-          try {
-            const response = await firebaseLogin(firebaseUser);
-            setUser(response.user);
-          } catch (err) {
-            console.error('Failed to sync Firebase user with backend:', err);
-            setError(err.message);
-          }
-        } else {
-          // User is signed out
-          // Only clear user if we don't have a token (email/password user)
-          if (!getToken()) {
-            setUser(null);
-          }
-        }
-        setLoading(false);
-      });
+    initializeAuth();
 
-      return () => unsubscribe();
-    } catch (err) {
-      console.error('Auth initialization error:', err);
-      setError(err.message);
-      setLoading(false);
-    }
-  };
+    // Cleanup function
+    return () => {
+      isMounted = false;
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
+  }, []);
 
   /**
    * Sign in with Google using popup
@@ -98,13 +128,31 @@ export const AuthProvider = ({ children }) => {
       
       // Send to backend
       const response = await firebaseLogin(firebaseUser, role);
-      setUser(response.user);
-      
-      return response;
+      if (response && response.user) {
+        setUser(response.user);
+        return response;
+      } else {
+        throw new Error('Invalid response from server');
+      }
     } catch (error) {
-      const errorMessage = error.message || 'Google sign-in failed';
+      console.error('Google sign-in error:', error);
+      let errorMessage = 'Google sign-in failed';
+      
+      // Handle Firebase auth errors
+      if (error.code === 'auth/popup-closed-by-user') {
+        errorMessage = 'Sign-in popup was closed';
+      } else if (error.code === 'auth/popup-blocked') {
+        errorMessage = 'Sign-in popup was blocked. Please allow popups for this site.';
+      } else if (error.code === 'auth/cancelled-popup-request') {
+        errorMessage = 'Sign-in was cancelled';
+      } else if (error.message) {
+        errorMessage = error.message;
+      } else if (error.response && error.response.data && error.response.data.message) {
+        errorMessage = error.response.data.message;
+      }
+      
       setError(errorMessage);
-      throw error;
+      throw new Error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -140,13 +188,26 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       
       const response = await login(email, password);
-      setUser(response.user);
-      
-      return response;
+      if (response && response.user) {
+        setUser(response.user);
+        return response;
+      } else {
+        throw new Error('Invalid response from server');
+      }
     } catch (error) {
-      const errorMessage = error.message || 'Login failed';
+      console.error('Login error:', error);
+      let errorMessage = 'Login failed';
+      
+      if (error.message) {
+        errorMessage = error.message;
+      } else if (error.response && error.response.data && error.response.data.message) {
+        errorMessage = error.response.data.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+      
       setError(errorMessage);
-      throw error;
+      throw new Error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -162,13 +223,26 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       
       const response = await register(userData);
-      setUser(response.user);
-      
-      return response;
+      if (response && response.user) {
+        setUser(response.user);
+        return response;
+      } else {
+        throw new Error('Invalid response from server');
+      }
     } catch (error) {
-      const errorMessage = error.message || 'Registration failed';
+      console.error('Registration error:', error);
+      let errorMessage = 'Registration failed';
+      
+      if (error.message) {
+        errorMessage = error.message;
+      } else if (error.response && error.response.data && error.response.data.message) {
+        errorMessage = error.response.data.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+      
       setError(errorMessage);
-      throw error;
+      throw new Error(errorMessage);
     } finally {
       setLoading(false);
     }
