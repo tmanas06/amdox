@@ -1,69 +1,622 @@
-* {
+/* Import Design System */
+@import './styles/tokens.css';
+@import './styles/typography.css';
+@import './styles/animations.css';
+@import './styles/mobile-optimization.css';
+@import './styles/accessibility.css';
+
+/* Modern CSS Reset */
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
+body {
+  font-family: var(--font-primary);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  transition: background var(--duration-300) var(--ease-in-out), color var(--duration-300) var(--ease-in-out);
+}
+
+/* Theme-specific body backgrounds - Higher specificity */
+html[data-theme="dark"] body,
+[data-theme="dark"] body {
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%) !important;
+}
+
+html[data-theme="light"] body,
+[data-theme="light"] body {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #e2e8f0 100%) !important;
+}
+
+/* Default fallback */
+body {
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+}
+
+/* Modern App Container */
+.app-container {
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  transition: background var(--duration-300) var(--ease-in-out);
+}
+
+/* Theme-specific app container backgrounds - Higher specificity */
+html[data-theme="dark"] .app-container,
+[data-theme="dark"] .app-container {
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%) !important;
+}
+
+html[data-theme="light"] .app-container,
+[data-theme="light"] .app-container {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #e2e8f0 100%) !important;
+}
+
+/* Default fallback */
+.app-container {
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+}
+
+/* Add subtle background pattern */
+.app-container::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.6;
+  transition: opacity var(--duration-300) var(--ease-in-out);
+}
+
+/* Dark theme background pattern */
+[data-theme="dark"] .app-container::before {
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(217, 70, 239, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(249, 115, 22, 0.02) 0%, transparent 50%);
+}
+
+/* Light theme background pattern */
+[data-theme="light"] .app-container::before {
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(217, 70, 239, 0.02) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.02) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(249, 115, 22, 0.01) 0%, transparent 50%);
+}
+
+@keyframes backgroundShift {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+/* Legacy styles for backward compatibility */
 .home-page {
   min-height: 100vh;
-  background: #f7fafc;
+  background: var(--color-bg-primary);
 }
 
 .home-header {
-  background: white;
-  padding: 24px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: var(--glass-backdrop);
+  backdrop-filter: var(--glass-blur);
+  border-bottom: 1px solid var(--glass-border);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-sm);
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 .home-header h1 {
-  color: #1a202c;
-  font-size: 24px;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .user-info {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: var(--space-4);
 }
 
 .user-info p {
-  color: #4a5568;
-  font-size: 14px;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
 }
 
 .logout-btn {
-  padding: 8px 16px;
-  background: #667eea;
+  padding: var(--space-2) var(--space-4);
+  background: var(--gradient-primary);
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-lg);
   cursor: pointer;
-  font-size: 14px;
-  transition: background 0.2s;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  transition: all var(--duration-200) var(--ease-out);
+  box-shadow: var(--shadow-primary);
 }
 
 .logout-btn:hover {
-  background: #5568d3;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.logout-btn:active {
+  transform: translateY(0);
 }
 
 main {
-  padding: 40px;
+  padding: var(--space-10);
   max-width: 1200px;
   margin: 0 auto;
 }
 
 main p {
-  color: #4a5568;
-  font-size: 16px;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+}
+
+/* Modern Button System */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-6);
+  border: none;
+  border-radius: var(--radius-lg);
+  font-family: var(--font-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all var(--duration-200) var(--ease-out);
+  position: relative;
+  overflow: hidden;
+  transform: translateZ(0); /* GPU acceleration */
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.btn-primary {
+  background: var(--gradient-primary);
+  color: white;
+  box-shadow: var(--shadow-primary);
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: var(--gradient-secondary);
+  color: white;
+  box-shadow: var(--shadow-secondary);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn-secondary:active:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--color-primary-600);
+  border: 2px solid var(--color-primary-600);
+  transition: all var(--duration-200) var(--ease-out);
+}
+
+.btn-outline:hover:not(:disabled) {
+  background: var(--color-primary-600);
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-primary);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--glass-border);
+  transition: all var(--duration-200) var(--ease-out);
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background: var(--glass-backdrop);
+  color: var(--color-text-primary);
+  transform: translateY(-1px);
+}
+
+/* Modern Card System */
+.card {
+  background: var(--glass-backdrop);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-base);
+  transition: all var(--duration-300) var(--ease-out);
+  transform: translateZ(0); /* GPU acceleration */
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--color-primary-500);
+}
+
+.card-header {
+  margin-bottom: var(--space-4);
+}
+
+.card-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-2);
+  transition: color var(--duration-200) var(--ease-out);
+}
+
+.card-subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  transition: color var(--duration-200) var(--ease-out);
+}
+
+/* Modern Form System */
+.form-group {
+  margin-bottom: var(--space-6);
+}
+
+.form-label {
+  display: block;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-2);
+  transition: color var(--duration-200) var(--ease-out);
+}
+
+.form-input {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: 2px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  background: var(--glass-backdrop);
+  backdrop-filter: var(--glass-blur-sm);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-base);
+  transition: all var(--duration-200) var(--ease-out);
+  transform: translateZ(0); /* GPU acceleration */
+}
+
+.form-input::placeholder {
+  color: var(--color-text-tertiary);
+  transition: color var(--duration-200) var(--ease-out);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px rgba(217, 70, 239, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.01);
+}
+
+.form-input:invalid {
+  border-color: var(--color-error-500);
+  animation: shake var(--duration-300) var(--ease-out);
+}
+
+.form-input:valid {
+  border-color: var(--color-success-500);
+}
+
+/* Shake animation for invalid inputs */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+/* Utility Classes */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.animate-bounce {
+  animation: bounce 1s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(-25%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: none;
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  main {
+    padding: var(--space-6);
+  }
+  
+  .btn {
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--font-size-xs);
+  }
+  
+  .card {
+    padding: var(--space-4);
+  }
+}
+/* Global Light Theme Text Override for Maximum Readability */
+html[data-theme="light"] *,
+[data-theme="light"] * {
+  color: #000000 !important;
+}
+
+/* Specific overrides for elements that should remain colored */
+html[data-theme="light"] .gradient-text-primary,
+[data-theme="light"] .gradient-text-primary,
+html[data-theme="light"] .gradient-text-secondary,
+[data-theme="light"] .gradient-text-secondary,
+html[data-theme="light"] .brand-title,
+[data-theme="light"] .brand-title,
+html[data-theme="light"] .auth-title-dark,
+[data-theme="light"] .auth-title-dark,
+html[data-theme="light"] .hero-heading-dark,
+[data-theme="light"] .hero-heading-dark {
+  background: var(--gradient-primary) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+
+/* Button text should remain white on colored backgrounds */
+html[data-theme="light"] .work-email-btn-dark,
+[data-theme="light"] .work-email-btn-dark,
+html[data-theme="light"] .google-btn-dark,
+[data-theme="light"] .google-btn-dark,
+html[data-theme="light"] .submit-btn-dark,
+[data-theme="light"] .submit-btn-dark,
+html[data-theme="light"] button[class*="btn-"],
+[data-theme="light"] button[class*="btn-"] {
+  color: #ffffff !important;
+}
+/* Enhanced Light Mode Fixes for All Content Areas */
+html[data-theme="light"] .loading-container,
+[data-theme="light"] .loading-container,
+html[data-theme="light"] .empty-state,
+[data-theme="light"] .empty-state,
+html[data-theme="light"] .content-box,
+[data-theme="light"] .content-box,
+html[data-theme="light"] .search-container,
+[data-theme="light"] .search-container,
+html[data-theme="light"] .filter-container,
+[data-theme="light"] .filter-container,
+html[data-theme="light"] .no-results,
+[data-theme="light"] .no-results,
+html[data-theme="light"] .job-card,
+[data-theme="light"] .job-card,
+html[data-theme="light"] .saved-job-card,
+[data-theme="light"] .saved-job-card,
+html[data-theme="light"] .post-job-card,
+[data-theme="light"] .post-job-card {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(0, 0, 0, 0.15) !important;
+  color: #000000 !important;
+}
+
+/* Fix all text in light mode content areas */
+html[data-theme="light"] .loading-container *,
+[data-theme="light"] .loading-container *,
+html[data-theme="light"] .empty-state *,
+[data-theme="light"] .empty-state *,
+html[data-theme="light"] .content-box *,
+[data-theme="light"] .content-box *,
+html[data-theme="light"] .search-container *,
+[data-theme="light"] .search-container *,
+html[data-theme="light"] .filter-container *,
+[data-theme="light"] .filter-container *,
+html[data-theme="light"] .no-results *,
+[data-theme="light"] .no-results *,
+html[data-theme="light"] .job-card *,
+[data-theme="light"] .job-card *,
+html[data-theme="light"] .saved-job-card *,
+[data-theme="light"] .saved-job-card *,
+html[data-theme="light"] .post-job-card *,
+[data-theme="light"] .post-job-card * {
+  color: #000000 !important;
+}
+
+/* Fix specific job card elements */
+html[data-theme="light"] .job-card h3,
+[data-theme="light"] .job-card h3,
+html[data-theme="light"] .job-card .company-name,
+[data-theme="light"] .job-card .company-name,
+html[data-theme="light"] .job-card .job-location,
+[data-theme="light"] .job-card .job-location,
+html[data-theme="light"] .job-card .job-salary,
+[data-theme="light"] .job-card .job-salary,
+html[data-theme="light"] .job-card .job-type,
+[data-theme="light"] .job-card .job-type,
+html[data-theme="light"] .job-card .job-description,
+[data-theme="light"] .job-card .job-description,
+html[data-theme="light"] .job-card .meta-item,
+[data-theme="light"] .job-card .meta-item,
+html[data-theme="light"] .saved-job-card h3,
+[data-theme="light"] .saved-job-card h3,
+html[data-theme="light"] .saved-job-card .company-name,
+[data-theme="light"] .saved-job-card .company-name,
+html[data-theme="light"] .saved-job-card .job-location,
+[data-theme="light"] .saved-job-card .job-location,
+html[data-theme="light"] .saved-job-card .job-salary,
+[data-theme="light"] .saved-job-card .job-salary,
+html[data-theme="light"] .saved-job-card .job-type,
+[data-theme="light"] .saved-job-card .job-type {
+  color: #000000 !important;
+}
+
+/* Fix input fields and search bars */
+html[data-theme="light"] input,
+[data-theme="light"] input,
+html[data-theme="light"] select,
+[data-theme="light"] select,
+html[data-theme="light"] textarea,
+[data-theme="light"] textarea,
+html[data-theme="light"] .search-input,
+[data-theme="light"] .search-input,
+html[data-theme="light"] .filter-select,
+[data-theme="light"] .filter-select {
+  background: #ffffff !important;
+  border: 2px solid rgba(0, 0, 0, 0.2) !important;
+  color: #000000 !important;
+}
+
+html[data-theme="light"] input::placeholder,
+[data-theme="light"] input::placeholder,
+html[data-theme="light"] textarea::placeholder,
+[data-theme="light"] textarea::placeholder,
+html[data-theme="light"] .search-input::placeholder,
+[data-theme="light"] .search-input::placeholder {
+  color: #666666 !important;
+}
+
+/* Fix buttons and interactive elements */
+html[data-theme="light"] .btn-secondary,
+[data-theme="light"] .btn-secondary,
+html[data-theme="light"] .filter-btn,
+[data-theme="light"] .filter-btn,
+html[data-theme="light"] .clear-btn,
+[data-theme="light"] .clear-btn,
+html[data-theme="light"] .clear-filters,
+[data-theme="light"] .clear-filters,
+html[data-theme="light"] .btn-save,
+[data-theme="light"] .btn-save,
+html[data-theme="light"] .btn-remove,
+[data-theme="light"] .btn-remove {
+  background: #ffffff !important;
+  border: 2px solid rgba(0, 0, 0, 0.2) !important;
+  color: #000000 !important;
+}
+
+/* Fix labels and form elements */
+html[data-theme="light"] .filter-label,
+[data-theme="light"] .filter-label,
+html[data-theme="light"] .form-label,
+[data-theme="light"] .form-label,
+html[data-theme="light"] label,
+[data-theme="light"] label {
+  color: #000000 !important;
+}
+
+/* Fix error and status messages */
+html[data-theme="light"] .error-message,
+[data-theme="light"] .error-message,
+html[data-theme="light"] .status-message,
+[data-theme="light"] .status-message,
+html[data-theme="light"] .info-message,
+[data-theme="light"] .info-message {
+  background: #ffffff !important;
+  border: 2px solid rgba(220, 38, 38, 0.3) !important;
+  color: #000000 !important;
+}
+
+/* Fix loading text and empty state text */
+html[data-theme="light"] .loading-text,
+[data-theme="light"] .loading-text,
+html[data-theme="light"] .empty-text,
+[data-theme="light"] .empty-text,
+html[data-theme="light"] .no-results h3,
+[data-theme="light"] .no-results h3,
+html[data-theme="light"] .no-results p,
+[data-theme="light"] .no-results p {
+  color: #000000 !important;
+  font-weight: 600 !important;
+}
+
+/* Fix meta information and secondary text */
+html[data-theme="light"] .job-meta,
+[data-theme="light"] .job-meta,
+html[data-theme="light"] .company-info,
+[data-theme="light"] .company-info,
+html[data-theme="light"] .job-posted,
+[data-theme="light"] .job-posted,
+html[data-theme="light"] .saved-date,
+[data-theme="light"] .saved-date {
+  color: #1a1a1a !important;
+}
+
+/* Fix skill tags and badges */
+html[data-theme="light"] .skill-tag,
+[data-theme="light"] .skill-tag,
+html[data-theme="light"] .remote-badge,
+[data-theme="light"] .remote-badge,
+html[data-theme="light"] .filter-tag,
+[data-theme="light"] .filter-tag {
+  background: rgba(217, 70, 239, 0.1) !important;
+  border-color: rgba(217, 70, 239, 0.3) !important;
+  color: #7c3aed !important;
+}
+
+/* Fix search icons and other icons */
+html[data-theme="light"] .search-icon,
+[data-theme="light"] .search-icon {
+  color: #666666 !important;
 }

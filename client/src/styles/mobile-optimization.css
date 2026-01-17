@@ -1,0 +1,612 @@
+/* Mobile Optimization and Touch Target Enhancements */
+/* Implements Requirements 9.1, 9.2, 9.3, 9.4 */
+
+/* === MOBILE-FIRST RESPONSIVE BREAKPOINTS === */
+/* Enhanced breakpoint system with better mobile coverage */
+
+/* Extra small devices (phones, 320px and up) */
+@media (min-width: 320px) {
+  :root {
+    --mobile-padding: var(--space-4);
+    --mobile-gap: var(--space-3);
+    --touch-target-min: 44px;
+    --mobile-font-scale: 0.9;
+  }
+}
+
+/* Small devices (phones, 475px and up) */
+@media (min-width: 475px) {
+  :root {
+    --mobile-padding: var(--space-5);
+    --mobile-gap: var(--space-4);
+    --mobile-font-scale: 0.95;
+  }
+}
+
+/* Medium devices (tablets, 640px and up) */
+@media (min-width: 640px) {
+  :root {
+    --mobile-padding: var(--space-6);
+    --mobile-gap: var(--space-5);
+    --mobile-font-scale: 1;
+  }
+}
+
+/* === TOUCH TARGET OPTIMIZATION === */
+/* Ensures all interactive elements meet 44px minimum touch target */
+
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* Expand touch area for small visual elements */
+.touch-target-expand::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 44px;
+  min-height: 44px;
+  z-index: -1;
+}
+
+/* Button touch targets */
+button,
+.btn,
+[role="button"] {
+  min-height: 44px;
+  min-width: 44px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+/* Link touch targets */
+a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+/* Input touch targets */
+input,
+select,
+textarea {
+  min-height: 44px;
+  touch-action: manipulation;
+}
+
+/* === MOBILE NAVIGATION ENHANCEMENTS === */
+@media (max-width: 768px) {
+  /* Dashboard navigation improvements */
+  .dashboard-nav {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-sticky);
+  }
+
+  .nav-container {
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--mobile-padding);
+  }
+
+  .nav-tabs {
+    width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: var(--space-2);
+  }
+
+  .nav-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav-tab {
+    flex-shrink: 0;
+    min-width: 120px;
+    padding: var(--space-3) var(--space-4);
+    white-space: nowrap;
+  }
+
+  /* Mobile-optimized header */
+  .amdox-header {
+    padding: var(--mobile-padding);
+  }
+
+  .header-container {
+    flex-direction: column;
+    gap: var(--space-4);
+    text-align: center;
+  }
+
+  .brand-title {
+    font-size: var(--font-size-xl);
+  }
+
+  .brand-subtitle {
+    font-size: var(--font-size-sm);
+  }
+}
+
+/* === MOBILE LAYOUT IMPROVEMENTS === */
+@media (max-width: 768px) {
+  /* Container spacing */
+  .jobs-container,
+  .dashboard-content,
+  .amdox-container {
+    padding: var(--mobile-padding);
+  }
+
+  /* Grid layouts become single column */
+  .stats-grid,
+  .content-grid,
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: var(--mobile-gap);
+  }
+
+  /* Card spacing optimization */
+  .job-card,
+  .stat-card,
+  .content-card,
+  .saved-job-card,
+  .profile-card {
+    margin-bottom: var(--mobile-gap);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+  }
+
+  /* Typography scaling for mobile */
+  .page-title,
+  .hero-heading-dark {
+    font-size: calc(var(--font-size-3xl) * var(--mobile-font-scale));
+    line-height: var(--line-height-tight);
+  }
+
+  .page-subtitle,
+  .hero-stats-dark {
+    font-size: calc(var(--font-size-base) * var(--mobile-font-scale));
+  }
+}
+
+/* === MOBILE FORM ENHANCEMENTS === */
+@media (max-width: 768px) {
+  /* Form layout improvements */
+  .search-container,
+  .auth-card-dark,
+  .post-job-card {
+    padding: var(--space-5);
+    border-radius: var(--radius-xl);
+  }
+
+  .filters-row {
+    flex-direction: column;
+    gap: var(--mobile-gap);
+  }
+
+  .filter-group {
+    width: 100%;
+  }
+
+  /* Input field optimization */
+  .form-input,
+  .search-input,
+  input,
+  select,
+  textarea {
+    padding: var(--space-4);
+    font-size: 16px; /* Prevents zoom on iOS */
+    border-radius: var(--radius-lg);
+  }
+
+  /* Button optimization */
+  .btn-primary,
+  .btn-secondary,
+  .btn-apply,
+  .primary-btn {
+    padding: var(--space-4) var(--space-6);
+    font-size: var(--font-size-base);
+    border-radius: var(--radius-lg);
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Form actions stack vertically */
+  .form-actions,
+  .job-card-footer,
+  .saved-job-actions {
+    flex-direction: column;
+    gap: var(--mobile-gap);
+  }
+}
+
+/* === MOBILE JOB CARD IMPROVEMENTS === */
+@media (max-width: 768px) {
+  .job-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
+  .job-actions {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .btn-save {
+    width: 100%;
+    justify-content: center;
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .job-meta {
+    flex-direction: column;
+    gap: var(--space-2);
+    align-items: flex-start;
+  }
+
+  .meta-item {
+    width: 100%;
+  }
+
+  .job-skills {
+    gap: var(--space-2);
+  }
+
+  .skill-tag {
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--font-size-xs);
+  }
+}
+
+/* === MOBILE DASHBOARD IMPROVEMENTS === */
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+  }
+
+  .header-actions {
+    width: 100%;
+  }
+
+  .primary-btn {
+    width: 100%;
+  }
+
+  /* Stats cards optimization */
+  .stat-card {
+    padding: var(--space-5);
+  }
+
+  .stat-value {
+    font-size: var(--font-size-3xl);
+  }
+
+  /* Quick actions optimization */
+  .quick-action-item {
+    padding: var(--space-4);
+    gap: var(--space-3);
+  }
+
+  .quick-action-icon {
+    width: 40px;
+    height: 40px;
+    font-size: var(--font-size-lg);
+  }
+}
+
+/* === MOBILE PROFILE IMPROVEMENTS === */
+@media (max-width: 768px) {
+  .profile-header {
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .profile-completion {
+    width: 100%;
+  }
+
+  .profile-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
+  .edit-actions {
+    width: 100%;
+    flex-direction: row;
+  }
+
+  .btn-edit,
+  .btn-cancel,
+  .btn-save {
+    flex: 1;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .section-with-actions {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
+  .btn-add {
+    width: 100%;
+  }
+
+  .skill-input-wrapper {
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .skill-input-wrapper button {
+    width: 100%;
+  }
+}
+
+/* === MOBILE SAVED JOBS IMPROVEMENTS === */
+@media (max-width: 768px) {
+  .saved-jobs-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+  }
+
+  .saved-jobs-tabs {
+    width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .saved-jobs-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab-btn {
+    flex-shrink: 0;
+    min-width: 100px;
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .saved-job-content {
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .saved-job-info {
+    min-width: auto;
+  }
+
+  .saved-job-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .btn-apply,
+  .btn-remove {
+    flex: 1;
+  }
+}
+
+/* === MOBILE POST JOB IMPROVEMENTS === */
+@media (max-width: 768px) {
+  .post-job-container {
+    padding: var(--mobile-padding);
+  }
+
+  .post-job-card {
+    padding: var(--space-6);
+  }
+
+  .post-job-card h2 {
+    font-size: var(--font-size-2xl);
+  }
+
+  .form-section {
+    gap: var(--space-4);
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+    gap: var(--space-3);
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+  }
+}
+
+/* === MOBILE PAGINATION IMPROVEMENTS === */
+@media (max-width: 768px) {
+  .pagination {
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    justify-content: center;
+  }
+
+  .pagination-arrow,
+  .page-number {
+    min-width: 44px;
+    min-height: 44px;
+    font-size: var(--font-size-sm);
+  }
+
+  .page-ellipsis {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* === MOBILE ACCESSIBILITY IMPROVEMENTS === */
+@media (max-width: 768px) {
+  /* Improved focus indicators for mobile */
+  button:focus,
+  .btn:focus,
+  [role="button"]:focus,
+  a:focus,
+  input:focus,
+  select:focus,
+  textarea:focus {
+    outline: 3px solid var(--color-primary-400);
+    outline-offset: 2px;
+  }
+
+  /* Better tap feedback */
+  button:active,
+  .btn:active,
+  [role="button"]:active {
+    transform: scale(0.98);
+    transition: transform var(--duration-100) var(--ease-out);
+  }
+
+  /* Improved text readability */
+  body {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  /* Better spacing for readability */
+  p, li {
+    line-height: var(--line-height-relaxed);
+  }
+}
+
+/* === LANDSCAPE ORIENTATION OPTIMIZATIONS === */
+@media (max-width: 768px) and (orientation: landscape) {
+  .amdox-container {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-8);
+    padding: var(--space-4);
+  }
+
+  .hero-heading-dark {
+    font-size: var(--font-size-2xl);
+  }
+
+  .auth-card-dark {
+    padding: var(--space-5);
+  }
+}
+
+/* === VERY SMALL SCREENS (320px and below) === */
+@media (max-width: 320px) {
+  :root {
+    --mobile-padding: var(--space-3);
+    --mobile-gap: var(--space-2);
+  }
+
+  .job-card,
+  .stat-card,
+  .content-card {
+    padding: var(--space-3);
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--font-size-sm);
+  }
+
+  .page-title {
+    font-size: var(--font-size-xl);
+  }
+
+  .stat-value {
+    font-size: var(--font-size-2xl);
+  }
+}
+
+/* === MOBILE PERFORMANCE OPTIMIZATIONS === */
+@media (max-width: 768px) {
+  /* Reduce animations on mobile for better performance */
+  .reduce-motion {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  /* Optimize transforms for mobile */
+  .job-card,
+  .stat-card,
+  .btn {
+    will-change: transform;
+    transform: translateZ(0);
+  }
+
+  /* Reduce blur effects on mobile for performance */
+  .glass-effect,
+  .glass-effect-lg {
+    backdrop-filter: var(--glass-blur-sm);
+  }
+}
+
+/* === MOBILE SCROLLING IMPROVEMENTS === */
+@media (max-width: 768px) {
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Better scroll indicators */
+  .nav-tabs,
+  .saved-jobs-tabs {
+    scroll-snap-type: x mandatory;
+  }
+
+  .nav-tab,
+  .tab-btn {
+    scroll-snap-align: start;
+  }
+
+  /* Momentum scrolling on iOS */
+  .nav-tabs,
+  .saved-jobs-tabs,
+  .skills-list {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* === MOBILE LOADING STATES === */
+@media (max-width: 768px) {
+  .loading-container {
+    padding: var(--space-8) var(--mobile-padding);
+  }
+
+  .loading-spinner {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .empty-state {
+    padding: var(--space-8) var(--mobile-padding);
+  }
+
+  .empty-state-text {
+    font-size: var(--font-size-lg);
+  }
+
+  .empty-state-subtext {
+    font-size: var(--font-size-sm);
+  }
+}

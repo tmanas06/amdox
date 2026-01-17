@@ -1,25 +1,13 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { 
-  signInWithPopup, 
-  signInWithRedirect, 
-  signOut as firebaseSignOut,
-  onAuthStateChanged 
-} from 'firebase/auth';
+import { signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
 import { auth, googleProvider } from '../firebase/config';
-import { 
-  firebaseLogin, 
-  login, 
-  register, 
-  getCurrentUser, 
-  logout as removeToken,
-  getToken 
-} from '../services/authService';
+import { firebaseLogin, login, register, getCurrentUser, logout as authLogout } from '../services/authService';
 
 const AuthContext = createContext(null);
 
 /**
  * AuthProvider Component
- * Manages authentication state and provides auth methods
+ * Manages authentication state with Firebase and backend integration
  */
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -27,96 +15,34 @@ export const AuthProvider = ({ children }) => {
   const [error, setError] = useState(null);
 
   /**
-   * Initialize auth state on mount
+   * Initialize auth state
    */
   useEffect(() => {
-    let unsubscribe = null;
-    let isMounted = true;
-
-    const initializeAuth = async () => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       try {
-        setLoading(true);
-        
-        // Check if we have a token
-        const token = getToken();
-        if (token) {
-          // Try to get user from backend
-          try {
-            const response = await getCurrentUser();
-            if (isMounted) {
-              setUser(response.user);
-            }
-          } catch (err) {
-            console.error('Failed to get current user:', err);
-            // Token might be invalid, remove it
-            removeToken();
-            if (isMounted) {
-              setUser(null);
-            }
-          }
+        if (firebaseUser) {
+          // User is signed in with Firebase, get backend user data
+          const userData = await getCurrentUser();
+          setUser(userData.user);
+        } else {
+          // User is signed out
+          setUser(null);
         }
-
-        // Listen to Firebase auth state changes
-        // This handles Firebase Google sign-in
-        unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-          if (!isMounted) return;
-
-          if (firebaseUser) {
-            // User is signed in with Firebase
-            // Only sync with backend if we don't already have a user from email/password
-            if (!getToken()) {
-              try {
-                const response = await firebaseLogin(firebaseUser);
-                if (isMounted) {
-                  setUser(response.user);
-                }
-              } catch (err) {
-                console.error('Failed to sync Firebase user with backend:', err);
-                if (isMounted) {
-                  setError(err.message || 'Failed to sync with backend');
-                }
-              }
-            }
-          } else {
-            // User is signed out from Firebase
-            // Only clear user if we don't have a token (email/password user)
-            if (!getToken() && isMounted) {
-              setUser(null);
-            }
-          }
-          
-          if (isMounted) {
-            setLoading(false);
-          }
-        });
-
-        // If we loaded user from token and Firebase has no user, we're done
-        if (token && !auth.currentUser && isMounted) {
-          setLoading(false);
-        }
-      } catch (err) {
-        console.error('Auth initialization error:', err);
-        if (isMounted) {
-          setError(err.message || 'Failed to initialize authentication');
-          setLoading(false);
-        }
+      } catch (error) {
+        console.error('Auth state change error:', error);
+        // If there's an error getting user data, sign out
+        setUser(null);
+        authLogout();
+      } finally {
+        setLoading(false);
       }
-    };
+    });
 
-    initializeAuth();
-
-    // Cleanup function
-    return () => {
-      isMounted = false;
-      if (unsubscribe) {
-        unsubscribe();
-      }
-    };
+    return () => unsubscribe();
   }, []);
 
   /**
-   * Sign in with Google using popup
-   * @param {string} role - Optional role (job_seeker or employer)
+   * Sign in with Google
    */
   const signInWithGoogle = async (role = null) => {
     try {
@@ -126,61 +52,26 @@ export const AuthProvider = ({ children }) => {
       const result = await signInWithPopup(auth, googleProvider);
       const firebaseUser = result.user;
       
-      // Send to backend
+      // Send Firebase user data to backend
       const response = await firebaseLogin(firebaseUser, role);
-      if (response && response.user) {
+      
+      if (response.success) {
         setUser(response.user);
-        return response;
+        return { success: true, user: response.user };
       } else {
-        throw new Error('Invalid response from server');
+        throw new Error(response.message || 'Google sign-in failed');
       }
     } catch (error) {
       console.error('Google sign-in error:', error);
-      let errorMessage = 'Google sign-in failed';
-      
-      // Handle Firebase auth errors
-      if (error.code === 'auth/popup-closed-by-user') {
-        errorMessage = 'Sign-in popup was closed';
-      } else if (error.code === 'auth/popup-blocked') {
-        errorMessage = 'Sign-in popup was blocked. Please allow popups for this site.';
-      } else if (error.code === 'auth/cancelled-popup-request') {
-        errorMessage = 'Sign-in was cancelled';
-      } else if (error.message) {
-        errorMessage = error.message;
-      } else if (error.response && error.response.data && error.response.data.message) {
-        errorMessage = error.response.data.message;
-      }
-      
-      setError(errorMessage);
-      throw new Error(errorMessage);
+      setError(error.message);
+      throw error;
     } finally {
       setLoading(false);
     }
   };
 
   /**
-   * Sign in with Google using redirect
-   * @param {string} role - Optional role (job_seeker or employer)
-   */
-  const signInWithGoogleRedirect = async (role = null) => {
-    try {
-      setError(null);
-      // Store role in sessionStorage for after redirect
-      if (role) {
-        sessionStorage.setItem('pendingRole', role);
-      }
-      await signInWithRedirect(auth, googleProvider);
-    } catch (error) {
-      const errorMessage = error.message || 'Google sign-in redirect failed';
-      setError(errorMessage);
-      throw error;
-    }
-  };
-
-  /**
    * Email/password login
-   * @param {string} email - User email
-   * @param {string} password - User password
    */
   const loginWithEmail = async (email, password) => {
     try {
@@ -188,26 +79,17 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       
       const response = await login(email, password);
-      if (response && response.user) {
+      
+      if (response.success) {
         setUser(response.user);
-        return response;
+        return { success: true, user: response.user };
       } else {
-        throw new Error('Invalid response from server');
+        throw new Error(response.message || 'Login failed');
       }
     } catch (error) {
-      console.error('Login error:', error);
-      let errorMessage = 'Login failed';
-      
-      if (error.message) {
-        errorMessage = error.message;
-      } else if (error.response && error.response.data && error.response.data.message) {
-        errorMessage = error.response.data.message;
-      } else if (typeof error === 'string') {
-        errorMessage = error;
-      }
-      
-      setError(errorMessage);
-      throw new Error(errorMessage);
+      console.error('Email login error:', error);
+      setError(error.message);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -215,7 +97,6 @@ export const AuthProvider = ({ children }) => {
 
   /**
    * Email/password registration
-   * @param {Object} userData - { email, password, confirmPassword, role, name, phone }
    */
   const registerWithEmail = async (userData) => {
     try {
@@ -223,52 +104,40 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       
       const response = await register(userData);
-      if (response && response.user) {
+      
+      if (response.success) {
         setUser(response.user);
-        return response;
+        return { success: true, user: response.user };
       } else {
-        throw new Error('Invalid response from server');
+        throw new Error(response.message || 'Registration failed');
       }
     } catch (error) {
       console.error('Registration error:', error);
-      let errorMessage = 'Registration failed';
-      
-      if (error.message) {
-        errorMessage = error.message;
-      } else if (error.response && error.response.data && error.response.data.message) {
-        errorMessage = error.response.data.message;
-      } else if (typeof error === 'string') {
-        errorMessage = error;
-      }
-      
-      setError(errorMessage);
-      throw new Error(errorMessage);
+      setError(error.message);
+      throw error;
     } finally {
       setLoading(false);
     }
   };
 
   /**
-   * Logout user
+   * Logout
    */
   const logout = async () => {
     try {
       setError(null);
       setLoading(true);
       
-      // Sign out from Firebase if signed in
-      if (auth.currentUser) {
-        await firebaseSignOut(auth);
-      }
+      // Sign out from Firebase
+      await signOut(auth);
       
-      // Remove token
-      removeToken();
+      // Clear backend token
+      authLogout();
       
-      // Clear user state
       setUser(null);
     } catch (error) {
-      const errorMessage = error.message || 'Logout failed';
-      setError(errorMessage);
+      console.error('Logout error:', error);
+      setError(error.message);
       throw error;
     } finally {
       setLoading(false);
@@ -280,7 +149,6 @@ export const AuthProvider = ({ children }) => {
     loading,
     error,
     signInWithGoogle,
-    signInWithGoogleRedirect,
     loginWithEmail,
     registerWithEmail,
     logout,
@@ -297,7 +165,6 @@ export const AuthProvider = ({ children }) => {
 
 /**
  * useAuth Hook
- * Provides access to auth context
  */
 export const useAuth = () => {
   const context = useContext(AuthContext);

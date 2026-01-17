@@ -22,6 +22,15 @@
 .header-container {
   max-width: 1400px;
   margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
 }
 
 .header-brand {
@@ -208,7 +217,7 @@
 /* Google Sign-In Button */
 .google-btn-dark {
   width: 100%;
-  background: linear-gradient(135deg, #3b82f6 0%, #10b981 100%);
+  background: var(--gradient-secondary);
   border: none;
   border-radius: 16px;
   padding: 1rem 1.5rem;
@@ -221,14 +230,14 @@
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
-  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+  box-shadow: var(--shadow-secondary);
   margin-bottom: 1.5rem;
 }
 
 .google-btn-dark:hover:not(:disabled) {
   transform: scale(1.02);
-  background: linear-gradient(135deg, #2563eb 0%, #059669 100%);
-  box-shadow: 0 12px 32px rgba(59, 130, 246, 0.4);
+  background: var(--gradient-secondary-dark);
+  box-shadow: 0 12px 32px rgba(16, 185, 129, 0.4);
 }
 
 .google-btn-dark:disabled {
@@ -322,7 +331,7 @@
 
 .submit-btn-dark {
   width: 100%;
-  background: linear-gradient(135deg, #3b82f6 0%, #10b981 100%);
+  background: var(--gradient-primary);
   border: none;
   border-radius: 16px;
   padding: 1rem 1.5rem;
@@ -336,7 +345,7 @@
 
 .submit-btn-dark:hover:not(:disabled) {
   transform: scale(1.02);
-  box-shadow: 0 12px 32px rgba(59, 130, 246, 0.4);
+  box-shadow: var(--shadow-primary);
 }
 
 .submit-btn-dark:disabled {
@@ -354,14 +363,14 @@
 }
 
 .auth-link-dark {
-  color: #3b82f6;
+  color: var(--color-primary-400);
   text-decoration: none;
   font-weight: 600;
   transition: color 0.2s;
 }
 
 .auth-link-dark:hover {
-  color: #60a5fa;
+  color: var(--color-primary-300);
   text-decoration: underline;
 }
 
