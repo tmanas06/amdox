@@ -1,0 +1,190 @@
+/* Theme Transition Styles */
+/* Smooth transitions when switching between light and dark themes */
+
+/* Global transition for theme switching */
+.theme-transitioning,
+.theme-transitioning *,
+.theme-transitioning *:before,
+.theme-transitioning *:after {
+  transition: 
+    background-color var(--duration-300) var(--ease-in-out),
+    border-color var(--duration-300) var(--ease-in-out),
+    color var(--duration-300) var(--ease-in-out),
+    box-shadow var(--duration-300) var(--ease-in-out),
+    backdrop-filter var(--duration-300) var(--ease-in-out) !important;
+  transition-delay: 0ms !important;
+}
+
+/* Prevent transitions on page load */
+.preload * {
+  transition: none !important;
+}
+
+/* Theme-specific animations */
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+}
+
+/* Smooth gradient transitions */
+.gradient-primary,
+.gradient-secondary,
+.gradient-sunset {
+  transition: opacity var(--duration-300) var(--ease-in-out);
+}
+
+/* Glass effect transitions */
+.glass-effect,
+.glass-effect-sm,
+.glass-effect-lg {
+  transition: 
+    backdrop-filter var(--duration-300) var(--ease-in-out),
+    background var(--duration-300) var(--ease-in-out),
+    border-color var(--duration-300) var(--ease-in-out);
+}
+
+/* Button and interactive element transitions */
+button,
+.btn,
+input,
+textarea,
+select {
+  transition: 
+    background-color var(--duration-200) var(--ease-in-out),
+    border-color var(--duration-200) var(--ease-in-out),
+    color var(--duration-200) var(--ease-in-out),
+    box-shadow var(--duration-200) var(--ease-in-out);
+}
+
+/* Card and container transitions */
+.card,
+.dashboard-card,
+.job-card,
+.profile-card {
+  transition: 
+    background-color var(--duration-300) var(--ease-in-out),
+    border-color var(--duration-300) var(--ease-in-out),
+    box-shadow var(--duration-300) var(--ease-in-out);
+}
+
+/* Navigation transitions */
+.nav-item,
+.sidebar-item,
+.tab-item {
+  transition: 
+    background-color var(--duration-200) var(--ease-in-out),
+    color var(--duration-200) var(--ease-in-out),
+    border-color var(--duration-200) var(--ease-in-out);
+}
+
+/* Text transitions */
+h1, h2, h3, h4, h5, h6,
+p, span, div, a {
+  transition: color var(--duration-300) var(--ease-in-out);
+}
+
+/* Icon transitions */
+.icon,
+svg {
+  transition: 
+    fill var(--duration-200) var(--ease-in-out),
+    stroke var(--duration-200) var(--ease-in-out),
+    color var(--duration-200) var(--ease-in-out);
+}
+
+/* Form element specific transitions */
+.form-group,
+.input-group {
+  transition: 
+    background-color var(--duration-300) var(--ease-in-out),
+    border-color var(--duration-300) var(--ease-in-out);
+}
+
+/* Modal and overlay transitions */
+.modal,
+.overlay,
+.backdrop {
+  transition: 
+    background-color var(--duration-300) var(--ease-in-out),
+    backdrop-filter var(--duration-300) var(--ease-in-out);
+}
+
+/* Disable transitions for reduced motion users */
+@media (prefers-reduced-motion: reduce) {
+  .theme-transitioning,
+  .theme-transitioning *,
+  .theme-transitioning *:before,
+  .theme-transitioning *:after {
+    transition: none !important;
+  }
+}
+
+/* Theme toggle button specific styles */
+.theme-toggle {
+  position: relative;
+  overflow: hidden;
+}
+
+.theme-toggle::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--gradient-primary);
+  opacity: 0;
+  transition: opacity var(--duration-200) var(--ease-in-out);
+  z-index: -1;
+}
+
+.theme-toggle:hover::before {
+  opacity: 0.1;
+}
+
+/* Theme indicator animations */
+.theme-indicator {
+  transition: transform var(--duration-300) var(--ease-bounce);
+}
+
+[data-theme="dark"] .theme-indicator {
+  transform: rotate(180deg);
+}
+
+/* Smooth scrollbar theme transitions */
+::-webkit-scrollbar-track {
+  transition: background-color var(--duration-300) var(--ease-in-out);
+}
+
+::-webkit-scrollbar-thumb {
+  transition: background-color var(--duration-300) var(--ease-in-out);
+}
+
+/* Loading state transitions during theme switch */
+.theme-loading {
+  pointer-events: none;
+  opacity: 0.8;
+  transition: opacity var(--duration-150) var(--ease-in-out);
+}
+
+/* Prevent flash of unstyled content */
+html {
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+}
+
+/* Ensure meta theme-color updates smoothly */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color-scheme: light;
+  }
+}

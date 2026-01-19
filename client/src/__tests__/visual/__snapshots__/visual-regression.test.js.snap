@@ -1,0 +1,3268 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Visual Regression and Browser Testing Component Screenshot Consistency dashboard renders consistently for employers: dashboard-employer 1`] = `
+<div
+  class="dashboard-page"
+>
+  <a
+    class="skip-link sr-only-focusable"
+    href="#main-content"
+  >
+    Skip to main content
+  </a>
+  <nav
+    aria-label="Main navigation"
+    class="dashboard-nav"
+    role="navigation"
+  >
+    <div
+      class="nav-container"
+    >
+      <div
+        class="nav-brand"
+      >
+        <div
+          class="nav-logo"
+        >
+          <img
+            alt="Amdox Jobs logo"
+            class="nav-logo-img"
+            src="/logo/logo.png"
+          />
+        </div>
+        <div
+          class="nav-brand-text"
+        >
+          <h1
+            class="nav-title"
+          >
+            Amdox Jobs
+          </h1>
+          <span
+            class="nav-subtitle"
+          >
+            Tech Hiring Platform
+          </span>
+        </div>
+      </div>
+      <div
+        aria-label="Dashboard sections"
+        class="nav-tabs"
+        role="tablist"
+      >
+        <button
+          aria-controls="panel-overview"
+          aria-selected="true"
+          class="nav-tab active"
+          id="tab-overview"
+          role="tab"
+          tabindex="0"
+        >
+          <span
+            class="nav-tab-label"
+          >
+            Overview
+          </span>
+        </button>
+        <button
+          aria-controls="panel-jobs"
+          aria-selected="false"
+          class="nav-tab "
+          id="tab-jobs"
+          role="tab"
+          tabindex="-1"
+        >
+          <span
+            class="nav-tab-label"
+          >
+            Browse Jobs
+          </span>
+        </button>
+        <button
+          aria-controls="panel-applications"
+          aria-selected="false"
+          class="nav-tab "
+          id="tab-applications"
+          role="tab"
+          tabindex="-1"
+        >
+          <span
+            class="nav-tab-label"
+          >
+            Applications
+          </span>
+        </button>
+        <button
+          aria-controls="panel-saved"
+          aria-selected="false"
+          class="nav-tab "
+          id="tab-saved"
+          role="tab"
+          tabindex="-1"
+        >
+          <span
+            class="nav-tab-label"
+          >
+            Saved Jobs
+          </span>
+        </button>
+        <button
+          aria-controls="panel-profile"
+          aria-selected="false"
+          class="nav-tab "
+          id="tab-profile"
+          role="tab"
+          tabindex="-1"
+        >
+          <span
+            class="nav-tab-label"
+          >
+            Profile
+          </span>
+        </button>
+      </div>
+      <div
+        aria-label="User account"
+        class="nav-user"
+        role="region"
+      >
+        <button
+          aria-label="Switch to dark theme"
+          class="theme-toggle
+        theme-toggle--sm
+        theme-toggle--minimal"
+          title="Switch to dark theme"
+        >
+          <div
+            class="theme-toggle__icon-container"
+          >
+            <svg
+              class="theme-toggle__icon theme-toggle__sun theme-toggle__icon--active"
+              fill="none"
+              height="20"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="20"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="5"
+              />
+              <path
+                d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
+              />
+            </svg>
+            <svg
+              class="theme-toggle__icon theme-toggle__moon "
+              fill="none"
+              height="20"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="20"
+            >
+              <path
+                d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
+              />
+            </svg>
+          </div>
+        </button>
+        <div
+          class="nav-user-info"
+        >
+          <img
+            alt="Profile picture of Visual Developer"
+            class="nav-user-avatar"
+            src="https://via.placeholder.com/150"
+          />
+          <div
+            class="nav-user-details"
+          >
+            <span
+              aria-label="User name"
+              class="nav-user-name"
+            >
+              Visual Developer
+            </span>
+            <span
+              aria-label="User role"
+              class="nav-user-role"
+            >
+              Job Seeker
+            </span>
+          </div>
+        </div>
+        <button
+          aria-label="Logout from account"
+          class="nav-logout-btn"
+        >
+          Logout
+        </button>
+      </div>
+    </div>
+  </nav>
+  <main
+    class="dashboard-content"
+    id="main-content"
+    role="main"
+  >
+    <div
+      class="dashboard-wrapper"
+    >
+      <header
+        class="page-header"
+      >
+        <div>
+          <h2
+            class="page-title"
+          >
+            Dashboard Overview
+          </h2>
+          <p
+            class="page-subtitle"
+          >
+            Track your job search progress and discover opportunities
+          </p>
+        </div>
+        <div
+          class="header-actions"
+        >
+          <button
+            aria-label="Navigate to browse jobs section"
+            class="primary-btn"
+          >
+            Browse Jobs
+          </button>
+        </div>
+      </header>
+      <div
+        aria-labelledby="tab-overview"
+        id="panel-overview"
+        role="tabpanel"
+        tabindex="0"
+      >
+        <section
+          aria-label="Dashboard overview"
+          class="overview-content"
+        >
+          <section
+            aria-label="Statistics summary"
+            class="stats-section"
+          >
+            <div
+              class="skeleton-stats-grid"
+            >
+              <div
+                class="skeleton--stat-card"
+              >
+                <div
+                  class="skeleton__stat-header"
+                >
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 60%;"
+                    />
+                  </div>
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 30%;"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="skeleton__stat-value"
+                >
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 40%; height: 32px;"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="skeleton__stat-description"
+                >
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 80%;"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div
+                class="skeleton--stat-card"
+              >
+                <div
+                  class="skeleton__stat-header"
+                >
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 60%;"
+                    />
+                  </div>
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 30%;"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="skeleton__stat-value"
+                >
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 40%; height: 32px;"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="skeleton__stat-description"
+                >
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 80%;"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div
+                class="skeleton--stat-card"
+              >
+                <div
+                  class="skeleton__stat-header"
+                >
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 60%;"
+                    />
+                  </div>
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 30%;"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="skeleton__stat-value"
+                >
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 40%; height: 32px;"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="skeleton__stat-description"
+                >
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 80%;"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div
+                class="skeleton--stat-card"
+              >
+                <div
+                  class="skeleton__stat-header"
+                >
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 60%;"
+                    />
+                  </div>
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 30%;"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="skeleton__stat-value"
+                >
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 40%; height: 32px;"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="skeleton__stat-description"
+                >
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 80%;"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section
+            aria-label="Main content"
+            class="content-grid"
+          >
+            <article
+              aria-labelledby="recommended-jobs-title"
+              class="content-card"
+            >
+              <header
+                class="card-header"
+              >
+                <h3
+                  class="card-title"
+                  id="recommended-jobs-title"
+                >
+                  Recommended Jobs
+                </h3>
+                <button
+                  aria-label="View all recommended jobs"
+                  class="card-action"
+                >
+                  View All
+                </button>
+              </header>
+              <div
+                class="card-content"
+              >
+                <div
+                  style="text-align: center; padding: 2rem; color: rgb(148, 163, 184);"
+                >
+                  <p
+                    aria-live="polite"
+                    role="status"
+                  >
+                    Loading jobs...
+                  </p>
+                </div>
+              </div>
+            </article>
+            <article
+              aria-labelledby="application-status-title"
+              class="content-card"
+            >
+              <header
+                class="card-header"
+              >
+                <h3
+                  class="card-title"
+                  id="application-status-title"
+                >
+                  Application Status
+                </h3>
+              </header>
+              <div
+                class="card-content"
+              >
+                <div
+                  class="empty-state"
+                  role="status"
+                >
+                  <p
+                    class="empty-state-text"
+                  >
+                    No applications yet
+                  </p>
+                  <p
+                    class="empty-state-subtext"
+                  >
+                    Start applying to jobs to track your progress
+                  </p>
+                  <button
+                    aria-label="Navigate to browse jobs to start applying"
+                    class="btn-primary"
+                  >
+                    Browse Jobs
+                  </button>
+                </div>
+              </div>
+            </article>
+          </section>
+        </section>
+      </div>
+    </div>
+  </main>
+  <div
+    aria-atomic="true"
+    aria-live="polite"
+    class="status-announcement"
+    id="status-announcements"
+    role="status"
+  />
+</div>
+`;
+
+exports[`Visual Regression and Browser Testing Component Screenshot Consistency dashboard renders consistently for job seekers: dashboard-job-seeker 1`] = `
+<div
+  class="dashboard-page"
+>
+  <a
+    class="skip-link sr-only-focusable"
+    href="#main-content"
+  >
+    Skip to main content
+  </a>
+  <nav
+    aria-label="Main navigation"
+    class="dashboard-nav"
+    role="navigation"
+  >
+    <div
+      class="nav-container"
+    >
+      <div
+        class="nav-brand"
+      >
+        <div
+          class="nav-logo"
+        >
+          <img
+            alt="Amdox Jobs logo"
+            class="nav-logo-img"
+            src="/logo/logo.png"
+          />
+        </div>
+        <div
+          class="nav-brand-text"
+        >
+          <h1
+            class="nav-title"
+          >
+            Amdox Jobs
+          </h1>
+          <span
+            class="nav-subtitle"
+          >
+            Tech Hiring Platform
+          </span>
+        </div>
+      </div>
+      <div
+        aria-label="Dashboard sections"
+        class="nav-tabs"
+        role="tablist"
+      >
+        <button
+          aria-controls="panel-overview"
+          aria-selected="true"
+          class="nav-tab active"
+          id="tab-overview"
+          role="tab"
+          tabindex="0"
+        >
+          <span
+            class="nav-tab-label"
+          >
+            Overview
+          </span>
+        </button>
+        <button
+          aria-controls="panel-jobs"
+          aria-selected="false"
+          class="nav-tab "
+          id="tab-jobs"
+          role="tab"
+          tabindex="-1"
+        >
+          <span
+            class="nav-tab-label"
+          >
+            Browse Jobs
+          </span>
+        </button>
+        <button
+          aria-controls="panel-applications"
+          aria-selected="false"
+          class="nav-tab "
+          id="tab-applications"
+          role="tab"
+          tabindex="-1"
+        >
+          <span
+            class="nav-tab-label"
+          >
+            Applications
+          </span>
+        </button>
+        <button
+          aria-controls="panel-saved"
+          aria-selected="false"
+          class="nav-tab "
+          id="tab-saved"
+          role="tab"
+          tabindex="-1"
+        >
+          <span
+            class="nav-tab-label"
+          >
+            Saved Jobs
+          </span>
+        </button>
+        <button
+          aria-controls="panel-profile"
+          aria-selected="false"
+          class="nav-tab "
+          id="tab-profile"
+          role="tab"
+          tabindex="-1"
+        >
+          <span
+            class="nav-tab-label"
+          >
+            Profile
+          </span>
+        </button>
+      </div>
+      <div
+        aria-label="User account"
+        class="nav-user"
+        role="region"
+      >
+        <button
+          aria-label="Switch to dark theme"
+          class="theme-toggle
+        theme-toggle--sm
+        theme-toggle--minimal"
+          title="Switch to dark theme"
+        >
+          <div
+            class="theme-toggle__icon-container"
+          >
+            <svg
+              class="theme-toggle__icon theme-toggle__sun theme-toggle__icon--active"
+              fill="none"
+              height="20"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="20"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="5"
+              />
+              <path
+                d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
+              />
+            </svg>
+            <svg
+              class="theme-toggle__icon theme-toggle__moon "
+              fill="none"
+              height="20"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="20"
+            >
+              <path
+                d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
+              />
+            </svg>
+          </div>
+        </button>
+        <div
+          class="nav-user-info"
+        >
+          <img
+            alt="Profile picture of Visual Developer"
+            class="nav-user-avatar"
+            src="https://via.placeholder.com/150"
+          />
+          <div
+            class="nav-user-details"
+          >
+            <span
+              aria-label="User name"
+              class="nav-user-name"
+            >
+              Visual Developer
+            </span>
+            <span
+              aria-label="User role"
+              class="nav-user-role"
+            >
+              Job Seeker
+            </span>
+          </div>
+        </div>
+        <button
+          aria-label="Logout from account"
+          class="nav-logout-btn"
+        >
+          Logout
+        </button>
+      </div>
+    </div>
+  </nav>
+  <main
+    class="dashboard-content"
+    id="main-content"
+    role="main"
+  >
+    <div
+      class="dashboard-wrapper"
+    >
+      <header
+        class="page-header"
+      >
+        <div>
+          <h2
+            class="page-title"
+          >
+            Dashboard Overview
+          </h2>
+          <p
+            class="page-subtitle"
+          >
+            Track your job search progress and discover opportunities
+          </p>
+        </div>
+        <div
+          class="header-actions"
+        >
+          <button
+            aria-label="Navigate to browse jobs section"
+            class="primary-btn"
+          >
+            Browse Jobs
+          </button>
+        </div>
+      </header>
+      <div
+        aria-labelledby="tab-overview"
+        id="panel-overview"
+        role="tabpanel"
+        tabindex="0"
+      >
+        <section
+          aria-label="Dashboard overview"
+          class="overview-content"
+        >
+          <section
+            aria-label="Statistics summary"
+            class="stats-section"
+          >
+            <div
+              class="skeleton-stats-grid"
+            >
+              <div
+                class="skeleton--stat-card"
+              >
+                <div
+                  class="skeleton__stat-header"
+                >
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 60%;"
+                    />
+                  </div>
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 30%;"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="skeleton__stat-value"
+                >
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 40%; height: 32px;"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="skeleton__stat-description"
+                >
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 80%;"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div
+                class="skeleton--stat-card"
+              >
+                <div
+                  class="skeleton__stat-header"
+                >
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 60%;"
+                    />
+                  </div>
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 30%;"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="skeleton__stat-value"
+                >
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 40%; height: 32px;"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="skeleton__stat-description"
+                >
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 80%;"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div
+                class="skeleton--stat-card"
+              >
+                <div
+                  class="skeleton__stat-header"
+                >
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 60%;"
+                    />
+                  </div>
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 30%;"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="skeleton__stat-value"
+                >
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 40%; height: 32px;"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="skeleton__stat-description"
+                >
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 80%;"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div
+                class="skeleton--stat-card"
+              >
+                <div
+                  class="skeleton__stat-header"
+                >
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 60%;"
+                    />
+                  </div>
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 30%;"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="skeleton__stat-value"
+                >
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 40%; height: 32px;"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="skeleton__stat-description"
+                >
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 80%;"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section
+            aria-label="Main content"
+            class="content-grid"
+          >
+            <article
+              aria-labelledby="recommended-jobs-title"
+              class="content-card"
+            >
+              <header
+                class="card-header"
+              >
+                <h3
+                  class="card-title"
+                  id="recommended-jobs-title"
+                >
+                  Recommended Jobs
+                </h3>
+                <button
+                  aria-label="View all recommended jobs"
+                  class="card-action"
+                >
+                  View All
+                </button>
+              </header>
+              <div
+                class="card-content"
+              >
+                <div
+                  style="text-align: center; padding: 2rem; color: rgb(148, 163, 184);"
+                >
+                  <p
+                    aria-live="polite"
+                    role="status"
+                  >
+                    Loading jobs...
+                  </p>
+                </div>
+              </div>
+            </article>
+            <article
+              aria-labelledby="application-status-title"
+              class="content-card"
+            >
+              <header
+                class="card-header"
+              >
+                <h3
+                  class="card-title"
+                  id="application-status-title"
+                >
+                  Application Status
+                </h3>
+              </header>
+              <div
+                class="card-content"
+              >
+                <div
+                  class="empty-state"
+                  role="status"
+                >
+                  <p
+                    class="empty-state-text"
+                  >
+                    No applications yet
+                  </p>
+                  <p
+                    class="empty-state-subtext"
+                  >
+                    Start applying to jobs to track your progress
+                  </p>
+                  <button
+                    aria-label="Navigate to browse jobs to start applying"
+                    class="btn-primary"
+                  >
+                    Browse Jobs
+                  </button>
+                </div>
+              </div>
+            </article>
+          </section>
+        </section>
+      </div>
+    </div>
+  </main>
+  <div
+    aria-atomic="true"
+    aria-live="polite"
+    class="status-announcement"
+    id="status-announcements"
+    role="status"
+  />
+</div>
+`;
+
+exports[`Visual Regression and Browser Testing Component Screenshot Consistency login page renders consistently across themes: login-page-dark-theme 1`] = `
+<div
+  class="amdox-page"
+>
+  <header
+    class="amdox-header"
+  >
+    <div
+      class="header-container"
+    >
+      <div
+        class="header-brand"
+      >
+        <div
+          class="logo-box"
+        >
+          <img
+            alt="Amdox Jobs Logo"
+            class="logo-image"
+            src="/logo/logo.png"
+          />
+        </div>
+        <div
+          class="brand-text"
+        >
+          <h1
+            class="brand-title"
+          >
+            Amdox Jobs™
+          </h1>
+          <p
+            class="brand-subtitle"
+          >
+            India's Fastest Tech Hiring Platform
+          </p>
+        </div>
+      </div>
+      <div
+        class="header-actions"
+      >
+        <button
+          aria-label="Switch to light theme"
+          class="theme-toggle
+        theme-toggle--sm
+        theme-toggle--outlined
+        theme-toggle--transitioning"
+          disabled=""
+          title="Switch to light theme"
+        >
+          <div
+            class="theme-toggle__icon-container"
+          >
+            <svg
+              class="theme-toggle__icon theme-toggle__sun "
+              fill="none"
+              height="20"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="20"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="5"
+              />
+              <path
+                d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
+              />
+            </svg>
+            <svg
+              class="theme-toggle__icon theme-toggle__moon theme-toggle__icon--active"
+              fill="none"
+              height="20"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="20"
+            >
+              <path
+                d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
+              />
+            </svg>
+            <div
+              class="theme-toggle__spinner"
+            >
+              <svg
+                fill="none"
+                height="20"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="20"
+              >
+                <path
+                  d="M21 12a9 9 0 11-6.219-8.56"
+                />
+              </svg>
+            </div>
+          </div>
+        </button>
+      </div>
+    </div>
+  </header>
+  <div
+    class="amdox-container"
+  >
+    <div
+      class="hero-section-dark"
+    >
+      <h2
+        class="hero-heading-dark"
+      >
+        Find Your Next Tech Role
+      </h2>
+      <div
+        class="hero-stats-dark"
+      >
+        <div
+          class="stat-item-dark"
+        >
+          <div
+            class="stat-bullet-dark"
+          />
+          <span
+            class="stat-text-dark"
+          >
+            500+ Live Tech Jobs from Top Companies
+          </span>
+        </div>
+        <div
+          class="stat-item-dark"
+        >
+          <div
+            class="stat-bullet-dark"
+          />
+          <span
+            class="stat-text-dark"
+          >
+            AI-Powered Job Matching
+          </span>
+        </div>
+        <div
+          class="stat-item-dark"
+        >
+          <div
+            class="stat-bullet-dark"
+          />
+          <span
+            class="stat-text-dark"
+          >
+            85% Placement Success Rate
+          </span>
+        </div>
+      </div>
+    </div>
+    <div
+      class="auth-section-dark"
+    >
+      <div
+        class="auth-card-dark"
+      >
+        <h3
+          class="auth-title-dark"
+        >
+          Welcome Back
+        </h3>
+        <p
+          class="auth-subtitle-dark"
+        >
+          Access saved jobs, applications, and recommendations
+        </p>
+        <button
+          class="work-email-btn-dark"
+          type="button"
+        >
+          Continue with Work Email
+        </button>
+        <div
+          class="email-info-dark"
+        >
+          <span
+            class="info-emoji"
+          >
+            👨‍💼
+          </span>
+          <span
+            class="info-text-small"
+          >
+            Company email → Employer
+          </span>
+          <span
+            class="info-separator"
+          >
+            |
+          </span>
+          <span
+            class="info-emoji"
+          >
+            👥
+          </span>
+          <span
+            class="info-text-small"
+          >
+            Gmail → Job Seeker
+          </span>
+        </div>
+        <div
+          class="divider-dark"
+        >
+          <div
+            class="divider-line"
+          />
+          <span
+            class="divider-text"
+          >
+            or
+          </span>
+          <div
+            class="divider-line"
+          />
+        </div>
+        <button
+          class="google-btn-dark"
+          type="button"
+        >
+          <svg
+            class="google-icon-dark"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+              fill="#4285F4"
+            />
+            <path
+              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+              fill="#34A853"
+            />
+            <path
+              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+              fill="#FBBC05"
+            />
+            <path
+              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+              fill="#EA4335"
+            />
+          </svg>
+          Sign in with Google
+        </button>
+        <div
+          class="auth-footer-dark"
+        >
+          <p>
+            Don't have an account?
+             
+            <a
+              class="auth-link-dark"
+              href="/register"
+            >
+              Sign up
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer
+    class="amdox-footer"
+  />
+</div>
+`;
+
+exports[`Visual Regression and Browser Testing Component Screenshot Consistency login page renders consistently across themes: login-page-light-theme 1`] = `
+<div
+  class="amdox-page"
+>
+  <header
+    class="amdox-header"
+  >
+    <div
+      class="header-container"
+    >
+      <div
+        class="header-brand"
+      >
+        <div
+          class="logo-box"
+        >
+          <img
+            alt="Amdox Jobs Logo"
+            class="logo-image"
+            src="/logo/logo.png"
+          />
+        </div>
+        <div
+          class="brand-text"
+        >
+          <h1
+            class="brand-title"
+          >
+            Amdox Jobs™
+          </h1>
+          <p
+            class="brand-subtitle"
+          >
+            India's Fastest Tech Hiring Platform
+          </p>
+        </div>
+      </div>
+      <div
+        class="header-actions"
+      >
+        <button
+          aria-label="Switch to dark theme"
+          class="theme-toggle
+        theme-toggle--sm
+        theme-toggle--outlined"
+          title="Switch to dark theme"
+        >
+          <div
+            class="theme-toggle__icon-container"
+          >
+            <svg
+              class="theme-toggle__icon theme-toggle__sun theme-toggle__icon--active"
+              fill="none"
+              height="20"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="20"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="5"
+              />
+              <path
+                d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
+              />
+            </svg>
+            <svg
+              class="theme-toggle__icon theme-toggle__moon "
+              fill="none"
+              height="20"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="20"
+            >
+              <path
+                d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
+              />
+            </svg>
+          </div>
+        </button>
+      </div>
+    </div>
+  </header>
+  <div
+    class="amdox-container"
+  >
+    <div
+      class="hero-section-dark"
+    >
+      <h2
+        class="hero-heading-dark"
+      >
+        Find Your Next Tech Role
+      </h2>
+      <div
+        class="hero-stats-dark"
+      >
+        <div
+          class="stat-item-dark"
+        >
+          <div
+            class="stat-bullet-dark"
+          />
+          <span
+            class="stat-text-dark"
+          >
+            500+ Live Tech Jobs from Top Companies
+          </span>
+        </div>
+        <div
+          class="stat-item-dark"
+        >
+          <div
+            class="stat-bullet-dark"
+          />
+          <span
+            class="stat-text-dark"
+          >
+            AI-Powered Job Matching
+          </span>
+        </div>
+        <div
+          class="stat-item-dark"
+        >
+          <div
+            class="stat-bullet-dark"
+          />
+          <span
+            class="stat-text-dark"
+          >
+            85% Placement Success Rate
+          </span>
+        </div>
+      </div>
+    </div>
+    <div
+      class="auth-section-dark"
+    >
+      <div
+        class="auth-card-dark"
+      >
+        <h3
+          class="auth-title-dark"
+        >
+          Welcome Back
+        </h3>
+        <p
+          class="auth-subtitle-dark"
+        >
+          Access saved jobs, applications, and recommendations
+        </p>
+        <button
+          class="work-email-btn-dark"
+          type="button"
+        >
+          Continue with Work Email
+        </button>
+        <div
+          class="email-info-dark"
+        >
+          <span
+            class="info-emoji"
+          >
+            👨‍💼
+          </span>
+          <span
+            class="info-text-small"
+          >
+            Company email → Employer
+          </span>
+          <span
+            class="info-separator"
+          >
+            |
+          </span>
+          <span
+            class="info-emoji"
+          >
+            👥
+          </span>
+          <span
+            class="info-text-small"
+          >
+            Gmail → Job Seeker
+          </span>
+        </div>
+        <div
+          class="divider-dark"
+        >
+          <div
+            class="divider-line"
+          />
+          <span
+            class="divider-text"
+          >
+            or
+          </span>
+          <div
+            class="divider-line"
+          />
+        </div>
+        <button
+          class="google-btn-dark"
+          type="button"
+        >
+          <svg
+            class="google-icon-dark"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+              fill="#4285F4"
+            />
+            <path
+              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+              fill="#34A853"
+            />
+            <path
+              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+              fill="#FBBC05"
+            />
+            <path
+              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+              fill="#EA4335"
+            />
+          </svg>
+          Sign in with Google
+        </button>
+        <div
+          class="auth-footer-dark"
+        >
+          <p>
+            Don't have an account?
+             
+            <a
+              class="auth-link-dark"
+              href="/register"
+            >
+              Sign up
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer
+    class="amdox-footer"
+  />
+</div>
+`;
+
+exports[`Visual Regression and Browser Testing Component Screenshot Consistency register page renders consistently: register-page 1`] = `
+<div
+  class="amdox-page"
+>
+  <header
+    class="amdox-header"
+  >
+    <div
+      class="header-container"
+    >
+      <div
+        class="header-brand"
+      >
+        <div
+          class="logo-box"
+        >
+          <img
+            alt="Amdox Jobs Logo"
+            class="logo-image"
+            src="/logo/logo.png"
+          />
+        </div>
+        <div
+          class="brand-text"
+        >
+          <h1
+            class="brand-title"
+          >
+            Amdox Jobs™
+          </h1>
+          <p
+            class="brand-subtitle"
+          >
+            India's Fastest Tech Hiring Platform
+          </p>
+        </div>
+      </div>
+      <div
+        class="header-actions"
+      >
+        <button
+          aria-label="Switch to dark theme"
+          class="theme-toggle
+        theme-toggle--sm
+        theme-toggle--outlined"
+          title="Switch to dark theme"
+        >
+          <div
+            class="theme-toggle__icon-container"
+          >
+            <svg
+              class="theme-toggle__icon theme-toggle__sun theme-toggle__icon--active"
+              fill="none"
+              height="20"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="20"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="5"
+              />
+              <path
+                d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
+              />
+            </svg>
+            <svg
+              class="theme-toggle__icon theme-toggle__moon "
+              fill="none"
+              height="20"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="20"
+            >
+              <path
+                d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
+              />
+            </svg>
+          </div>
+        </button>
+      </div>
+    </div>
+  </header>
+  <div
+    class="amdox-container"
+  >
+    <div
+      class="hero-section-dark"
+    >
+      <h2
+        class="hero-heading-dark"
+      >
+        Join 10K+ Developers
+      </h2>
+      <div
+        class="hero-stats-dark"
+      >
+        <div
+          class="stat-item-dark"
+        >
+          <div
+            class="stat-bullet-dark"
+          />
+          <span
+            class="stat-text-dark"
+          >
+            500+ Live Tech Jobs from Top Companies
+          </span>
+        </div>
+        <div
+          class="stat-item-dark"
+        >
+          <div
+            class="stat-bullet-dark"
+          />
+          <span
+            class="stat-text-dark"
+          >
+            AI-Powered Job Matching
+          </span>
+        </div>
+        <div
+          class="stat-item-dark"
+        >
+          <div
+            class="stat-bullet-dark"
+          />
+          <span
+            class="stat-text-dark"
+          >
+            85% Placement Success Rate
+          </span>
+        </div>
+      </div>
+    </div>
+    <div
+      class="auth-section-dark"
+    >
+      <div
+        class="auth-card-dark"
+      >
+        <h3
+          class="auth-title-dark"
+        >
+          Create Account
+        </h3>
+        <p
+          class="auth-subtitle-dark"
+        >
+          Join 10K+ developers finding their dream tech roles
+        </p>
+        <button
+          class="google-btn-dark"
+          type="button"
+        >
+          <svg
+            class="google-icon-dark"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+              fill="#4285F4"
+            />
+            <path
+              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+              fill="#34A853"
+            />
+            <path
+              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+              fill="#FBBC05"
+            />
+            <path
+              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+              fill="#EA4335"
+            />
+          </svg>
+          Sign up with Google
+        </button>
+        <div
+          class="divider-dark"
+        >
+          <div
+            class="divider-line"
+          />
+          <span
+            class="divider-text"
+          >
+            or
+          </span>
+          <div
+            class="divider-line"
+          />
+        </div>
+        <form
+          class="register-form-dark"
+        >
+          <div
+            class="form-group-dark"
+          >
+            <label
+              for="email"
+            >
+              Email *
+            </label>
+            <input
+              id="email"
+              name="email"
+              placeholder="your.email@company.com"
+              required=""
+              type="email"
+              value=""
+            />
+          </div>
+          <div
+            class="form-group-dark"
+          >
+            <label
+              for="name"
+            >
+              Full Name
+            </label>
+            <input
+              id="name"
+              name="name"
+              placeholder="Enter your full name"
+              type="text"
+              value=""
+            />
+          </div>
+          <div
+            class="form-group-dark"
+          >
+            <label
+              for="phone"
+            >
+              Phone
+            </label>
+            <input
+              id="phone"
+              name="phone"
+              placeholder="Enter your phone number"
+              type="tel"
+              value=""
+            />
+          </div>
+          <div
+            class="form-group-dark"
+          >
+            <label
+              for="role"
+            >
+              I am a *
+            </label>
+            <select
+              class="role-select-dark"
+              id="role"
+              name="role"
+              required=""
+            >
+              <option
+                value="job_seeker"
+              >
+                Job Seeker
+              </option>
+              <option
+                value="employer"
+              >
+                Employer
+              </option>
+            </select>
+          </div>
+          <div
+            class="form-group-dark"
+          >
+            <label
+              for="password"
+            >
+              Password *
+            </label>
+            <input
+              id="password"
+              name="password"
+              placeholder="Enter your password (min. 6 characters)"
+              required=""
+              type="password"
+              value=""
+            />
+          </div>
+          <div
+            class="form-group-dark"
+          >
+            <label
+              for="confirmPassword"
+            >
+              Confirm Password *
+            </label>
+            <input
+              id="confirmPassword"
+              name="confirmPassword"
+              placeholder="Confirm your password"
+              required=""
+              type="password"
+              value=""
+            />
+          </div>
+          <button
+            class="submit-btn-dark"
+            type="submit"
+          >
+            Create Account
+          </button>
+        </form>
+        <div
+          class="auth-footer-dark"
+        >
+          <p>
+            Already have an account?
+             
+            <a
+              class="auth-link-dark"
+              href="/login"
+            >
+              Sign in
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer
+    class="amdox-footer"
+  />
+</div>
+`;
+
+exports[`Visual Regression and Browser Testing Error State Visual Consistency error messages display consistently: login-page-error-state 1`] = `
+<div
+  class="amdox-page"
+>
+  <header
+    class="amdox-header"
+  >
+    <div
+      class="header-container"
+    >
+      <div
+        class="header-brand"
+      >
+        <div
+          class="logo-box"
+        >
+          <img
+            alt="Amdox Jobs Logo"
+            class="logo-image"
+            src="/logo/logo.png"
+          />
+        </div>
+        <div
+          class="brand-text"
+        >
+          <h1
+            class="brand-title"
+          >
+            Amdox Jobs™
+          </h1>
+          <p
+            class="brand-subtitle"
+          >
+            India's Fastest Tech Hiring Platform
+          </p>
+        </div>
+      </div>
+      <div
+        class="header-actions"
+      >
+        <button
+          aria-label="Switch to dark theme"
+          class="theme-toggle
+        theme-toggle--sm
+        theme-toggle--outlined"
+          title="Switch to dark theme"
+        >
+          <div
+            class="theme-toggle__icon-container"
+          >
+            <svg
+              class="theme-toggle__icon theme-toggle__sun theme-toggle__icon--active"
+              fill="none"
+              height="20"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="20"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="5"
+              />
+              <path
+                d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
+              />
+            </svg>
+            <svg
+              class="theme-toggle__icon theme-toggle__moon "
+              fill="none"
+              height="20"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="20"
+            >
+              <path
+                d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
+              />
+            </svg>
+          </div>
+        </button>
+      </div>
+    </div>
+  </header>
+  <div
+    class="amdox-container"
+  >
+    <div
+      class="hero-section-dark"
+    >
+      <h2
+        class="hero-heading-dark"
+      >
+        Find Your Next Tech Role
+      </h2>
+      <div
+        class="hero-stats-dark"
+      >
+        <div
+          class="stat-item-dark"
+        >
+          <div
+            class="stat-bullet-dark"
+          />
+          <span
+            class="stat-text-dark"
+          >
+            500+ Live Tech Jobs from Top Companies
+          </span>
+        </div>
+        <div
+          class="stat-item-dark"
+        >
+          <div
+            class="stat-bullet-dark"
+          />
+          <span
+            class="stat-text-dark"
+          >
+            AI-Powered Job Matching
+          </span>
+        </div>
+        <div
+          class="stat-item-dark"
+        >
+          <div
+            class="stat-bullet-dark"
+          />
+          <span
+            class="stat-text-dark"
+          >
+            85% Placement Success Rate
+          </span>
+        </div>
+      </div>
+    </div>
+    <div
+      class="auth-section-dark"
+    >
+      <div
+        class="auth-card-dark"
+      >
+        <h3
+          class="auth-title-dark"
+        >
+          Welcome Back
+        </h3>
+        <p
+          class="auth-subtitle-dark"
+        >
+          Access saved jobs, applications, and recommendations
+        </p>
+        <div
+          class="error-message-dark"
+          role="alert"
+        >
+          Please fill in all fields
+        </div>
+        <form
+          class="email-form-dark"
+        >
+          <div
+            class="form-group-dark"
+          >
+            <label
+              for="email"
+            >
+              Work Email
+            </label>
+            <input
+              id="email"
+              placeholder="your.email@company.com"
+              required=""
+              type="email"
+              value=""
+            />
+          </div>
+          <div
+            class="form-group-dark"
+          >
+            <label
+              for="password"
+            >
+              Password
+            </label>
+            <input
+              id="password"
+              placeholder="Enter your password"
+              required=""
+              type="password"
+              value=""
+            />
+          </div>
+          <button
+            class="submit-btn-dark"
+            type="submit"
+          >
+            Sign In
+          </button>
+          <button
+            class="cancel-btn-dark"
+            type="button"
+          >
+            Back
+          </button>
+        </form>
+        <div
+          class="auth-footer-dark"
+        >
+          <p>
+            Don't have an account?
+             
+            <a
+              class="auth-link-dark"
+              href="/register"
+            >
+              Sign up
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer
+    class="amdox-footer"
+  />
+</div>
+`;
+
+exports[`Visual Regression and Browser Testing Responsive Behavior Testing dashboard navigation adapts to mobile viewport: dashboard-mobile 1`] = `
+<div
+  class="dashboard-page"
+>
+  <a
+    class="skip-link sr-only-focusable"
+    href="#main-content"
+  >
+    Skip to main content
+  </a>
+  <nav
+    aria-label="Main navigation"
+    class="dashboard-nav"
+    role="navigation"
+  >
+    <div
+      class="nav-container"
+    >
+      <div
+        class="nav-brand"
+      >
+        <div
+          class="nav-logo"
+        >
+          <img
+            alt="Amdox Jobs logo"
+            class="nav-logo-img"
+            src="/logo/logo.png"
+          />
+        </div>
+        <div
+          class="nav-brand-text"
+        >
+          <h1
+            class="nav-title"
+          >
+            Amdox Jobs
+          </h1>
+          <span
+            class="nav-subtitle"
+          >
+            Tech Hiring Platform
+          </span>
+        </div>
+      </div>
+      <div
+        aria-label="Dashboard sections"
+        class="nav-tabs"
+        role="tablist"
+      >
+        <button
+          aria-controls="panel-overview"
+          aria-selected="true"
+          class="nav-tab active"
+          id="tab-overview"
+          role="tab"
+          tabindex="0"
+        >
+          <span
+            class="nav-tab-label"
+          >
+            Overview
+          </span>
+        </button>
+        <button
+          aria-controls="panel-jobs"
+          aria-selected="false"
+          class="nav-tab "
+          id="tab-jobs"
+          role="tab"
+          tabindex="-1"
+        >
+          <span
+            class="nav-tab-label"
+          >
+            Browse Jobs
+          </span>
+        </button>
+        <button
+          aria-controls="panel-applications"
+          aria-selected="false"
+          class="nav-tab "
+          id="tab-applications"
+          role="tab"
+          tabindex="-1"
+        >
+          <span
+            class="nav-tab-label"
+          >
+            Applications
+          </span>
+        </button>
+        <button
+          aria-controls="panel-saved"
+          aria-selected="false"
+          class="nav-tab "
+          id="tab-saved"
+          role="tab"
+          tabindex="-1"
+        >
+          <span
+            class="nav-tab-label"
+          >
+            Saved Jobs
+          </span>
+        </button>
+        <button
+          aria-controls="panel-profile"
+          aria-selected="false"
+          class="nav-tab "
+          id="tab-profile"
+          role="tab"
+          tabindex="-1"
+        >
+          <span
+            class="nav-tab-label"
+          >
+            Profile
+          </span>
+        </button>
+      </div>
+      <div
+        aria-label="User account"
+        class="nav-user"
+        role="region"
+      >
+        <button
+          aria-label="Switch to dark theme"
+          class="theme-toggle
+        theme-toggle--sm
+        theme-toggle--minimal"
+          title="Switch to dark theme"
+        >
+          <div
+            class="theme-toggle__icon-container"
+          >
+            <svg
+              class="theme-toggle__icon theme-toggle__sun theme-toggle__icon--active"
+              fill="none"
+              height="20"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="20"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="5"
+              />
+              <path
+                d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
+              />
+            </svg>
+            <svg
+              class="theme-toggle__icon theme-toggle__moon "
+              fill="none"
+              height="20"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="20"
+            >
+              <path
+                d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
+              />
+            </svg>
+          </div>
+        </button>
+        <div
+          class="nav-user-info"
+        >
+          <img
+            alt="Profile picture of Visual Developer"
+            class="nav-user-avatar"
+            src="https://via.placeholder.com/150"
+          />
+          <div
+            class="nav-user-details"
+          >
+            <span
+              aria-label="User name"
+              class="nav-user-name"
+            >
+              Visual Developer
+            </span>
+            <span
+              aria-label="User role"
+              class="nav-user-role"
+            >
+              Job Seeker
+            </span>
+          </div>
+        </div>
+        <button
+          aria-label="Logout from account"
+          class="nav-logout-btn"
+        >
+          Logout
+        </button>
+      </div>
+    </div>
+  </nav>
+  <main
+    class="dashboard-content"
+    id="main-content"
+    role="main"
+  >
+    <div
+      class="dashboard-wrapper"
+    >
+      <header
+        class="page-header"
+      >
+        <div>
+          <h2
+            class="page-title"
+          >
+            Dashboard Overview
+          </h2>
+          <p
+            class="page-subtitle"
+          >
+            Track your job search progress and discover opportunities
+          </p>
+        </div>
+        <div
+          class="header-actions"
+        >
+          <button
+            aria-label="Navigate to browse jobs section"
+            class="primary-btn"
+          >
+            Browse Jobs
+          </button>
+        </div>
+      </header>
+      <div
+        aria-labelledby="tab-overview"
+        id="panel-overview"
+        role="tabpanel"
+        tabindex="0"
+      >
+        <section
+          aria-label="Dashboard overview"
+          class="overview-content"
+        >
+          <section
+            aria-label="Statistics summary"
+            class="stats-section"
+          >
+            <div
+              class="skeleton-stats-grid"
+            >
+              <div
+                class="skeleton--stat-card"
+              >
+                <div
+                  class="skeleton__stat-header"
+                >
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 60%;"
+                    />
+                  </div>
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 30%;"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="skeleton__stat-value"
+                >
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 40%; height: 32px;"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="skeleton__stat-description"
+                >
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 80%;"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div
+                class="skeleton--stat-card"
+              >
+                <div
+                  class="skeleton__stat-header"
+                >
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 60%;"
+                    />
+                  </div>
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 30%;"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="skeleton__stat-value"
+                >
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 40%; height: 32px;"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="skeleton__stat-description"
+                >
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 80%;"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div
+                class="skeleton--stat-card"
+              >
+                <div
+                  class="skeleton__stat-header"
+                >
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 60%;"
+                    />
+                  </div>
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 30%;"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="skeleton__stat-value"
+                >
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 40%; height: 32px;"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="skeleton__stat-description"
+                >
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 80%;"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div
+                class="skeleton--stat-card"
+              >
+                <div
+                  class="skeleton__stat-header"
+                >
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 60%;"
+                    />
+                  </div>
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 30%;"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="skeleton__stat-value"
+                >
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 40%; height: 32px;"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="skeleton__stat-description"
+                >
+                  <div
+                    class="skeleton--text"
+                  >
+                    <div
+                      class="skeleton__line"
+                      style="width: 80%;"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section
+            aria-label="Main content"
+            class="content-grid"
+          >
+            <article
+              aria-labelledby="recommended-jobs-title"
+              class="content-card"
+            >
+              <header
+                class="card-header"
+              >
+                <h3
+                  class="card-title"
+                  id="recommended-jobs-title"
+                >
+                  Recommended Jobs
+                </h3>
+                <button
+                  aria-label="View all recommended jobs"
+                  class="card-action"
+                >
+                  View All
+                </button>
+              </header>
+              <div
+                class="card-content"
+              >
+                <div
+                  style="text-align: center; padding: 2rem; color: rgb(148, 163, 184);"
+                >
+                  <p
+                    aria-live="polite"
+                    role="status"
+                  >
+                    Loading jobs...
+                  </p>
+                </div>
+              </div>
+            </article>
+            <article
+              aria-labelledby="application-status-title"
+              class="content-card"
+            >
+              <header
+                class="card-header"
+              >
+                <h3
+                  class="card-title"
+                  id="application-status-title"
+                >
+                  Application Status
+                </h3>
+              </header>
+              <div
+                class="card-content"
+              >
+                <div
+                  class="empty-state"
+                  role="status"
+                >
+                  <p
+                    class="empty-state-text"
+                  >
+                    No applications yet
+                  </p>
+                  <p
+                    class="empty-state-subtext"
+                  >
+                    Start applying to jobs to track your progress
+                  </p>
+                  <button
+                    aria-label="Navigate to browse jobs to start applying"
+                    class="btn-primary"
+                  >
+                    Browse Jobs
+                  </button>
+                </div>
+              </div>
+            </article>
+          </section>
+        </section>
+      </div>
+    </div>
+  </main>
+  <div
+    aria-atomic="true"
+    aria-live="polite"
+    class="status-announcement"
+    id="status-announcements"
+    role="status"
+  />
+</div>
+`;
+
+exports[`Visual Regression and Browser Testing Responsive Behavior Testing login page adapts to mobile viewport (375px): login-page-mobile 1`] = `
+<div
+  class="amdox-page"
+>
+  <header
+    class="amdox-header"
+  >
+    <div
+      class="header-container"
+    >
+      <div
+        class="header-brand"
+      >
+        <div
+          class="logo-box"
+        >
+          <img
+            alt="Amdox Jobs Logo"
+            class="logo-image"
+            src="/logo/logo.png"
+          />
+        </div>
+        <div
+          class="brand-text"
+        >
+          <h1
+            class="brand-title"
+          >
+            Amdox Jobs™
+          </h1>
+          <p
+            class="brand-subtitle"
+          >
+            India's Fastest Tech Hiring Platform
+          </p>
+        </div>
+      </div>
+      <div
+        class="header-actions"
+      >
+        <button
+          aria-label="Switch to dark theme"
+          class="theme-toggle
+        theme-toggle--sm
+        theme-toggle--outlined"
+          title="Switch to dark theme"
+        >
+          <div
+            class="theme-toggle__icon-container"
+          >
+            <svg
+              class="theme-toggle__icon theme-toggle__sun theme-toggle__icon--active"
+              fill="none"
+              height="20"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="20"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="5"
+              />
+              <path
+                d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
+              />
+            </svg>
+            <svg
+              class="theme-toggle__icon theme-toggle__moon "
+              fill="none"
+              height="20"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="20"
+            >
+              <path
+                d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
+              />
+            </svg>
+          </div>
+        </button>
+      </div>
+    </div>
+  </header>
+  <div
+    class="amdox-container"
+  >
+    <div
+      class="hero-section-dark"
+    >
+      <h2
+        class="hero-heading-dark"
+      >
+        Find Your Next Tech Role
+      </h2>
+      <div
+        class="hero-stats-dark"
+      >
+        <div
+          class="stat-item-dark"
+        >
+          <div
+            class="stat-bullet-dark"
+          />
+          <span
+            class="stat-text-dark"
+          >
+            500+ Live Tech Jobs from Top Companies
+          </span>
+        </div>
+        <div
+          class="stat-item-dark"
+        >
+          <div
+            class="stat-bullet-dark"
+          />
+          <span
+            class="stat-text-dark"
+          >
+            AI-Powered Job Matching
+          </span>
+        </div>
+        <div
+          class="stat-item-dark"
+        >
+          <div
+            class="stat-bullet-dark"
+          />
+          <span
+            class="stat-text-dark"
+          >
+            85% Placement Success Rate
+          </span>
+        </div>
+      </div>
+    </div>
+    <div
+      class="auth-section-dark"
+    >
+      <div
+        class="auth-card-dark"
+      >
+        <h3
+          class="auth-title-dark"
+        >
+          Welcome Back
+        </h3>
+        <p
+          class="auth-subtitle-dark"
+        >
+          Access saved jobs, applications, and recommendations
+        </p>
+        <button
+          class="work-email-btn-dark"
+          type="button"
+        >
+          Continue with Work Email
+        </button>
+        <div
+          class="email-info-dark"
+        >
+          <span
+            class="info-emoji"
+          >
+            👨‍💼
+          </span>
+          <span
+            class="info-text-small"
+          >
+            Company email → Employer
+          </span>
+          <span
+            class="info-separator"
+          >
+            |
+          </span>
+          <span
+            class="info-emoji"
+          >
+            👥
+          </span>
+          <span
+            class="info-text-small"
+          >
+            Gmail → Job Seeker
+          </span>
+        </div>
+        <div
+          class="divider-dark"
+        >
+          <div
+            class="divider-line"
+          />
+          <span
+            class="divider-text"
+          >
+            or
+          </span>
+          <div
+            class="divider-line"
+          />
+        </div>
+        <button
+          class="google-btn-dark"
+          type="button"
+        >
+          <svg
+            class="google-icon-dark"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+              fill="#4285F4"
+            />
+            <path
+              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+              fill="#34A853"
+            />
+            <path
+              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+              fill="#FBBC05"
+            />
+            <path
+              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+              fill="#EA4335"
+            />
+          </svg>
+          Sign in with Google
+        </button>
+        <div
+          class="auth-footer-dark"
+        >
+          <p>
+            Don't have an account?
+             
+            <a
+              class="auth-link-dark"
+              href="/register"
+            >
+              Sign up
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer
+    class="amdox-footer"
+  />
+</div>
+`;
+
+exports[`Visual Regression and Browser Testing Responsive Behavior Testing login page adapts to tablet viewport (768px): login-page-tablet 1`] = `
+<div
+  class="amdox-page"
+>
+  <header
+    class="amdox-header"
+  >
+    <div
+      class="header-container"
+    >
+      <div
+        class="header-brand"
+      >
+        <div
+          class="logo-box"
+        >
+          <img
+            alt="Amdox Jobs Logo"
+            class="logo-image"
+            src="/logo/logo.png"
+          />
+        </div>
+        <div
+          class="brand-text"
+        >
+          <h1
+            class="brand-title"
+          >
+            Amdox Jobs™
+          </h1>
+          <p
+            class="brand-subtitle"
+          >
+            India's Fastest Tech Hiring Platform
+          </p>
+        </div>
+      </div>
+      <div
+        class="header-actions"
+      >
+        <button
+          aria-label="Switch to dark theme"
+          class="theme-toggle
+        theme-toggle--sm
+        theme-toggle--outlined"
+          title="Switch to dark theme"
+        >
+          <div
+            class="theme-toggle__icon-container"
+          >
+            <svg
+              class="theme-toggle__icon theme-toggle__sun theme-toggle__icon--active"
+              fill="none"
+              height="20"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="20"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="5"
+              />
+              <path
+                d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
+              />
+            </svg>
+            <svg
+              class="theme-toggle__icon theme-toggle__moon "
+              fill="none"
+              height="20"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="20"
+            >
+              <path
+                d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
+              />
+            </svg>
+          </div>
+        </button>
+      </div>
+    </div>
+  </header>
+  <div
+    class="amdox-container"
+  >
+    <div
+      class="hero-section-dark"
+    >
+      <h2
+        class="hero-heading-dark"
+      >
+        Find Your Next Tech Role
+      </h2>
+      <div
+        class="hero-stats-dark"
+      >
+        <div
+          class="stat-item-dark"
+        >
+          <div
+            class="stat-bullet-dark"
+          />
+          <span
+            class="stat-text-dark"
+          >
+            500+ Live Tech Jobs from Top Companies
+          </span>
+        </div>
+        <div
+          class="stat-item-dark"
+        >
+          <div
+            class="stat-bullet-dark"
+          />
+          <span
+            class="stat-text-dark"
+          >
+            AI-Powered Job Matching
+          </span>
+        </div>
+        <div
+          class="stat-item-dark"
+        >
+          <div
+            class="stat-bullet-dark"
+          />
+          <span
+            class="stat-text-dark"
+          >
+            85% Placement Success Rate
+          </span>
+        </div>
+      </div>
+    </div>
+    <div
+      class="auth-section-dark"
+    >
+      <div
+        class="auth-card-dark"
+      >
+        <h3
+          class="auth-title-dark"
+        >
+          Welcome Back
+        </h3>
+        <p
+          class="auth-subtitle-dark"
+        >
+          Access saved jobs, applications, and recommendations
+        </p>
+        <button
+          class="work-email-btn-dark"
+          type="button"
+        >
+          Continue with Work Email
+        </button>
+        <div
+          class="email-info-dark"
+        >
+          <span
+            class="info-emoji"
+          >
+            👨‍💼
+          </span>
+          <span
+            class="info-text-small"
+          >
+            Company email → Employer
+          </span>
+          <span
+            class="info-separator"
+          >
+            |
+          </span>
+          <span
+            class="info-emoji"
+          >
+            👥
+          </span>
+          <span
+            class="info-text-small"
+          >
+            Gmail → Job Seeker
+          </span>
+        </div>
+        <div
+          class="divider-dark"
+        >
+          <div
+            class="divider-line"
+          />
+          <span
+            class="divider-text"
+          >
+            or
+          </span>
+          <div
+            class="divider-line"
+          />
+        </div>
+        <button
+          class="google-btn-dark"
+          type="button"
+        >
+          <svg
+            class="google-icon-dark"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+              fill="#4285F4"
+            />
+            <path
+              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+              fill="#34A853"
+            />
+            <path
+              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+              fill="#FBBC05"
+            />
+            <path
+              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+              fill="#EA4335"
+            />
+          </svg>
+          Sign in with Google
+        </button>
+        <div
+          class="auth-footer-dark"
+        >
+          <p>
+            Don't have an account?
+             
+            <a
+              class="auth-link-dark"
+              href="/register"
+            >
+              Sign up
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer
+    class="amdox-footer"
+  />
+</div>
+`;

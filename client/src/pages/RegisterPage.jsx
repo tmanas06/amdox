@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import ThemeToggle from '../components/ThemeToggle';
 import './RegisterPage.css';
 
 /**
@@ -112,6 +113,9 @@ const RegisterPage = () => {
               <h1 className="brand-title">Amdox Jobs™</h1>
               <p className="brand-subtitle">India's Fastest Tech Hiring Platform</p>
             </div>
+          </div>
+          <div className="header-actions">
+            <ThemeToggle size="sm" variant="outlined" />
           </div>
         </div>
       </header>

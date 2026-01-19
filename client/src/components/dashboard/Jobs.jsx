@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { jobs as jobService } from '../../services/api';
+import { JobCardSkeleton } from '../SkeletonLoader';
 import './Jobs.css';
 
 const Jobs = () => {
@@ -131,9 +132,16 @@ const Jobs = () => {
 
   if (isLoading) {
     return (
-      <div className="loading-container">
-        <div className="loading-spinner"></div>
-        <p>Finding the best jobs for you...</p>
+      <div className="jobs-container">
+        <div className="jobs-header">
+          <div className="header-content">
+            <h1>Find Your Dream Job</h1>
+            <p>Loading the best opportunities for you...</p>
+          </div>
+        </div>
+        <div className="jobs-content">
+          <JobCardSkeleton count={jobsPerPage} />
+        </div>
       </div>
     );
   }

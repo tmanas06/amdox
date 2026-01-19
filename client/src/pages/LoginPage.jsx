@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import ThemeToggle from '../components/ThemeToggle';
 import './LoginPage.css';
 
 /**
@@ -86,6 +87,9 @@ const LoginPage = () => {
               <p className="brand-subtitle">India's Fastest Tech Hiring Platform</p>
             </div>
           </div>
+          <div className="header-actions">
+            <ThemeToggle size="sm" variant="outlined" />
+          </div>
         </div>
       </header>
 
@@ -141,10 +145,8 @@ const LoginPage = () => {
                 </button>
 
                 <div className="email-info-dark">
-                  <span className="info-emoji">👨‍💼</span>
                   <span className="info-text-small">Company email → Employer</span>
                   <span className="info-separator">|</span>
-                  <span className="info-emoji">👥</span>
                   <span className="info-text-small">Gmail → Job Seeker</span>
                 </div>
 
