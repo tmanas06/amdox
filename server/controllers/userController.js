@@ -84,14 +84,100 @@ const extractName = (text) => {
 };
 
 const extractSkills = (text) => {
-  const lines = text.split('\n');
-  const skillsLine = lines.find(l => /skills?/i.test(l));
-  if (!skillsLine) return [];
-  const afterColon = skillsLine.split(':')[1] || skillsLine;
-  return afterColon
-    .split(/[,\u2022]/)
+  const lines = text.split('\n').map(l => l.trim());
+  const idx = lines.findIndex(l => /^skills?\b/i.test(l));
+  if (idx === -1) return [];
+
+  const sectionLines = [];
+  for (let i = idx; i < lines.length; i++) {
+    const line = lines[i];
+    if (i > idx && !line) break; // stop at blank line after section
+    sectionLines.push(line);
+  }
+
+  const combined = sectionLines.join(' ');
+  return combined
+    .split(/[,\u2022;•|-]/)
     .map(s => s.trim())
     .filter(Boolean);
+};
+
+// Generic helper to pull lines under a section header
+const extractSectionLines = (text, headerPatterns) => {
+  const lines = text.split('\n').map(l => l.trim());
+  let start = -1;
+
+  for (let i = 0; i < lines.length; i++) {
+    const lower = lines[i].toLowerCase();
+    if (headerPatterns.some(h => lower.startsWith(h))) {
+      start = i + 1;
+      break;
+    }
+  }
+
+  if (start === -1) return [];
+
+  const result = [];
+  for (let i = start; i < lines.length; i++) {
+    const line = lines[i];
+    if (!line) break;
+    // Stop if we hit another likely header
+    if (/^[A-Z][A-Za-z ]+:$/.test(line)) break;
+    result.push(line);
+  }
+  return result;
+};
+
+const extractSummary = (text) => {
+  const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+  if (!lines.length) {
+    // Fallback: first 400 chars of whole text
+    return (text || '').slice(0, 400);
+  }
+
+  const stopIdx = lines.findIndex(l =>
+    /(experience|education|skills)/i.test(l)
+  );
+
+  const end = stopIdx === -1 ? Math.min(lines.length, 5) : Math.min(stopIdx, 5);
+  return lines.slice(0, end).join(' ');
+};
+
+const extractExperience = (text) => {
+  const lines = extractSectionLines(text, [
+    'experience',
+    'work experience',
+    'professional experience',
+  ]);
+  if (!lines.length) return [];
+
+  return [{
+    id: Date.now(),
+    title: '',
+    company: '',
+    from: '',
+    to: '',
+    current: false,
+    description: lines.join(' '),
+  }];
+};
+
+const extractEducation = (text) => {
+  const lines = extractSectionLines(text, [
+    'education',
+    'academic background',
+  ]);
+  if (!lines.length) return [];
+
+  return [{
+    id: Date.now() + 1,
+    school: '',
+    degree: '',
+    field: '',
+    from: '',
+    to: '',
+    description: lines.join(' '),
+  }];
 };
 
 // @desc    Upload resume and return parsed profile suggestions
@@ -131,17 +217,20 @@ exports.uploadResume = async (req, res) => {
     const email = extractEmail(text);
     const phone = extractPhone(text);
     const skills = extractSkills(text);
+    const summary = extractSummary(text);
+    const experience = extractExperience(text);
+    const education = extractEducation(text);
 
     const profileSuggestions = {
       name,
       email,
       phone,
       skills,
-      summary: '',
+      summary,
       headline: '',
       location: '',
-      experience: [],
-      education: [],
+      experience,
+      education,
     };
 
     res.status(200).json({
