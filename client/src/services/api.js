@@ -141,6 +141,18 @@ export const user = {
       },
     });
   },
+
+  // Upload resume and get parsed profile suggestions
+  uploadResume: (userId, file) => {
+    const formData = new FormData();
+    formData.append('resume', file);
+
+    return api.post(`/users/${userId}/resume`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
 };
 
 const apiExports = {

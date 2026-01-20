@@ -6,6 +6,7 @@ import {
   onAuthStateChanged 
 } from 'firebase/auth';
 import { auth, googleProvider } from '../firebase/config';
+import { user as userApi } from '../services/api';
 import { 
   firebaseLogin, 
   login, 
@@ -201,6 +202,34 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  /**
+   * Update profile via backend and keep auth context in sync
+   */
+  const updateProfile = async (profileData) => {
+    if (!user?.id) {
+      throw new Error('User not loaded');
+    }
+
+    const response = await userApi.updateProfile(user.id, profileData);
+    const updatedUser = {
+      ...user,
+      profile: response.data?.user?.profile || response.user?.profile || profileData,
+    };
+    setUser(updatedUser);
+    return updatedUser;
+  };
+
+  /**
+   * Upload resume and get parsed profile suggestions
+   */
+  const uploadResume = async (file) => {
+    if (!user?.id) {
+      throw new Error('User not loaded');
+    }
+    const response = await userApi.uploadResume(user.id, file);
+    return response.data?.profile || {};
+  };
+
   const value = {
     user,
     loading,
@@ -210,6 +239,8 @@ export const AuthProvider = ({ children }) => {
     loginWithEmail,
     registerWithEmail,
     logout,
+    updateProfile,
+    uploadResume,
     isAuthenticated: !!user,
     clearError: () => setError(null)
   };
