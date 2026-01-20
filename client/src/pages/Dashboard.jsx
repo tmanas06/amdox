@@ -21,15 +21,22 @@ const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [recommendedJobs, setRecommendedJobs] = useState([]);
   const [loadingJobs, setLoadingJobs] = useState(false);
+  const [totalJobsCount, setTotalJobsCount] = useState(0);
 
   const isJobSeeker = user?.role === 'job_seeker';
   const isEmployer = user?.role === 'employer';
   const [savedJobs, setSavedJobs] = useState([]);
+  const [appliedJobs, setAppliedJobs] = useState([]);
 
   // Load saved jobs from localStorage on component mount
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem('savedJobs') || '[]');
     setSavedJobs(saved);
+  }, []);
+
+  useEffect(() => {
+    const applied = JSON.parse(localStorage.getItem('appliedJobs') || '[]');
+    setAppliedJobs(applied);
   }, []);
 
   // Save to localStorage when savedJobs change
@@ -50,10 +57,12 @@ const Dashboard = () => {
       const response = await jobService.getAll({ limit: 2 });
       if (response.data && response.data.data) {
         setRecommendedJobs(response.data.data.slice(0, 2));
+        setTotalJobsCount(response.data.total || 0);
       }
     } catch (error) {
       console.error('Error fetching recommended jobs:', error);
       setRecommendedJobs([]);
+      setTotalJobsCount(0);
     } finally {
       setLoadingJobs(false);
     }
@@ -159,7 +168,7 @@ const Dashboard = () => {
                 {activeTab === 'overview' && (isJobSeeker 
                   ? 'Track your job search progress and discover opportunities'
                   : 'Manage your hiring pipeline and track performance')}
-                {activeTab === 'jobs' && 'Explore 500+ tech jobs from top companies'}
+                {activeTab === 'jobs' && `Explore ${totalJobsCount || 0} jobs from top companies`}
                 {activeTab === 'applications' && isJobSeeker && 'Track and manage your job applications'}
                 {activeTab === 'applications' && isEmployer && 'Review and manage candidate applications'}
                 {activeTab === 'saved' && 'Your saved job listings'}
@@ -203,23 +212,23 @@ const Dashboard = () => {
                           <span className="stat-label">Active Jobs</span>
                           <span className="stat-trend positive">+12%</span>
                         </div>
-                        <div className="stat-value">500+</div>
+                        <div className="stat-value">{totalJobsCount || 0}</div>
                         <div className="stat-description">Tech positions available</div>
                       </div>
                       <div className="stat-card">
                         <div className="stat-header">
                           <span className="stat-label">My Applications</span>
-                          <span className="stat-trend">0</span>
+                          <span className="stat-trend">{appliedJobs.length}</span>
                         </div>
-                        <div className="stat-value">0</div>
+                        <div className="stat-value">{appliedJobs.length}</div>
                         <div className="stat-description">Applications submitted</div>
                       </div>
                       <div className="stat-card">
                         <div className="stat-header">
                           <span className="stat-label">Saved Jobs</span>
-                          <span className="stat-trend">0</span>
+                          <span className="stat-trend">{savedJobs.length}</span>
                         </div>
-                        <div className="stat-value">0</div>
+                        <div className="stat-value">{savedJobs.length}</div>
                         <div className="stat-description">Jobs saved for later</div>
                       </div>
                       <div className="stat-card">
@@ -379,8 +388,8 @@ const Dashboard = () => {
           {activeTab !== 'overview' && (
             <div className="tab-content">
               {activeTab === 'jobs' && isJobSeeker && <Jobs />}
-              {activeTab === 'applications' && isJobSeeker && <Applications />}
-              {activeTab === 'saved' && isJobSeeker && <SavedJobs />}
+              {activeTab === 'applications' && isJobSeeker && <Applications onBrowseJobs={() => setActiveTab('jobs')} />}
+              {activeTab === 'saved' && isJobSeeker && <SavedJobs onBrowseJobs={() => setActiveTab('jobs')} />}
               {activeTab === 'profile' && isJobSeeker && <Profile />}
               
               {/* Employer Tabs */}

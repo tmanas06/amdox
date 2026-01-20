@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../context/AuthContext';
 import { jobs as jobService } from '../../services/api';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 import './SavedJobs.css';
 
-const SavedJobs = () => {
-  const { user } = useAuth();
+const SavedJobs = ({ onBrowseJobs }) => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('all');
   const [savedJobs, setSavedJobs] = useState([]);
   const [appliedJobs, setAppliedJobs] = useState([]);
@@ -18,15 +18,24 @@ const SavedJobs = () => {
       try {
         setIsLoading(true);
         setError('');
-        
-        // Fetch all jobs and filter by user's saved status
-        const response = await jobService.getAll({ limit: 100 });
-        const allJobs = response.data?.data || [];
-        
-        // Filter saved jobs (in real app, backend would handle this)
-        const saved = allJobs.filter(job => user?.jobSeeker?.savedJobs?.includes(job._id));
-        const applied = allJobs.filter(job => user?.jobSeeker?.applications?.includes(job._id));
-        
+
+        const savedIds = JSON.parse(localStorage.getItem('savedJobs') || '[]');
+        const appliedIds = JSON.parse(localStorage.getItem('appliedJobs') || '[]');
+
+        const [savedRes, appliedRes] = await Promise.all([
+          Promise.allSettled((Array.isArray(savedIds) ? savedIds : []).map((jobId) => jobService.getById(jobId))),
+          Promise.allSettled((Array.isArray(appliedIds) ? appliedIds : []).map((jobId) => jobService.getById(jobId))),
+        ]);
+
+        const saved = savedRes
+          .filter(r => r.status === 'fulfilled')
+          .map(r => r.value?.data?.data)
+          .filter(Boolean);
+        const applied = appliedRes
+          .filter(r => r.status === 'fulfilled')
+          .map(r => r.value?.data?.data)
+          .filter(Boolean);
+
         setSavedJobs(saved);
         setAppliedJobs(applied);
       } catch (err) {
@@ -38,10 +47,8 @@ const SavedJobs = () => {
       }
     };
 
-    if (user) {
-      fetchJobs();
-    }
-  }, [user]);
+    fetchJobs();
+  }, []);
 
   const allJobs = [...savedJobs, ...appliedJobs];
   const filteredJobs = activeTab === 'all' 
@@ -61,8 +68,10 @@ const SavedJobs = () => {
 
   const handleRemoveJob = async (jobId) => {
     try {
-      await jobService.unsaveJob(jobId);
       setSavedJobs(prev => prev.filter(job => job._id !== jobId));
+      const savedIds = JSON.parse(localStorage.getItem('savedJobs') || '[]');
+      const next = (Array.isArray(savedIds) ? savedIds : []).filter(id => id !== jobId);
+      localStorage.setItem('savedJobs', JSON.stringify(next));
       toast.success('Job removed from saved');
     } catch (err) {
       console.error('Error removing job:', err);
@@ -72,10 +81,19 @@ const SavedJobs = () => {
 
   const handleApplyJob = async (jobId) => {
     try {
-      await jobService.applyJob(jobId);
       const job = savedJobs.find(j => j._id === jobId);
       setSavedJobs(prev => prev.filter(j => j._id !== jobId));
       setAppliedJobs(prev => [...prev, job]);
+
+      const appliedIds = JSON.parse(localStorage.getItem('appliedJobs') || '[]');
+      const nextApplied = Array.isArray(appliedIds) ? appliedIds : [];
+      if (!nextApplied.includes(jobId)) nextApplied.push(jobId);
+      localStorage.setItem('appliedJobs', JSON.stringify(nextApplied));
+
+      const savedIds = JSON.parse(localStorage.getItem('savedJobs') || '[]');
+      const nextSaved = (Array.isArray(savedIds) ? savedIds : []).filter(id => id !== jobId);
+      localStorage.setItem('savedJobs', JSON.stringify(nextSaved));
+
       toast.success('Applied to job successfully!');
     } catch (err) {
       console.error('Error applying to job:', err);
@@ -122,7 +140,7 @@ const SavedJobs = () => {
         <div className="empty-state">
           <p>No {activeTab === 'all' ? 'saved' : activeTab} jobs found.</p>
           <p>Save jobs to keep track of positions you're interested in.</p>
-          <button className="btn-primary">Browse Jobs</button>
+          <button className="btn-primary" onClick={onBrowseJobs}>Browse Jobs</button>
         </div>
       ) : (
         <div className="saved-jobs-list">
@@ -152,6 +170,12 @@ const SavedJobs = () => {
                 </div>
                 
                 <div className="saved-job-actions">
+                  <button
+                    className="btn-outline"
+                    onClick={() => navigate(`/jobs/${job._id}`)}
+                  >
+                    View
+                  </button>
                   {getJobStatus(job) === 'saved' && (
                     <button 
                       className="btn-apply"

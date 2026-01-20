@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../context/AuthContext';
 import { jobs as jobService } from '../../services/api';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 import './Applications.css';
 
-const Applications = () => {
-  const { user } = useAuth();
+const Applications = ({ onBrowseJobs }) => {
+  const navigate = useNavigate();
   const [applications, setApplications] = useState([]);
   const [filteredApplications, setFilteredApplications] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -19,10 +19,33 @@ const Applications = () => {
       try {
         setIsLoading(true);
         setError('');
-        
-        // Fetch applications from user's profile
-        const response = await jobService.getUserApplications();
-        setApplications(response.data?.data || []);
+
+        // Dynamic flow (no static): use localStorage applied job IDs + real job data
+        const appliedIds = JSON.parse(localStorage.getItem('appliedJobs') || '[]');
+        if (!Array.isArray(appliedIds) || appliedIds.length === 0) {
+          setApplications([]);
+          return;
+        }
+
+        const results = await Promise.allSettled(appliedIds.map((jobId) => jobService.getById(jobId)));
+        const jobs = results
+          .filter(r => r.status === 'fulfilled')
+          .map(r => r.value?.data?.data)
+          .filter(Boolean);
+
+        const appRows = jobs.map(j => ({
+          _id: j._id,
+          jobId: j._id,
+          jobTitle: j.title,
+          company: j.company,
+          appliedDate: j.createdAt || new Date().toISOString(),
+          lastUpdated: j.updatedAt || j.createdAt || new Date().toISOString(),
+          status: 'Applied',
+          jobDetails: { location: j.location, type: j.type },
+          nextSteps: 'Waiting for response from recruiter',
+        }));
+
+        setApplications(appRows);
       } catch (err) {
         console.error('Error fetching applications:', err);
         setError(err.message || 'Failed to load applications');
@@ -32,10 +55,8 @@ const Applications = () => {
       }
     };
 
-    if (user) {
-      fetchApplications();
-    }
-  }, [user]);
+    fetchApplications();
+  }, []);
 
   // Apply filters and sorting
   useEffect(() => {
@@ -73,18 +94,13 @@ const Applications = () => {
   };
 
   const handleUpdateStatus = async (applicationId, newStatus) => {
-    try {
-      await jobService.updateApplicationStatus(applicationId, newStatus);
-      setApplications(prev =>
-        prev.map(app =>
-          app._id === applicationId ? { ...app, status: newStatus } : app
-        )
-      );
-      toast.success('Application status updated');
-    } catch (err) {
-      console.error('Error updating status:', err);
-      toast.error(err.message || 'Failed to update status');
-    }
+    // No backend support yet; keep UX dynamic locally
+    setApplications(prev =>
+      prev.map(app =>
+        app._id === applicationId ? { ...app, status: newStatus, lastUpdated: new Date().toISOString() } : app
+      )
+    );
+    toast.success('Application status updated');
   };
 
   return (
@@ -128,7 +144,7 @@ const Applications = () => {
         ) : filteredApplications.length === 0 ? (
           <div className="empty-state">
             <p>You haven't applied to any jobs yet.</p>
-            <button className="btn-primary">Browse Jobs</button>
+            <button className="btn-primary" onClick={onBrowseJobs}>Browse Jobs</button>
           </div>
         ) : (
           filteredApplications.map(application => (
@@ -175,7 +191,7 @@ const Applications = () => {
               )}
               
               <div className="application-actions">
-                <button className="btn-outline">View Job</button>
+                <button className="btn-outline" onClick={() => navigate(`/jobs/${application.jobId}`)}>View Job</button>
                 <button className="btn-outline">Add Note</button>
                 <select 
                   className="btn-outline"
