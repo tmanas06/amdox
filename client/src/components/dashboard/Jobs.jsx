@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../context/AuthContext';
+import React, { useState, useEffect, useCallback } from 'react';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { jobs as jobService } from '../../services/api';
 import './Jobs.css';
 
 const Jobs = () => {
-  const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [jobType, setJobType] = useState('');
   const [location, setLocation] = useState('');
@@ -19,18 +17,18 @@ const Jobs = () => {
   const jobsPerPage = 5;
 
   // Fetch jobs from API
-  const fetchJobs = async () => {
+  const fetchJobs = useCallback(async () => {
     try {
       setIsLoading(true);
       const params = {
         search: searchTerm,
-        location: location,
+        location,
         type: jobType,
         remote: location === 'remote' ? 'true' : '',
         page: currentPage,
-        limit: jobsPerPage
+        limit: jobsPerPage,
       };
-      
+
       const response = await jobService.getAll(params);
       if (response && response.data) {
         setJobs(response.data.data || []);
@@ -48,7 +46,7 @@ const Jobs = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [searchTerm, jobType, location, currentPage]);
 
   // Load saved and applied jobs from localStorage on component mount
   useEffect(() => {
@@ -56,16 +54,12 @@ const Jobs = () => {
     const applied = JSON.parse(localStorage.getItem('appliedJobs') || '[]');
     setSavedJobs(saved);
     setAppliedJobs(applied);
-    
-    fetchJobs();
-  }, [currentPage]);
+  }, []);
 
-  // Handle search and filter changes
+  // Fetch jobs when filters or page change
   useEffect(() => {
     fetchJobs();
-    // Reset to first page when filters change
-    setCurrentPage(1);
-  }, [searchTerm, jobType, location]);
+  }, [fetchJobs]);
 
   // Save to localStorage when savedJobs or appliedJobs change
   useEffect(() => {
@@ -111,13 +105,6 @@ const Jobs = () => {
     }
 
     toast.success('Successfully applied to the job!');
-  };
-
-  // Get job button state
-  const getJobButtonState = (jobId) => {
-    if (appliedJobs.includes(jobId)) return 'applied';
-    if (savedJobs.includes(jobId)) return 'saved';
-    return 'default';
   };
 
   // Calculate total pages for pagination

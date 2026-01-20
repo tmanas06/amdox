@@ -10,7 +10,6 @@ import Jobs from '../components/dashboard/Jobs';
 import Applications from '../components/dashboard/Applications';
 import SavedJobs from '../components/dashboard/SavedJobs';
 import Profile from '../components/dashboard/Profile';
-import PostJob from '../components/dashboard/PostJob';
 
 /**
  * Dashboard Component - Amdox Jobs

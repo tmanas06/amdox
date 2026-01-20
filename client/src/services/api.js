@@ -143,9 +143,11 @@ export const user = {
   },
 };
 
-export default {
+const apiExports = {
   auth,
   jobs,
   applications,
   user,
 };
+
+export default apiExports;
