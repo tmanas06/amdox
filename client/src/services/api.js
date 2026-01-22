@@ -126,6 +126,13 @@ export const applications = {
 
   // Invite candidate to apply
   invite: (data) => api.post('/applications/invite', data),
+
+  // Rounds
+  addRound: (appId, data) => api.post(`/applications/${appId}/rounds`, data),
+  updateRound: (appId, roundId, data) => api.patch(`/applications/${appId}/rounds/${roundId}`, data),
+
+  // Chat
+  addMessage: (appId, content) => api.post(`/applications/${appId}/messages`, { content }),
 };
 
 export const user = {

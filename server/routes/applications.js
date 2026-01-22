@@ -12,6 +12,9 @@ router.get('/me', applicationController.getMyApplications);
 router.get('/employer', authorizeRole('employer', 'admin'), applicationController.getEmployerApplications);
 router.patch('/:id/status', authorizeRole('employer', 'admin'), applicationController.updateStatus);
 router.post('/invite', authorizeRole('employer', 'admin'), applicationController.inviteToApply);
+router.post('/:id/rounds', authorizeRole('employer', 'admin'), applicationController.addRound);
+router.patch('/:id/rounds/:roundId', authorizeRole('employer', 'admin'), applicationController.updateRoundStatus);
+router.post('/:id/messages', applicationController.addMessage);
 
 module.exports = router;
 

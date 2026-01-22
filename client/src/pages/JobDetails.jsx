@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
 import { jobs as jobService } from '../services/api';
 import './JobDetails.css';
@@ -8,6 +9,8 @@ import './JobDetails.css';
 const JobDetails = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const { user } = useAuth();
+  const isEmployer = user?.role === 'employer';
 
   const [job, setJob] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -111,12 +114,21 @@ const JobDetails = () => {
             Browse
           </button>
           <div className="job-details-actions">
-            <button className={`btn-save ${isSaved ? 'saved' : ''}`} onClick={toggleSave}>
-              {isSaved ? 'Remove Bookmark' : 'Bookmark Job'}
-            </button>
-            <button className="primary-btn" onClick={handleApply} disabled={isApplied}>
-              {isApplied ? 'Application Submitted' : 'Quick Apply'}
-            </button>
+            {!isEmployer && (
+              <>
+                <button className={`btn-save ${isSaved ? 'saved' : ''}`} onClick={toggleSave}>
+                  {isSaved ? 'Remove Bookmark' : 'Bookmark Job'}
+                </button>
+                <button className="primary-btn" onClick={handleApply} disabled={isApplied}>
+                  {isApplied ? 'Application Submitted' : 'Quick Apply'}
+                </button>
+              </>
+            )}
+            {isEmployer && (
+              <div style={{ padding: '0.5rem 1rem', background: 'rgba(255,255,255,0.1)', borderRadius: '8px', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
+                Viewing as Employer
+              </div>
+            )}
           </div>
         </div>
 

@@ -22,7 +22,7 @@ const applicationSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['Applied', 'Interview Scheduled', 'Offer Received', 'Rejected', 'Hired'],
+      enum: ['Applied', 'Invited', 'Interview Scheduled', 'Offer Received', 'Rejected', 'Hired'],
       default: 'Applied',
     },
     coverLetter: {
@@ -35,6 +35,17 @@ const applicationSchema = new mongoose.Schema(
       trim: true,
       maxlength: 5000,
     },
+    rounds: [{
+      name: { type: String, required: true }, // e.g., "Screening", "Tech Round 1", "HR"
+      status: { type: String, enum: ['Pending', 'Passed', 'Failed', 'Scheduled'], default: 'Pending' },
+      scheduledDate: Date,
+      feedback: String
+    }],
+    messages: [{
+      sender: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+      content: { type: String, required: true },
+      timestamp: { type: Date, default: Date.now }
+    }]
   },
   { timestamps: true }
 );
