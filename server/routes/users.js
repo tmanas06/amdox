@@ -12,6 +12,9 @@ router.use(authenticateToken);
 // Get all job seekers
 router.get('/job-seekers', userController.getJobSeekers);
 
+// Employer Dashboard Stats
+router.get('/dashboard/stats', userController.getEmployerStats);
+
 // Profile update
 router.put('/:id/profile', userController.updateProfile);
 

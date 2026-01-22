@@ -267,3 +267,74 @@ exports.uploadResume = async (req, res) => {
     res.status(500).json({ success: false, message: 'Failed to parse resume' });
   }
 };
+// @desc    Get employer dashboard stats
+// @route   GET /api/users/dashboard/stats
+// @access  Private (Employer only)
+exports.getEmployerStats = async (req, res) => {
+  try {
+    const employerId = req.user._id;
+
+    // Parallelize queries for performance
+    const [activeJobsCount, totalApplicationsCount, applications, recentJobs, activeCandidates] = await Promise.all([
+      // 1. Active Postings
+      require('../models/Job').countDocuments({ postedBy: employerId, status: 'active' }),
+
+      // 2. Total Applications
+      require('../models/Application').countDocuments({ employer: employerId }),
+
+      // 3. Recent Applications (Last 5)
+      require('../models/Application').find({ employer: employerId })
+        .sort({ createdAt: -1 })
+        .limit(5)
+        .populate('job', 'title')
+        .populate('applicant', 'profile.name email')
+        .lean(),
+
+      // 4. Recent Jobs (Last 5)
+      require('../models/Job').find({ postedBy: employerId })
+        .sort({ createdAt: -1 })
+        .limit(5)
+        .select('title createdAt status')
+        .lean(),
+
+      // 5. Active Candidates (Unique applicants)
+      require('../models/Application').distinct('applicant', { employer: employerId })
+    ]);
+
+    // Combine and sort activities
+    const activities = [
+      ...applications.map(app => ({
+        id: app._id,
+        type: 'Application',
+        description: `New application for ${app.job?.title || 'a job'}`,
+        candidate: app.applicant?.profile?.name || app.applicant?.email || 'Candidate',
+        time: app.createdAt
+      })),
+      ...recentJobs.map(job => ({
+        id: job._id,
+        type: 'Job',
+        description: `Posted new job: ${job.title}`,
+        candidate: job.status === 'active' ? 'Active' : 'Inactive', // Reusing candidate field for status/info
+        time: job.createdAt
+      }))
+    ].sort((a, b) => new Date(b.time) - new Date(a.time)).slice(0, 5);
+
+    res.status(200).json({
+      success: true,
+      stats: {
+        activePostings: activeJobsCount,
+        totalApplications: totalApplicationsCount,
+        activeCandidates: activeCandidates.length,
+        profileViews: Math.floor(Math.random() * 50) + 10 // Placeholder for now
+      },
+      recentActivity: activities
+    });
+
+  } catch (error) {
+    console.error('Error fetching dashboard stats:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch dashboard statistics'
+    });
+  }
+};

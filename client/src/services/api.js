@@ -166,6 +166,9 @@ export const user = {
 
   // Get all job seekers (employer only)
   getJobSeekers: () => api.get('/users/job-seekers'),
+
+  // Get employer dashboard stats
+  getDashboardStats: () => api.get('/users/dashboard/stats'),
 };
 
 const apiExports = {

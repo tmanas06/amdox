@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
-import { jobs as jobService } from '../services/api';
+import { jobs as jobService, user as userService } from '../services/api';
 import { toast } from 'react-toastify';
 import './Dashboard.css';
 
@@ -36,6 +36,15 @@ const Dashboard = () => {
   const [savedJobs, setSavedJobs] = useState([]);
   const [appliedJobs, setAppliedJobs] = useState([]);
 
+  // Employer Stats State
+  const [employerStats, setEmployerStats] = useState({
+    activePostings: 0,
+    totalApplications: 0,
+    activeCandidates: 0,
+    profileViews: 0
+  });
+  const [recentActivity, setRecentActivity] = useState([]);
+
   // Load saved jobs from localStorage on component mount
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem('savedJobs') || '[]');
@@ -56,8 +65,10 @@ const Dashboard = () => {
   useEffect(() => {
     if (isJobSeeker) {
       fetchRecommendedJobs();
+    } else if (isEmployer) {
+      fetchEmployerStats();
     }
-  }, [isJobSeeker]);
+  }, [isJobSeeker, isEmployer]);
 
   const fetchRecommendedJobs = async () => {
     try {
@@ -73,6 +84,18 @@ const Dashboard = () => {
       setTotalJobsCount(0);
     } finally {
       setLoadingJobs(false);
+    }
+  };
+
+  const fetchEmployerStats = async () => {
+    try {
+      const res = await userService.getDashboardStats();
+      if (res.data && res.data.success) {
+        setEmployerStats(res.data.stats);
+        setRecentActivity(res.data.recentActivity || []);
+      }
+    } catch (error) {
+      console.error('Error fetching employer stats:', error);
     }
   };
 
@@ -212,33 +235,33 @@ const Dashboard = () => {
                       <div className="stat-card">
                         <div className="stat-header">
                           <span className="stat-label">Active Postings</span>
-                          <span className="stat-trend">0</span>
+                          <span className="stat-trend">{employerStats.activePostings}</span>
                         </div>
-                        <div className="stat-value">0</div>
+                        <div className="stat-value">{employerStats.activePostings}</div>
                         <div className="stat-description">Jobs currently live</div>
                       </div>
                       <div className="stat-card">
                         <div className="stat-header">
                           <span className="stat-label">Total Applications</span>
-                          <span className="stat-trend">0</span>
+                          <span className="stat-trend">{employerStats.totalApplications}</span>
                         </div>
-                        <div className="stat-value">0</div>
+                        <div className="stat-value">{employerStats.totalApplications}</div>
                         <div className="stat-description">Applications received</div>
                       </div>
                       <div className="stat-card">
                         <div className="stat-header">
                           <span className="stat-label">Active Candidates</span>
-                          <span className="stat-trend">0</span>
+                          <span className="stat-trend">{employerStats.activeCandidates}</span>
                         </div>
-                        <div className="stat-value">0</div>
+                        <div className="stat-value">{employerStats.activeCandidates}</div>
                         <div className="stat-description">Candidates in pipeline</div>
                       </div>
                       <div className="stat-card">
                         <div className="stat-header">
                           <span className="stat-label">Profile Views</span>
-                          <span className="stat-trend">0</span>
+                          <span className="stat-trend">{employerStats.profileViews}</span>
                         </div>
-                        <div className="stat-value">0</div>
+                        <div className="stat-value">{employerStats.profileViews}</div>
                         <div className="stat-description">Company profile views</div>
                       </div>
                     </>
@@ -338,11 +361,27 @@ const Dashboard = () => {
                         <h3 className="card-title">Recent Activity</h3>
                       </div>
                       <div className="card-content">
-                        <div className="empty-state">
-                          <p className="empty-state-text">No activity yet</p>
-                          <p className="empty-state-subtext">Start posting jobs to see activity here</p>
-                          <button className="btn-primary" onClick={() => setActiveTab('postings')}>Post Your First Job</button>
-                        </div>
+                        {recentActivity.length > 0 ? (
+                          <div className="activity-list">
+                            {recentActivity.map((activity, index) => (
+                              <div key={index} className="activity-item" style={{ padding: '1rem', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(56, 189, 248, 0.1)', color: '#38bdf8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                  {activity.type === 'Application' ? '📝' : '🔔'}
+                                </div>
+                                <div style={{ flex: 1 }}>
+                                  <div style={{ fontWeight: 600, color: '#f8fafc' }}>{activity.description}</div>
+                                  <div style={{ fontSize: '0.85rem', color: '#94a3b8' }}>{activity.candidate} • {new Date(activity.time).toLocaleDateString()}</div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="empty-state">
+                            <p className="empty-state-text">No activity yet</p>
+                            <p className="empty-state-subtext">Start posting jobs to see activity here</p>
+                            <button className="btn-primary" onClick={() => setActiveTab('postings')}>Post Your First Job</button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </>
