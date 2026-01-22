@@ -12,12 +12,14 @@ export const useTheme = () => {
 
 export const ThemeProvider = ({ children }) => {
     const [theme, setTheme] = useState(() => {
-        const savedTheme = localStorage.getItem('theme');
+        const savedTheme = localStorage.getItem('theme') || localStorage.getItem('amdox-theme');
         return savedTheme || 'dark'; // Default to dark as Dashboard is already dark
     });
 
     useEffect(() => {
         localStorage.setItem('theme', theme);
+        // Also keep compatibility with the other key if it was used
+        localStorage.setItem('amdox-theme', theme);
         document.documentElement.setAttribute('data-theme', theme);
     }, [theme]);
 

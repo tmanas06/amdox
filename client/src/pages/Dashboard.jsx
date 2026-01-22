@@ -12,6 +12,8 @@ import Applications from '../components/dashboard/Applications';
 import SavedJobs from '../components/dashboard/SavedJobs';
 import Profile from '../components/dashboard/Profile';
 import PostJob from '../components/dashboard/PostJob';
+import EmployerPostings from '../components/dashboard/EmployerPostings';
+import EmployerApplications from '../components/dashboard/EmployerApplications';
 import ThemeToggle from '../components/ThemeToggle';
 
 /**
@@ -25,15 +27,22 @@ const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [recommendedJobs, setRecommendedJobs] = useState([]);
   const [loadingJobs, setLoadingJobs] = useState(false);
+  const [totalJobsCount, setTotalJobsCount] = useState(0);
 
   const isJobSeeker = user?.role === 'job_seeker';
   const isEmployer = user?.role === 'employer';
   const [savedJobs, setSavedJobs] = useState([]);
+  const [appliedJobs, setAppliedJobs] = useState([]);
 
   // Load saved jobs from localStorage on component mount
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem('savedJobs') || '[]');
     setSavedJobs(saved);
+  }, []);
+
+  useEffect(() => {
+    const applied = JSON.parse(localStorage.getItem('appliedJobs') || '[]');
+    setAppliedJobs(applied);
   }, []);
 
   // Save to localStorage when savedJobs change
@@ -54,10 +63,12 @@ const Dashboard = () => {
       const response = await jobService.getAll({ limit: 2 });
       if (response.data && response.data.data) {
         setRecommendedJobs(response.data.data.slice(0, 2));
+        setTotalJobsCount(response.data.total || 0);
       }
     } catch (error) {
       console.error('Error fetching recommended jobs:', error);
       setRecommendedJobs([]);
+      setTotalJobsCount(0);
     } finally {
       setLoadingJobs(false);
     }
@@ -166,7 +177,7 @@ const Dashboard = () => {
                 {activeTab === 'overview' && (isJobSeeker
                   ? 'Track your job search progress and discover opportunities'
                   : 'Manage your hiring pipeline and track performance')}
-                {activeTab === 'jobs' && 'Explore 500+ tech jobs from top companies'}
+                {activeTab === 'jobs' && `Explore ${totalJobsCount || 0} jobs from top companies`}
                 {activeTab === 'applications' && isJobSeeker && 'Track and manage your job applications'}
                 {activeTab === 'applications' && isEmployer && 'Review and manage candidate applications'}
                 {activeTab === 'saved' && 'Your saved job listings'}
@@ -210,23 +221,23 @@ const Dashboard = () => {
                           <span className="stat-label">Active Jobs</span>
                           <span className="stat-trend positive">+12%</span>
                         </div>
-                        <div className="stat-value">500+</div>
+                        <div className="stat-value">{totalJobsCount || 0}</div>
                         <div className="stat-description">Tech positions available</div>
                       </div>
                       <div className="stat-card">
                         <div className="stat-header">
                           <span className="stat-label">My Applications</span>
-                          <span className="stat-trend">0</span>
+                          <span className="stat-trend">{appliedJobs.length}</span>
                         </div>
-                        <div className="stat-value">0</div>
+                        <div className="stat-value">{appliedJobs.length}</div>
                         <div className="stat-description">Applications submitted</div>
                       </div>
                       <div className="stat-card">
                         <div className="stat-header">
                           <span className="stat-label">Saved Jobs</span>
-                          <span className="stat-trend">0</span>
+                          <span className="stat-trend">{savedJobs.length}</span>
                         </div>
-                        <div className="stat-value">0</div>
+                        <div className="stat-value">{savedJobs.length}</div>
                         <div className="stat-description">Jobs saved for later</div>
                       </div>
                       <div className="stat-card">
@@ -288,8 +299,8 @@ const Dashboard = () => {
                       </div>
                       <div className="card-content">
                         {loadingJobs ? (
-                          <div style={{ textAlign: 'center', padding: '2rem', color: '#94a3b8' }}>
-                            <p>Loading jobs...</p>
+                          <div style={{ textAlign: 'center', padding: '2rem' }}>
+                            <p style={{ color: 'var(--text-muted)' }}>Loading jobs...</p>
                           </div>
                         ) : recommendedJobs.length > 0 ? (
                           recommendedJobs.map((job) => (
@@ -314,8 +325,8 @@ const Dashboard = () => {
                           ))
                         ) : (
                           <div className="empty-state">
-                            <p className="empty-state-text">No jobs available</p>
-                            <p className="empty-state-subtext">Check back soon for new opportunities</p>
+                            <p className="empty-state-text" style={{ color: 'var(--text-muted)' }}>No jobs available</p>
+                            <p className="empty-state-subtext" style={{ color: 'var(--text-secondary)' }}>Check back soon for new opportunities</p>
                           </div>
                         )}
                       </div>
@@ -327,8 +338,8 @@ const Dashboard = () => {
                       </div>
                       <div className="card-content">
                         <div className="empty-state">
-                          <p className="empty-state-text">No applications yet</p>
-                          <p className="empty-state-subtext">Start applying to jobs to track your progress</p>
+                          <p className="empty-state-text" style={{ color: 'var(--text-muted)' }}>No applications yet</p>
+                          <p className="empty-state-subtext" style={{ color: 'var(--text-secondary)' }}>Start applying to jobs to track your progress</p>
                           <button className="btn-primary" onClick={() => setActiveTab('jobs')}>Browse Jobs</button>
                         </div>
                       </div>
@@ -342,19 +353,19 @@ const Dashboard = () => {
                       </div>
                       <div className="card-content">
                         <div className="quick-actions-list">
-                          <button className="quick-action-item">
+                          <button className="quick-action-item" onClick={() => setActiveTab('postings')}>
                             <div className="quick-action-content">
                               <h4>Post a New Job</h4>
                               <p>Create a job listing to attract top talent</p>
                             </div>
                           </button>
-                          <button className="quick-action-item">
+                          <button className="quick-action-item" onClick={() => setActiveTab('postings')}>
                             <div className="quick-action-content">
                               <h4>Manage Postings</h4>
                               <p>View and edit your active job postings</p>
                             </div>
                           </button>
-                          <button className="quick-action-item">
+                          <button className="quick-action-item" onClick={() => setActiveTab('candidates')}>
                             <div className="quick-action-content">
                               <h4>Browse Candidates</h4>
                               <p>Search and connect with qualified candidates</p>
@@ -372,7 +383,7 @@ const Dashboard = () => {
                         <div className="empty-state">
                           <p className="empty-state-text">No activity yet</p>
                           <p className="empty-state-subtext">Start posting jobs to see activity here</p>
-                          <button className="btn-primary">Post Your First Job</button>
+                          <button className="btn-primary" onClick={() => setActiveTab('postings')}>Post Your First Job</button>
                         </div>
                       </div>
                     </div>
@@ -386,38 +397,13 @@ const Dashboard = () => {
           {activeTab !== 'overview' && (
             <div className="tab-content">
               {activeTab === 'jobs' && isJobSeeker && <Jobs />}
-              {activeTab === 'applications' && isJobSeeker && <Applications />}
-              {activeTab === 'saved' && isJobSeeker && <SavedJobs />}
+              {activeTab === 'applications' && isJobSeeker && <Applications onBrowseJobs={() => setActiveTab('jobs')} />}
+              {activeTab === 'saved' && isJobSeeker && <SavedJobs onBrowseJobs={() => setActiveTab('jobs')} />}
               {activeTab === 'profile' && isJobSeeker && <Profile />}
 
               {/* Employer Tabs */}
-              {activeTab === 'postings' && isEmployer && (
-                <div className="content-card">
-                  <div className="card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h3 className="card-title">Job Postings</h3>
-                    <button
-                      className="btn-primary"
-                      onClick={() => navigate('/post-job')}
-                    >
-                      + Post New Job
-                    </button>
-                  </div>
-                  <div className="card-content">
-                    <div className="empty-state">
-                      <p className="empty-state-text">No job postings yet</p>
-                      <p className="empty-state-subtext">
-                        Create your first job posting to get started
-                      </p>
-                      <button
-                        className="btn-primary"
-                        onClick={() => navigate('/post-job')}
-                      >
-                        Post Your First Job
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
+              {activeTab === 'postings' && isEmployer && <EmployerPostings />}
+              {activeTab === 'applications' && isEmployer && <EmployerApplications />}
 
               {activeTab === 'candidates' && isEmployer && (
                 <div className="content-card">

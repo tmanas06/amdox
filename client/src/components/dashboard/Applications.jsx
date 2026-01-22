@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../context/AuthContext';
-import { jobs as jobService } from '../../services/api';
+import { applications as applicationService } from '../../services/api';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 import './Applications.css';
 
-const Applications = () => {
-  const { user } = useAuth();
+const Applications = ({ onBrowseJobs }) => {
+  const navigate = useNavigate();
   const [applications, setApplications] = useState([]);
   const [filteredApplications, setFilteredApplications] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -19,10 +19,23 @@ const Applications = () => {
       try {
         setIsLoading(true);
         setError('');
-        
-        // Fetch applications from user's profile
-        const response = await jobService.getUserApplications();
-        setApplications(response.data?.data || []);
+
+        const response = await applicationService.getMyApplications();
+        const rows = (response.data?.data || [])
+          .filter(app => app?.job) // only keep apps with a linked job
+          .map((app) => ({
+            _id: app._id,
+            jobId: app.job?._id,
+            jobTitle: app.job?.title || '—',
+            company: app.job?.company || '—',
+            appliedDate: app.createdAt,
+            lastUpdated: app.updatedAt,
+            status: app.status || 'Applied',
+            jobDetails: { location: app.job?.location, type: app.job?.type },
+            nextSteps: 'Waiting for response from recruiter',
+          }));
+
+        setApplications(rows || []);
       } catch (err) {
         console.error('Error fetching applications:', err);
         setError(err.message || 'Failed to load applications');
@@ -32,10 +45,8 @@ const Applications = () => {
       }
     };
 
-    if (user) {
-      fetchApplications();
-    }
-  }, [user]);
+    fetchApplications();
+  }, []);
 
   // Apply filters and sorting
   useEffect(() => {
@@ -73,18 +84,8 @@ const Applications = () => {
   };
 
   const handleUpdateStatus = async (applicationId, newStatus) => {
-    try {
-      await jobService.updateApplicationStatus(applicationId, newStatus);
-      setApplications(prev =>
-        prev.map(app =>
-          app._id === applicationId ? { ...app, status: newStatus } : app
-        )
-      );
-      toast.success('Application status updated');
-    } catch (err) {
-      console.error('Error updating status:', err);
-      toast.error(err.message || 'Failed to update status');
-    }
+    // Job seeker flow: status updates are employer-driven; keep this disabled/ignored
+    toast.info('Employers update application status.');
   };
 
   return (
@@ -128,7 +129,7 @@ const Applications = () => {
         ) : filteredApplications.length === 0 ? (
           <div className="empty-state">
             <p>You haven't applied to any jobs yet.</p>
-            <button className="btn-primary">Browse Jobs</button>
+            <button className="btn-primary" onClick={onBrowseJobs}>Browse Jobs</button>
           </div>
         ) : (
           filteredApplications.map(application => (
@@ -175,7 +176,7 @@ const Applications = () => {
               )}
               
               <div className="application-actions">
-                <button className="btn-outline">View Job</button>
+                <button className="btn-outline" onClick={() => navigate(`/jobs/${application.jobId}`)}>View Job</button>
                 <button className="btn-outline">Add Note</button>
                 <select 
                   className="btn-outline"

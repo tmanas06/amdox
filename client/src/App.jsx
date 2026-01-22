@@ -7,8 +7,12 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import Dashboard from './pages/Dashboard';
 import PostJob from './components/dashboard/PostJob';
+import JobDetails from './pages/JobDetails';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import './styles/themes.css'; // Existing remote theme
 import './App.css';
-import './theme.css';
+import './theme.css'; // My refined theme override
 
 /**
  * Main App Component
@@ -18,6 +22,7 @@ function App() {
     <ThemeProvider>
       <AuthProvider>
         <BrowserRouter>
+          <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop />
           <Routes>
             {/* Public routes */}
             <Route path="/login" element={<LoginPage />} />
@@ -37,6 +42,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <PostJob />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/jobs/:id"
+              element={
+                <ProtectedRoute>
+                  <JobDetails />
                 </ProtectedRoute>
               }
             />

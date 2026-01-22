@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import './Profile.css';
 
 const Profile = () => {
-  const { user, updateProfile } = useAuth();
+  const { user, updateProfile, uploadResume } = useAuth();
   
   // Form state - initialized from user data
   const [formData, setFormData] = useState({
@@ -29,6 +29,7 @@ const Profile = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [isParsingResume, setIsParsingResume] = useState(false);
 
   // Load user profile data on mount or when user changes
   useEffect(() => {
@@ -144,6 +145,48 @@ const Profile = () => {
       setIsSaving(false);
     }
   };
+
+  // Handle resume upload and auto-fill
+  const handleResumeUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!['application/pdf', 'text/plain'].includes(file.type)) {
+      toast.error('Please upload a PDF or text resume');
+      return;
+    }
+
+    setIsParsingResume(true);
+    setError('');
+
+    try {
+      const parsed = await uploadResume(file);
+
+      setFormData(prev => ({
+        ...prev,
+        name: parsed.name || prev.name,
+        email: parsed.email || prev.email,
+        phone: parsed.phone || prev.phone,
+        headline: parsed.headline || prev.headline,
+        summary: parsed.summary || prev.summary,
+        location: parsed.location || prev.location,
+        skills: parsed.skills?.length ? parsed.skills : prev.skills,
+        experience: parsed.experience?.length ? parsed.experience : prev.experience,
+        education: parsed.education?.length ? parsed.education : prev.education,
+      }));
+
+      setIsEditing(true);
+      toast.success('Resume parsed. Review and save your profile.');
+    } catch (err) {
+      const errorMsg = err.message || 'Failed to parse resume';
+      setError(errorMsg);
+      toast.error(errorMsg);
+    } finally {
+      setIsParsingResume(false);
+      // reset input so same file can be re-selected
+      e.target.value = '';
+    }
+  };
   
   // Calculate profile completion percentage
   const calculateCompletion = () => {
@@ -218,6 +261,18 @@ const Profile = () => {
               </button>
             </div>
           )}
+          <div className="resume-upload">
+            <label className="btn-secondary">
+              {isParsingResume ? 'Parsing Resume...' : 'Upload Resume (PDF/Text)'}
+              <input
+                type="file"
+                accept=".pdf,text/plain"
+                style={{ display: 'none' }}
+                onChange={handleResumeUpload}
+                disabled={isParsingResume}
+              />
+            </label>
+          </div>
         </div>
         
         <form onSubmit={handleSubmit}>

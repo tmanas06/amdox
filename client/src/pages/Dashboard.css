@@ -4,6 +4,7 @@
   min-height: 100vh;
   background: var(--bg-primary);
   color: var(--text-primary);
+  transition: background-color var(--transition-normal), color var(--transition-normal);
 }
 
 /* Top Navigation Bar - Glassmorphism */
@@ -16,6 +17,7 @@
   top: 0;
   z-index: 1000;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+  transition: background-color var(--transition-normal), border-bottom var(--transition-normal);
 }
 
 .nav-container {
@@ -109,7 +111,7 @@
 
 .nav-tab.active {
   background: rgba(59, 130, 246, 0.15);
-  color: #60a5fa;
+  color: var(--primary-color);
   border: 1px solid rgba(59, 130, 246, 0.2);
 }
 
@@ -121,17 +123,8 @@
   transform: translateX(-50%);
   width: 60%;
   height: 2px;
-  background: linear-gradient(90deg, #3b82f6, #10b981);
+  background: var(--primary-gradient);
   border-radius: 2px 2px 0 0;
-}
-
-.nav-tab-icon {
-  font-size: 1rem;
-  line-height: 1;
-}
-
-.nav-tab-label {
-  font-weight: 500;
 }
 
 /* User Section */
@@ -283,7 +276,7 @@
 }
 
 .stat-card {
-  background: var(--stat-card-bg);
+  background: var(--card-bg);
   backdrop-filter: blur(24px);
   border: 1px solid var(--border-color);
   border-radius: 16px;
@@ -396,7 +389,7 @@
 
 .card-action:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
 }
 
 .card-content {
@@ -577,10 +570,7 @@
 .empty-state-text {
   font-size: 1.25rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--text-muted);
   margin: 0 0 0.5rem 0;
 }
 
@@ -592,7 +582,7 @@
 }
 
 .empty-state .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--primary-gradient);
   color: white;
   padding: 0.75rem 1.75rem;
   border-radius: 8px;
@@ -600,7 +590,7 @@
   font-weight: 600;
   font-size: 0.95rem;
   cursor: pointer;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
   transition: all 0.3s ease;
 }
 

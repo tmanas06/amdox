@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../context/AuthContext';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { jobs as jobService } from '../../services/api';
 import './Jobs.css';
 
 const Jobs = () => {
-  const { user } = useAuth();
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [jobType, setJobType] = useState('');
   const [location, setLocation] = useState('');
@@ -19,18 +19,18 @@ const Jobs = () => {
   const jobsPerPage = 5;
 
   // Fetch jobs from API
-  const fetchJobs = async () => {
+  const fetchJobs = useCallback(async () => {
     try {
       setIsLoading(true);
       const params = {
         search: searchTerm,
-        location: location,
+        location,
         type: jobType,
         remote: location === 'remote' ? 'true' : '',
         page: currentPage,
-        limit: jobsPerPage
+        limit: jobsPerPage,
       };
-      
+
       const response = await jobService.getAll(params);
       if (response && response.data) {
         setJobs(response.data.data || []);
@@ -48,7 +48,7 @@ const Jobs = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [searchTerm, jobType, location, currentPage]);
 
   // Load saved and applied jobs from localStorage on component mount
   useEffect(() => {
@@ -56,16 +56,12 @@ const Jobs = () => {
     const applied = JSON.parse(localStorage.getItem('appliedJobs') || '[]');
     setSavedJobs(saved);
     setAppliedJobs(applied);
-    
-    fetchJobs();
-  }, [currentPage]);
+  }, []);
 
-  // Handle search and filter changes
+  // Fetch jobs when filters or page change
   useEffect(() => {
     fetchJobs();
-    // Reset to first page when filters change
-    setCurrentPage(1);
-  }, [searchTerm, jobType, location]);
+  }, [fetchJobs]);
 
   // Save to localStorage when savedJobs or appliedJobs change
   useEffect(() => {
@@ -94,30 +90,30 @@ const Jobs = () => {
   };
 
   const handleApplyJob = (job) => {
-    if (appliedJobs.includes(job.jobId)) {
+    if (appliedJobs.includes(job._id)) {
       toast.info('You have already applied to this job');
       return;
     }
 
-    const newAppliedJobs = [...appliedJobs, job.jobId];
-    setAppliedJobs(newAppliedJobs);
-    localStorage.setItem('appliedJobs', JSON.stringify(newAppliedJobs));
+    (async () => {
+      try {
+        await jobService.apply(job._id, {});
+        const newAppliedJobs = [...appliedJobs, job._id];
+        setAppliedJobs(newAppliedJobs);
+        localStorage.setItem('appliedJobs', JSON.stringify(newAppliedJobs));
+        toast.success('Successfully applied to the job!');
+      } catch (err) {
+        console.error('Apply failed:', err);
+        toast.error(err.message || 'Failed to apply to job');
+      }
+    })();
     
     // Remove from saved jobs when applied
-    if (savedJobs.includes(job.jobId)) {
-      const updatedSavedJobs = savedJobs.filter(id => id !== job.jobId);
+    if (savedJobs.includes(job._id)) {
+      const updatedSavedJobs = savedJobs.filter(id => id !== job._id);
       setSavedJobs(updatedSavedJobs);
       localStorage.setItem('savedJobs', JSON.stringify(updatedSavedJobs));
     }
-
-    toast.success('Successfully applied to the job!');
-  };
-
-  // Get job button state
-  const getJobButtonState = (jobId) => {
-    if (appliedJobs.includes(jobId)) return 'applied';
-    if (savedJobs.includes(jobId)) return 'saved';
-    return 'default';
   };
 
   // Calculate total pages for pagination
@@ -139,8 +135,15 @@ const Jobs = () => {
   }
 
   // Get unique job types and locations for filters
-  const jobTypes = [...new Set(jobs.map(job => job.type))];
-  const locations = [...new Set(jobs.flatMap(job => job.isRemote ? ['Remote', job.location] : [job.location]))];
+  const jobTypes = [...new Set(jobs.map(job => job.type).filter(Boolean))];
+  const locations = [
+    'remote',
+    ...new Set(
+      jobs
+        .flatMap(job => (job.isRemote ? [] : [job.location]))
+        .filter(Boolean)
+    ),
+  ];
 
   return (
     <div className="jobs-container">
@@ -196,7 +199,9 @@ const Jobs = () => {
               >
                 <option value="">All Locations</option>
                 {locations.map(loc => (
-                  <option key={loc} value={loc}>{loc}</option>
+                  <option key={loc} value={loc}>
+                    {loc === 'remote' ? 'Remote' : loc}
+                  </option>
                 ))}
               </select>
             </div>
@@ -244,7 +249,7 @@ const Jobs = () => {
         <div className="jobs-list">
           {jobs.length > 0 ? (
             jobs.map((job) => (
-              <article key={job.id} className="job-card">
+              <article key={job._id} className="job-card">
                 <div className="job-card-header">
                   <div className="company-logo">
                     <img
@@ -267,14 +272,20 @@ const Jobs = () => {
                   </div>
                   <div className="job-actions">
                     <button
-                      className={`btn-save ${savedJobs.includes(job.jobId) ? 'saved' : ''}`}
-                      onClick={() => toggleSaveJob(job.jobId)}
-                      aria-label={savedJobs.includes(job.jobId) ? 'Remove from saved jobs' : 'Save job'}
+                      className={`btn-save ${savedJobs.includes(job._id) ? 'saved' : ''}`}
+                      onClick={() => toggleSaveJob(job._id)}
+                      aria-label={savedJobs.includes(job._id) ? 'Remove from saved jobs' : 'Save job'}
                     >
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill={savedJobs.includes(job.jobId) ? "#3b82f6" : "none"} stroke="currentColor" strokeWidth="2">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill={savedJobs.includes(job._id) ? "#3b82f6" : "none"} stroke="currentColor" strokeWidth="2">
                         <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
                       </svg>
-                      {savedJobs.includes(job.jobId) ? 'Saved' : 'Save'}
+                      {savedJobs.includes(job._id) ? 'Saved' : 'Save'}
+                    </button>
+                    <button
+                      className="btn-outline"
+                      onClick={() => navigate(`/jobs/${job._id}`)}
+                    >
+                      View
                     </button>
                   </div>
                 </div>
@@ -309,7 +320,9 @@ const Jobs = () => {
                         <circle cx="12" cy="12" r="10"></circle>
                         <polyline points="12 6 12 12 16 14"></polyline>
                       </svg>
-                      <span>Posted {job.posted}</span>
+                      <span>
+                        Posted {job.createdAt ? new Date(job.createdAt).toLocaleDateString() : '—'}
+                      </span>
                     </div>
                   </div>
 
@@ -349,11 +362,11 @@ const Jobs = () => {
 
                 <div className="job-card-footer">
                   <button
-                    className={`btn-apply ${appliedJobs.includes(job.jobId) ? 'applied' : ''}`}
+                    className={`btn-apply ${appliedJobs.includes(job._id) ? 'applied' : ''}`}
                     onClick={() => handleApplyJob(job)}
-                    disabled={appliedJobs.includes(job.jobId)}
+                    disabled={appliedJobs.includes(job._id)}
                   >
-                    {appliedJobs.includes(job.jobId) ? (
+                    {appliedJobs.includes(job._id) ? (
                       <>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
@@ -366,7 +379,9 @@ const Jobs = () => {
                     )}
                   </button>
                   <div className="job-posted">
-                    <span>Posted {job.posted}</span>
+                    <span>
+                      Posted {job.createdAt ? new Date(job.createdAt).toLocaleDateString() : '—'}
+                    </span>
                   </div>
                 </div>
               </article>
