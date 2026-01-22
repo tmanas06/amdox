@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import ThemeToggle from '../components/ThemeToggle';
+import Navbar from '../components/Navbar';
 import './LoginPage.css';
 
 /**
@@ -78,22 +79,7 @@ const LoginPage = () => {
   return (
     <div className="amdox-page">
       {/* Header */}
-      <header className="amdox-header">
-        <div className="header-container">
-          <div className="header-brand">
-            <div className="logo-box">
-              <img src="/logo/logo.png" alt="Amdox Jobs Logo" className="logo-image" />
-            </div>
-            <div className="brand-text">
-              <h1 className="brand-title">Amdox Jobs™</h1>
-              <p className="brand-subtitle">India's Fastest Tech Hiring Platform</p>
-            </div>
-          </div>
-          <div className="header-actions">
-            <ThemeToggle />
-          </div>
-        </div>
-      </header>
+      <Navbar showTabs={false} />
 
       {/* Main Content */}
       <div className="amdox-container">

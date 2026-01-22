@@ -1,370 +1,138 @@
-* {
-  box-sizing: border-box;
-}
+/* PostJob Refined */
 
 .post-job-container {
-  min-height: 100vh;
-  background: var(--bg-primary);
-  padding: 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  max-width: 100%;
+  padding: 0;
+  animation: fadeIn 0.4s ease-out;
 }
 
 .post-job-card {
+  max-width: 900px;
+  margin: 2rem auto;
   background: var(--card-bg);
   backdrop-filter: blur(24px);
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 3rem;
   box-shadow: var(--card-shadow);
-  padding: 4rem;
-  width: 100%;
-  max-width: 800px;
-  animation: slideUp 0.5s ease;
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 .post-job-card h2 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
   background: var(--primary-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin: 0 0 0.5rem 0;
-  letter-spacing: -0.5px;
 }
 
-.post-job-card .subtitle {
+.subtitle {
   color: var(--text-secondary);
   font-size: 1.1rem;
-  margin: 0 0 1rem 0;
-  font-weight: 500;
+  margin-bottom: 2rem;
 }
 
 .form-hint {
-  color: var(--text-muted);
   font-size: 0.85rem;
-  margin-bottom: 2rem;
-  padding: 0.75rem 1rem;
-  background: var(--glass-bg);
-  border-left: 3px solid var(--primary-color);
-  border-radius: 4px;
+  color: var(--text-muted);
+  margin-bottom: 2.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--glass-border);
 }
 
-.job-form {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-}
-
-.form-section {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  padding-bottom: 2rem;
-  border-bottom: 2px solid var(--border-color);
-}
-
-.form-section:last-of-type {
-  border-bottom: none;
-  padding-bottom: 0;
-}
-
-.form-section-title {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--primary-color);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 0.5rem;
+.job-form .form-section {
+  margin-bottom: 3rem;
 }
 
 .form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-  width: 100%;
+  margin-bottom: 1.5rem;
 }
 
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  width: 100%;
+  gap: 1.5rem;
 }
 
-.form-row .form-group {
-  flex: 1;
+@media (max-width: 640px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
 }
 
-.form-row.full {
-  grid-template-columns: 1fr;
-}
-
-label {
+.form-group label {
+  display: block;
+  font-size: 0.9rem;
   font-weight: 600;
   color: var(--text-secondary);
-  font-size: 0.9rem;
-  letter-spacing: 0.3px;
+  margin-bottom: 0.5rem;
 }
 
-label .required {
-  color: var(--error-color);
-  margin-left: 2px;
-  font-weight: 700;
-}
-
-input[type="text"],
-input[type="email"],
-input[type="number"],
-input[type="url"],
-input[type="tel"],
-select,
-textarea {
-  padding: 0.875rem 1.125rem;
-  border: 2px solid var(--border-color);
-  border-radius: 8px;
-  font-size: 0.95rem;
-  transition: all 0.3s ease;
+.form-group input,
+.form-group textarea,
+.form-group select {
   width: 100%;
-  background-color: var(--input-bg);
-  color: var(--input-text);
-  font-family: inherit;
+  padding: 0.85rem 1.25rem;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 1rem;
+  transition: all var(--transition-fast);
 }
 
-input[type="text"]::placeholder,
-input[type="email"]::placeholder,
-input[type="number"]::placeholder,
-input[type="url"]::placeholder,
-input[type="tel"]::placeholder,
-select,
-textarea::placeholder {
-  color: var(--text-muted);
-}
-
-input[type="text"]:focus,
-input[type="email"]:focus,
-input[type="number"]:focus,
-input[type="url"]:focus,
-input[type="tel"]:focus,
-select:focus,
-textarea:focus {
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
   outline: none;
   border-color: var(--primary-color);
-  background-color: var(--bg-tertiary);
-  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
-  transform: translateY(-1px);
+  box-shadow: 0 0 0 4px var(--primary-glow);
+  background: rgba(0, 0, 0, 0.3);
 }
 
-textarea {
-  resize: vertical;
-  min-height: 140px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-select {
-  cursor: pointer;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23667eea' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 1rem center;
-  padding-right: 2.5rem;
+.required {
+  color: var(--error-color);
 }
 
 .checkbox-group {
   display: flex;
-  flex-direction: row;
   align-items: center;
-  gap: 1rem;
-  margin-top: 0.5rem;
-  padding: 1rem;
-  background: rgba(102, 126, 234, 0.05);
-  border-radius: 8px;
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  transition: all 0.3s ease;
+  gap: 0.75rem;
 }
 
-.checkbox-group:hover {
-  border-color: rgba(102, 126, 234, 0.3);
-  background: rgba(102, 126, 234, 0.08);
-}
-
-.checkbox-group input[type="checkbox"] {
-  width: 1.35rem;
-  height: 1.35rem;
+.checkbox-group input {
+  width: 18px;
+  height: 18px;
   cursor: pointer;
-  accent-color: #667eea;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  border-radius: 6px;
-  transition: all 0.2s ease;
-  background-color: rgba(255, 255, 255, 0.05);
-}
-
-.checkbox-group input[type="checkbox"]:hover {
-  border-color: #667eea;
-}
-
-.checkbox-group input[type="checkbox"]:checked {
-  background-color: #667eea;
-  border-color: #667eea;
-}
-
-.checkbox-group label {
-  margin: 0;
-  font-weight: 500;
-  cursor: pointer;
-  color: #cbd5e1;
-  font-size: 0.95rem;
 }
 
 .form-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 1.25rem;
-  margin-top: 2.5rem;
+  gap: 1.5rem;
+  margin-top: 3rem;
   padding-top: 2rem;
-  border-top: 2px solid rgba(255, 255, 255, 0.08);
-}
-
-.btn-primary,
-.btn-secondary {
-  padding: 0.9rem 2rem;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: none;
-  letter-spacing: 0.3px;
-  position: relative;
-  overflow: hidden;
+  border-top: 1px solid var(--glass-border);
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 1rem 2.5rem;
+  background: var(--primary-gradient);
   color: white;
-  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
-}
-
-.btn-primary:hover:not(:disabled) {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 30px rgba(102, 126, 234, 0.5);
-}
-
-.btn-primary:active:not(:disabled) {
-  transform: translateY(-1px);
-}
-
-.btn-primary:disabled,
-.btn-secondary:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-  transform: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 15px var(--primary-glow);
 }
 
 .btn-secondary {
-  background-color: rgba(255, 255, 255, 0.08);
-  color: #cbd5e1;
-  border: 2px solid rgba(102, 126, 234, 0.3);
-}
-
-.btn-secondary:hover:not(:disabled) {
-  background-color: rgba(102, 126, 234, 0.1);
-  border-color: #667eea;
-  transform: translateY(-2px);
-}
-
-.btn-secondary:active:not(:disabled) {
-  transform: translateY(0);
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .post-job-card {
-    padding: 2rem;
-    border-radius: 12px;
-  }
-
-  .post-job-card h2 {
-    font-size: 1.75rem;
-  }
-
-  .form-row {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-
-  .form-actions {
-    flex-direction: column-reverse;
-    gap: 1rem;
-  }
-
-  .btn-primary,
-  .btn-secondary {
-    width: 100%;
-  }
-
-  .job-form {
-    gap: 1.5rem;
-  }
-
-  .form-section {
-    gap: 1.25rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .post-job-container {
-    padding: 1rem;
-  }
-
-  .post-job-card {
-    padding: 1.5rem;
-  }
-
-  .post-job-card h2 {
-    font-size: 1.5rem;
-  }
-
-  .post-job-card .subtitle {
-    font-size: 0.95rem;
-  }
-
-  label {
-    font-size: 0.85rem;
-  }
-
-  input[type="text"],
-  input[type="email"],
-  input[type="number"],
-  input[type="url"],
-  input[type="tel"],
-  select,
-  textarea {
-    font-size: 16px;
-  }
-}
-
-.loading-spinner {
-  display: inline-block;
-  width: 1.25rem;
-  height: 1.25rem;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  border-top-color: #fff;
-  animation: spin 1s ease-in-out infinite;
-  margin-right: 0.5rem;
-  vertical-align: middle;
+  padding: 1rem 2.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  cursor: pointer;
 }

@@ -11,6 +11,7 @@ router.get('/me', applicationController.getMyApplications);
 // Employer
 router.get('/employer', authorizeRole('employer', 'admin'), applicationController.getEmployerApplications);
 router.patch('/:id/status', authorizeRole('employer', 'admin'), applicationController.updateStatus);
+router.post('/invite', authorizeRole('employer', 'admin'), applicationController.inviteToApply);
 
 module.exports = router;
 

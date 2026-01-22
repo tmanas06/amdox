@@ -149,3 +149,59 @@ exports.updateStatus = async (req, res) => {
   }
 };
 
+// @desc    Invite candidate to apply
+// @route   POST /api/applications/invite
+// @access  Private/employer
+exports.inviteToApply = async (req, res) => {
+  try {
+    const { applicantId, jobId } = req.body || {};
+
+    if (!applicantId || !jobId) {
+      return res.status(400).json({ success: false, message: 'Applicant ID and Job ID are required' });
+    }
+
+    // Verify job belongs to employer
+    const job = await Job.findById(jobId);
+    if (!job) {
+      return res.status(404).json({ success: false, message: 'Job not found' });
+    }
+
+    if (job.postedBy.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ success: false, message: 'Not authorized to invite for this job' });
+    }
+
+    // Check if application already exists
+    const existingApp = await Application.findOne({ job: jobId, applicant: applicantId });
+    if (existingApp) {
+      return res.status(409).json({ success: false, message: 'Application/Invitation already exists' });
+    }
+
+    const application = await Application.create({
+      job: jobId,
+      applicant: applicantId,
+      employer: req.user._id,
+      status: 'Invited',
+      coverLetter: 'Invited by employer',
+    });
+
+    await Promise.all([
+      Job.findByIdAndUpdate(jobId, { $addToSet: { applications: application._id } }),
+      User.findByIdAndUpdate(applicantId, { $addToSet: { 'jobSeeker.applications': application._id } }),
+      User.findByIdAndUpdate(req.user._id, { $addToSet: { 'employer.savedApplications': application._id } }),
+    ]);
+
+    return res.status(201).json({
+      success: true,
+      message: 'Invitation sent successfully',
+      data: application,
+    });
+
+  } catch (error) {
+    console.error('Error inviting candidate:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to send invitation',
+    });
+  }
+};
+

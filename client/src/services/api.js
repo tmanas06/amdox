@@ -35,7 +35,7 @@ api.interceptors.response.use(
         data: error.response.data,
         headers: error.response.headers
       });
-      
+
       // Handle specific status codes
       if (error.response.status === 401) {
         // Clear auth data and redirect to login
@@ -43,7 +43,7 @@ api.interceptors.response.use(
         localStorage.removeItem('user');
         window.location.href = '/login';
       }
-      
+
       // Return error response
       return Promise.reject({
         message: error.response.data.message || 'An error occurred',
@@ -78,7 +78,7 @@ export const jobs = {
   // Get all jobs with optional filters
   getAll: (params = {}) => {
     const queryParams = new URLSearchParams();
-    
+
     // Add optional parameters if they exist
     if (params.search) queryParams.append('search', params.search);
     if (params.location) queryParams.append('location', params.location);
@@ -86,28 +86,28 @@ export const jobs = {
     if (params.remote) queryParams.append('remote', params.remote);
     if (params.page) queryParams.append('page', params.page);
     if (params.limit) queryParams.append('limit', params.limit);
-    
+
     return api.get(`/jobs?${queryParams.toString()}`);
   },
-  
+
   // Get a single job by ID
   getById: (id) => api.get(`/jobs/${id}`),
-  
+
   // Create a new job (employer only)
   create: (jobData) => api.post('/jobs', jobData),
-  
+
   // Update a job (employer only)
   update: (id, jobData) => api.put(`/jobs/${id}`, jobData),
-  
+
   // Delete a job (employer or admin only)
   delete: (id) => api.delete(`/jobs/${id}`),
-  
+
   // Get jobs posted by current employer
   getEmployerJobs: () => api.get('/jobs/employer/my-jobs'),
-  
+
   // Toggle job status (active/inactive)
   toggleStatus: (id) => api.patch(`/jobs/${id}/status`),
-  
+
   // Apply to a job (job seeker only)
   apply: (jobId, applicationData = {}) =>
     api.post(`/jobs/${jobId}/apply`, applicationData),
@@ -119,22 +119,25 @@ export const applications = {
 
   // Get all applications for employer jobs
   getEmployerApplications: () => api.get('/applications/employer'),
-  
+
   // Update application status (employer only)
-  updateStatus: (applicationId, status) => 
+  updateStatus: (applicationId, status) =>
     api.patch(`/applications/${applicationId}/status`, { status }),
+
+  // Invite candidate to apply
+  invite: (data) => api.post('/applications/invite', data),
 };
 
 export const user = {
   // Update user profile
-  updateProfile: (userId, userData) => 
+  updateProfile: (userId, userData) =>
     api.put(`/users/${userId}/profile`, userData),
-  
+
   // Upload profile picture
   uploadProfilePicture: (userId, file) => {
     const formData = new FormData();
     formData.append('profilePicture', file);
-    
+
     return api.post(`/users/${userId}/profile/picture`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -153,6 +156,9 @@ export const user = {
       },
     });
   },
+
+  // Get all job seekers (employer only)
+  getJobSeekers: () => api.get('/users/job-seekers'),
 };
 
 const apiExports = {

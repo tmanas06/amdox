@@ -42,7 +42,12 @@ exports.updateProfile = async (req, res) => {
     res.status(200).json({
       success: true,
       message: 'Profile updated successfully',
-      user,
+      user: {
+        id: user._id,
+        email: user.email,
+        role: user.role,
+        profile: user.profile
+      },
     });
   } catch (error) {
     console.error('Error updating profile:', error);
@@ -53,184 +58,203 @@ exports.updateProfile = async (req, res) => {
   }
 };
 
-// @desc    Upload profile picture (stub, file handling can be added later)
-// @route   POST /api/users/:id/profile/picture
-// @access  Private
 exports.uploadProfilePicture = async (req, res) => {
-  // For now just acknowledge; actual storage (S3, etc.) can be wired later
   res.status(200).json({
     success: true,
     message: 'Profile picture upload endpoint not fully implemented yet',
   });
 };
 
-// Helpers for resume parsing
+// @desc    Get all job seekers
+// @route   GET /api/users/job-seekers
+// @access  Private (Employer only)
+exports.getJobSeekers = async (req, res) => {
+  try {
+    const jobSeekers = await User.find({ role: 'job_seeker' })
+      .select('-password -firebaseUid')
+      .lean();
+
+    res.status(200).json({
+      success: true,
+      count: jobSeekers.length,
+      data: jobSeekers
+    });
+  } catch (error) {
+    console.error('Error fetching job seekers:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch candidates'
+    });
+  }
+};
+
+/* --- ENHANCED RESUME PARSING LOGIC --- */
+
 const extractEmail = (text) => {
-  const match = text.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
+  const match = text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
   return match ? match[0] : '';
 };
 
 const extractPhone = (text) => {
-  const match = text.match(/(\+?\d{1,3}[-.\s]?)?(\d{3}[-.\s]?\d{3}[-.\s]?\d{4})/);
+  // Matches various formats: +91 9999999999, (123) 456-7890, etc.
+  const match = text.match(/(\+?\d{1,3}[-.\s]?)?(\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4})/);
   return match ? match[0] : '';
 };
 
 const extractName = (text) => {
-  const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+  const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 2);
   if (!lines.length) return '';
-  const first = lines[0];
-  if (first.toLowerCase().includes('resume')) return lines[1] || '';
-  return first;
+
+  // Usually the name is in the first 3 lines
+  for (let i = 0; i < Math.min(3, lines.length); i++) {
+    const line = lines[i];
+    // Ignore lines that look like headers or common titles
+    if (!/resume|curriculum|vitae|contact|profile|summary|email/i.test(line)) {
+      return line;
+    }
+  }
+  return lines[0];
 };
 
 const extractSkills = (text) => {
-  const lines = text.split('\n').map(l => l.trim());
-  const idx = lines.findIndex(l => /^skills?\b/i.test(l));
-  if (idx === -1) return [];
+  const skillsList = [
+    'JavaScript', 'Python', 'Java', 'C++', 'React', 'Node.js', 'Express', 'MongoDB',
+    'SQL', 'Docker', 'Kubernetes', 'AWS', 'Azure', 'GCP', 'HTML', 'CSS', 'TypeScript',
+    'Angular', 'Vue', 'Django', 'Flask', 'Spring Boot', 'PostgreSQL', 'Redis', 'Git',
+    'Agile', 'Scrum', 'Figma', 'UI/UX', 'Mobile App', 'Android', 'iOS', 'Flutter'
+  ];
 
-  const sectionLines = [];
-  for (let i = idx; i < lines.length; i++) {
-    const line = lines[i];
-    if (i > idx && !line) break; // stop at blank line after section
-    sectionLines.push(line);
+  const foundSkills = new Set();
+
+  // Method 1: Keyword matching
+  skillsList.forEach(skill => {
+    const regex = new RegExp(`\\b${skill.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
+    if (regex.test(text)) {
+      foundSkills.add(skill);
+    }
+  });
+
+  // Method 2: Section extraction
+  const lines = text.split('\n').map(l => l.trim());
+  const idx = lines.findIndex(l => /^(skills|technical skills|technologies|expertise)/i.test(l));
+  if (idx !== -1) {
+    let skillText = '';
+    for (let i = idx + 1; i < Math.min(idx + 10, lines.length); i++) {
+      if (/experience|education|projects|summary/i.test(lines[i])) break;
+      skillText += ' ' + lines[i];
+    }
+    const extracted = skillText.split(/[,\u2022;•|-]/).map(s => s.trim()).filter(s => s.length > 1 && s.length < 30);
+    extracted.forEach(s => foundSkills.add(s));
   }
 
-  const combined = sectionLines.join(' ');
-  return combined
-    .split(/[,\u2022;•|-]/)
-    .map(s => s.trim())
-    .filter(Boolean);
+  return Array.from(foundSkills).slice(0, 15);
 };
 
-// Generic helper to pull lines under a section header
-const extractSectionLines = (text, headerPatterns) => {
+const extractSectionText = (text, headers) => {
   const lines = text.split('\n').map(l => l.trim());
-  let start = -1;
+  let startIdx = -1;
 
   for (let i = 0; i < lines.length; i++) {
-    const lower = lines[i].toLowerCase();
-    if (headerPatterns.some(h => lower.startsWith(h))) {
-      start = i + 1;
+    const line = lines[i].toLowerCase();
+    if (headers.some(h => line === h || line.startsWith(h))) {
+      startIdx = i + 1;
       break;
     }
   }
 
-  if (start === -1) return [];
+  if (startIdx === -1) return '';
 
-  const result = [];
-  for (let i = start; i < lines.length; i++) {
+  let sectionContent = [];
+  const nextSectionHeaders = ['experience', 'education', 'skills', 'projects', 'summary', 'about', 'contact', 'languages', 'certifications'];
+
+  for (let i = startIdx; i < lines.length; i++) {
     const line = lines[i];
-    if (!line) break;
-    // Stop if we hit another likely header
-    if (/^[A-Z][A-Za-z ]+:$/.test(line)) break;
-    result.push(line);
-  }
-  return result;
-};
+    const lowerLine = line.toLowerCase();
 
-const extractSummary = (text) => {
-  const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
-  if (!lines.length) {
-    // Fallback: first 400 chars of whole text
-    return (text || '').slice(0, 400);
+    // Check if we hit another section
+    if (nextSectionHeaders.some(h => lowerLine === h || lowerLine.startsWith(h + ':'))) break;
+    if (line) sectionContent.push(line);
   }
 
-  const stopIdx = lines.findIndex(l =>
-    /(experience|education|skills)/i.test(l)
-  );
-
-  const end = stopIdx === -1 ? Math.min(lines.length, 5) : Math.min(stopIdx, 5);
-  return lines.slice(0, end).join(' ');
+  return sectionContent.join('\n');
 };
 
-const extractExperience = (text) => {
-  const lines = extractSectionLines(text, [
-    'experience',
-    'work experience',
-    'professional experience',
-  ]);
-  if (!lines.length) return [];
+const parseExperience = (expText) => {
+  if (!expText) return [];
 
-  return [{
-    id: Date.now(),
-    title: '',
-    company: '',
-    from: '',
-    to: '',
-    current: false,
-    description: lines.join(' '),
-  }];
+  const lines = expText.split('\n').filter(Boolean);
+  const experiences = [];
+
+  // Attempt to identify blocks (usually 2-4 experiences max for parsing)
+  // This is a simplified version. In a real app, one might use NLP.
+  if (lines.length > 0) {
+    experiences.push({
+      id: Date.now(),
+      title: lines[0].slice(0, 50),
+      company: lines[1] ? lines[1].slice(0, 50) : '',
+      from: '',
+      to: '',
+      current: false,
+      description: lines.slice(2, 6).join(' ')
+    });
+  }
+
+  return experiences;
 };
 
-const extractEducation = (text) => {
-  const lines = extractSectionLines(text, [
-    'education',
-    'academic background',
-  ]);
-  if (!lines.length) return [];
+const parseEducation = (eduText) => {
+  if (!eduText) return [];
+  const lines = eduText.split('\n').filter(Boolean);
 
-  return [{
-    id: Date.now() + 1,
-    school: '',
-    degree: '',
-    field: '',
-    from: '',
-    to: '',
-    description: lines.join(' '),
-  }];
+  if (lines.length > 0) {
+    return [{
+      id: Date.now() + 1,
+      school: lines[0].slice(0, 50),
+      degree: lines[1] ? lines[1].slice(0, 50) : '',
+      field: '',
+      from: '',
+      to: '',
+    }];
+  }
+  return [];
 };
 
-// @desc    Upload resume and return parsed profile suggestions
-// @route   POST /api/users/:id/resume
-// @access  Private
 exports.uploadResume = async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).json({
-        success: false,
-        message: 'Resume file is required',
-      });
+      return res.status(400).json({ success: false, message: 'Resume file is required' });
     }
 
     if (req.user._id.toString() !== req.params.id && req.user.id !== req.params.id) {
-      return res.status(403).json({
-        success: false,
-        message: 'Not authorized to update this profile',
-      });
+      return res.status(403).json({ success: false, message: 'Not authorized' });
     }
 
     let text = '';
-
     if (req.file.mimetype === 'application/pdf') {
       const data = await pdfParse(req.file.buffer);
       text = data.text || '';
-    } else if (req.file.mimetype.startsWith('text/')) {
-      text = req.file.buffer.toString('utf-8');
     } else {
-      return res.status(400).json({
-        success: false,
-        message: 'Unsupported resume format. Please upload a PDF or text file.',
-      });
+      text = req.file.buffer.toString('utf-8');
     }
 
     const name = extractName(text);
     const email = extractEmail(text);
     const phone = extractPhone(text);
     const skills = extractSkills(text);
-    const summary = extractSummary(text);
-    const experience = extractExperience(text);
-    const education = extractEducation(text);
+    const summaryText = extractSectionText(text, ['summary', 'professional summary', 'profile', 'about me']);
+    const expText = extractSectionText(text, ['experience', 'work experience', 'professional experience', 'employment history']);
+    const eduText = extractSectionText(text, ['education', 'academic background', 'qualification']);
 
     const profileSuggestions = {
       name,
       email,
       phone,
       skills,
-      summary,
-      headline: '',
+      summary: summaryText.slice(0, 500) || text.split('\n').filter(l => l.length > 10).slice(0, 3).join(' ').slice(0, 500),
+      headline: name ? `${name} | Tech Professional` : '',
       location: '',
-      experience,
-      education,
+      experience: parseExperience(expText),
+      education: parseEducation(eduText),
     };
 
     res.status(200).json({
@@ -240,10 +264,6 @@ exports.uploadResume = async (req, res) => {
     });
   } catch (error) {
     console.error('Error parsing resume:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to parse resume',
-    });
+    res.status(500).json({ success: false, message: 'Failed to parse resume' });
   }
 };
-

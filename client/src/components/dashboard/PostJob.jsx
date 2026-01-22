@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import Navbar from '../Navbar';
 import { jobs as jobService } from '../../services/api';
 import './PostJob.css';
 
@@ -83,7 +84,7 @@ const PostJob = () => {
       console.log('Token in localStorage:', localStorage.getItem('authToken'));
 
       const response = await jobService.create(jobData);
-      
+
       console.log('API Response:', response);
       console.log('API Response Data:', response.data);
 
@@ -101,9 +102,9 @@ const PostJob = () => {
     } catch (error) {
       console.error('Full error object:', error);
       console.error('Error keys:', Object.keys(error));
-      
+
       let errorMsg = 'Failed to post job';
-      
+
       if (error.data?.errors && Array.isArray(error.data.errors)) {
         // Handle validation errors
         errorMsg = error.data.errors[0].msg || error.data.errors[0].message || errorMsg;
@@ -112,7 +113,7 @@ const PostJob = () => {
       } else if (error.message) {
         errorMsg = error.message;
       }
-      
+
       console.error('Final error message:', errorMsg);
       toast.error(errorMsg);
     } finally {
@@ -122,11 +123,12 @@ const PostJob = () => {
 
   return (
     <div className="post-job-container">
+      <Navbar showTabs={false} />
       <div className="post-job-card">
         <h2>Post a New Job</h2>
         <p className="subtitle">Create a compelling job posting to attract top talent</p>
         <p className="form-hint">Fields marked with <span className="required">*</span> are required</p>
-        
+
         <form onSubmit={handleSubmit} className="job-form">
           {/* Basic Information Section */}
           <div className="form-section">

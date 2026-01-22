@@ -9,6 +9,9 @@ const upload = multer({ storage: multer.memoryStorage() });
 // All user routes require auth
 router.use(authenticateToken);
 
+// Get all job seekers
+router.get('/job-seekers', userController.getJobSeekers);
+
 // Profile update
 router.put('/:id/profile', userController.updateProfile);
 

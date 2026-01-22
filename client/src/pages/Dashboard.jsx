@@ -14,7 +14,9 @@ import Profile from '../components/dashboard/Profile';
 import PostJob from '../components/dashboard/PostJob';
 import EmployerPostings from '../components/dashboard/EmployerPostings';
 import EmployerApplications from '../components/dashboard/EmployerApplications';
+import EmployerCandidates from '../components/dashboard/EmployerCandidates';
 import ThemeToggle from '../components/ThemeToggle';
+import Navbar from '../components/Navbar';
 
 /**
  * Dashboard Component - Amdox Jobs
@@ -106,55 +108,11 @@ const Dashboard = () => {
   return (
     <div className="dashboard-page">
       {/* Top Navigation Bar - Glassmorphism */}
-      <nav className="dashboard-nav">
-        <div className="nav-container">
-          <div className="nav-brand">
-            <div className="nav-logo">
-              <img src="/logo/logo.png" alt="Amdox Jobs" className="nav-logo-img" />
-            </div>
-            <div className="nav-brand-text">
-              <h1 className="nav-title">Amdox Jobs</h1>
-              <span className="nav-subtitle">Tech Hiring Platform</span>
-            </div>
-          </div>
-
-          <div className="nav-tabs">
-            {tabs.map(tab => (
-              <button
-                key={tab.id}
-                className={`nav-tab ${activeTab === tab.id ? 'active' : ''}`}
-                onClick={() => setActiveTab(tab.id)}
-              >
-                <span className="nav-tab-label">{tab.label}</span>
-              </button>
-            ))}
-          </div>
-
-          <div className="nav-user">
-            <div className="nav-user-info">
-              {user?.profile?.photoURL && (
-                <img
-                  src={user.profile.photoURL}
-                  alt={user.profile.name || user.email}
-                  className="nav-user-avatar"
-                />
-              )}
-              <div className="nav-user-details">
-                <span className="nav-user-name">{user?.profile?.name || user?.email}</span>
-                <span className="nav-user-role">
-                  {isJobSeeker ? 'Job Seeker' : isEmployer ? 'Employer' : 'User'}
-                </span>
-              </div>
-            </div>
-            <div className="nav-actions">
-              <ThemeToggle />
-              <button onClick={logout} className="nav-logout-btn">
-                Logout
-              </button>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navbar
+        tabs={tabs}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+      />
 
       {/* Main Content Area */}
       <main className="dashboard-content">
@@ -405,21 +363,7 @@ const Dashboard = () => {
               {activeTab === 'postings' && isEmployer && <EmployerPostings />}
               {activeTab === 'applications' && isEmployer && <EmployerApplications />}
 
-              {activeTab === 'candidates' && isEmployer && (
-                <div className="content-card">
-                  <div className="card-header">
-                    <h3 className="card-title">Candidates</h3>
-                  </div>
-                  <div className="card-content">
-                    <div className="empty-state">
-                      <p className="empty-state-text">No candidates yet</p>
-                      <p className="empty-state-subtext">
-                        Candidates will appear here when they apply to your jobs
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
+              {activeTab === 'candidates' && isEmployer && <EmployerCandidates />}
 
               {activeTab === 'company' && isEmployer && (
                 <div className="content-card">

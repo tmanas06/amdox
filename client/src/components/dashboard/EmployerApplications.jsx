@@ -75,8 +75,8 @@ const EmployerApplications = () => {
       <div className="card-content">
         {apps.length === 0 ? (
           <div className="empty-state">
-            <p className="empty-state-text">No applications yet</p>
-            <p className="empty-state-subtext">You’ll see candidates here once they apply to your jobs.</p>
+            <p className="empty-state-text">No active applications</p>
+            <p className="empty-state-subtext">Applications from candidates will appear here.</p>
           </div>
         ) : (
           <div style={{ display: 'grid', gap: '1rem' }}>
