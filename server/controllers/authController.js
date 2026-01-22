@@ -13,6 +13,8 @@ const generateToken = (userId) => {
   );
 };
 
+const PUBLIC_DOMAINS = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'live.com', 'icloud.com', 'aol.com', 'protonmail.com', 'zoho.com', 'yandex.com', 'mail.com'];
+
 /**
  * Determine user role based on email domain
  * @param {string} email - User's email address
@@ -24,17 +26,34 @@ const determineRole = (email, providedRole = null) => {
   if (providedRole && ['job_seeker', 'employer'].includes(providedRole)) {
     return providedRole;
   }
-  
+
   // Extract domain from email
   const emailDomain = email.toLowerCase().split('@')[1];
-  
-  // If email is NOT @gmail.com, set as employer (company email)
-  if (emailDomain && emailDomain !== 'gmail.com') {
+
+  // If email is NOT a public domain, set as employer
+  if (emailDomain && !PUBLIC_DOMAINS.includes(emailDomain)) {
     return 'employer';
   }
-  
-  // Default to job_seeker for @gmail.com emails
+
+  // Default to job_seeker for public domains
   return 'job_seeker';
+};
+
+/**
+ * Extract company info from email domain
+ */
+const getCompanyInfo = (email) => {
+  const domain = email.toLowerCase().split('@')[1];
+  if (!domain || PUBLIC_DOMAINS.includes(domain)) return null;
+
+  const namePart = domain.split('.')[0];
+  const companyName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
+
+  return {
+    company: companyName,
+    website: `https://${domain}`,
+    logo: `https://logo.clearbit.com/${domain}`
+  };
 };
 
 /**
@@ -57,33 +76,46 @@ exports.firebaseLogin = async (req, res) => {
     // Find user by firebaseUid
     let user = await User.findOne({ firebaseUid });
 
+    const emailLower = email.toLowerCase().trim();
+    const isPublicDomain = PUBLIC_DOMAINS.includes(emailLower.split('@')[1]);
+
     if (user) {
       // User exists - update profile information
-      const emailLower = email.toLowerCase().trim();
       user.email = emailLower;
       if (name) user.profile.name = name;
-      if (photoURL) user.profile.photoURL = photoURL;
-      
+
       // Update role based on current email domain
       // Priority: Explicit role > Email domain detection
       const emailDomain = emailLower.split('@')[1];
-      
+
       if (role && ['job_seeker', 'employer'].includes(role)) {
-        // Explicit role provided in request - use it
         user.role = role;
-      } else if (emailDomain && emailDomain !== 'gmail.com') {
-        // Company email (not gmail.com) → set as employer
+      } else if (emailDomain && !PUBLIC_DOMAINS.includes(emailDomain)) {
         user.role = 'employer';
-      } else if (emailDomain === 'gmail.com') {
-        // Gmail email → set as job_seeker (unless already employer, then keep employer)
+      } else if (isPublicDomain) {
         if (user.role !== 'employer') {
           user.role = 'job_seeker';
         }
       } else {
-        // Fallback: use determineRole function
         user.role = determineRole(emailLower, role);
       }
-      
+
+      // Auto-populate company info if employer
+      if (user.role === 'employer') {
+        const companyInfo = getCompanyInfo(emailLower);
+        if (companyInfo) {
+          if (!user.profile.company) user.profile.company = companyInfo.company;
+          if (!user.profile.website) user.profile.website = companyInfo.website;
+          // Use Clearbit logo if available, otherwise keep existing
+          if (!user.profile.photoURL || user.profile.photoURL === photoURL) {
+            user.profile.photoURL = companyInfo.logo;
+          }
+        }
+      } else {
+        // Keep Google photo for job seekers if not set
+        if (!user.profile.photoURL && photoURL) user.profile.photoURL = photoURL;
+      }
+
       await user.save();
 
       // Generate JWT token
@@ -102,17 +134,28 @@ exports.firebaseLogin = async (req, res) => {
       });
     } else {
       // User doesn't exist - create new user
-      const emailLower = email.toLowerCase().trim();
       const userRole = determineRole(emailLower, role);
+
+      const newUserProfile = {
+        name: name || '',
+        photoURL: photoURL || ''
+      };
+
+      // Auto-populate company info for new employers
+      if (userRole === 'employer') {
+        const companyInfo = getCompanyInfo(emailLower);
+        if (companyInfo) {
+          newUserProfile.company = companyInfo.company;
+          newUserProfile.website = companyInfo.website;
+          newUserProfile.photoURL = companyInfo.logo; // Prefer company logo
+        }
+      }
 
       user = new User({
         firebaseUid,
         email: emailLower,
         role: userRole,
-        profile: {
-          name: name || '',
-          photoURL: photoURL || ''
-        }
+        profile: newUserProfile
       });
 
       await user.save();
@@ -135,7 +178,7 @@ exports.firebaseLogin = async (req, res) => {
   } catch (error) {
     // Log error for debugging
     console.error('Firebase login error:', error);
-    
+
     // Handle duplicate email error
     if (error.code === 11000) {
       const field = Object.keys(error.keyPattern)[0];

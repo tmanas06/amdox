@@ -12,7 +12,7 @@ import './RegisterPage.css';
 const RegisterPage = () => {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
-  const { registerWithEmail, signInWithGoogle, isAuthenticated, loading, error, clearError } = useAuth();
+  const { registerWithEmail, signInWithGoogle, isAuthenticated, user, loading, error, clearError } = useAuth();
 
   const [formData, setFormData] = useState({
     email: '',
@@ -26,10 +26,14 @@ const RegisterPage = () => {
 
   // Redirect if already authenticated
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/');
+    if (isAuthenticated && user) {
+      if (user.role === 'employer') {
+        navigate('/dashboard');
+      } else {
+        navigate('/');
+      }
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, user, navigate]);
 
   // Clear errors when component mounts
   useEffect(() => {
@@ -55,8 +59,9 @@ const RegisterPage = () => {
   const handleGoogleSignIn = async () => {
     try {
       setFormError('');
-      await signInWithGoogle(formData.role);
-      navigate('/');
+      // Pass 'employer' only if explicitly selected, otherwise let backend detect from email
+      await signInWithGoogle(formData.role === 'employer' ? 'employer' : null);
+      // Navigation handled by useEffect
     } catch (err) {
       setFormError(err.message || 'Google sign-in failed');
     }

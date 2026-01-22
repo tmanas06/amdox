@@ -13,7 +13,7 @@ import './LoginPage.css';
 const LoginPage = () => {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
-  const { signInWithGoogle, loginWithEmail, isAuthenticated, loading, error, clearError } = useAuth();
+  const { signInWithGoogle, loginWithEmail, isAuthenticated, user, loading, error, clearError } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -22,10 +22,14 @@ const LoginPage = () => {
 
   // Redirect if already authenticated
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/');
+    if (isAuthenticated && user) {
+      if (user.role === 'employer') {
+        navigate('/dashboard');
+      } else {
+        navigate('/');
+      }
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, user, navigate]);
 
   // Clear errors when component mounts or when switching forms
   useEffect(() => {
@@ -40,7 +44,7 @@ const LoginPage = () => {
     try {
       setFormError('');
       await signInWithGoogle();
-      navigate('/');
+      // Navigation handled by useEffect
     } catch (err) {
       setFormError(err.message || 'Google sign-in failed');
     }
