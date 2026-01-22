@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Navbar from '../Navbar';
 import { jobs as jobService } from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 import './PostJob.css';
 
 const PostJob = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
@@ -22,6 +24,19 @@ const PostJob = () => {
     industry: '',
     benefits: ''
   });
+
+  // Auto-populate company details from user profile
+  useEffect(() => {
+    if (user?.profile) {
+      setFormData(prev => ({
+        ...prev,
+        company: user.profile.company || '',
+        location: user.profile.location || '',
+        companySize: user.profile.companySize || '',
+        industry: user.profile.industry || ''
+      }));
+    }
+  }, [user]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
