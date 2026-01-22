@@ -37,11 +37,12 @@ const userSchema = new mongoose.Schema({
     },
     photoURL: {
       type: String,
-      trim: true
+      trim: true,
+      default: '' // Profile picture URL (Google photo, Clearbit logo, or uploaded image)
     },
     bio: {
       type: String,
-      maxlength: 500
+      maxlength: 1000 // Increased from 500 for more detailed bios
     },
     company: {
       type: String,
@@ -60,6 +61,36 @@ const userSchema = new mongoose.Schema({
       trim: true
     },
     companySize: {
+      type: String,
+      trim: true
+    },
+    // Job Seeker specific fields
+    resumeURL: {
+      type: String,
+      trim: true // URL to uploaded resume (PDF/DOC)
+    },
+    skills: [{
+      type: String,
+      trim: true
+    }],
+    experience: {
+      type: String,
+      trim: true // e.g., "3-5 years"
+    },
+    education: {
+      type: String,
+      trim: true
+    },
+    // Social links (for both)
+    linkedin: {
+      type: String,
+      trim: true
+    },
+    github: {
+      type: String,
+      trim: true
+    },
+    portfolio: {
       type: String,
       trim: true
     }
