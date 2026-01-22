@@ -4,7 +4,7 @@
 
 .post-job-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 100%);
+  background: var(--bg-primary);
   padding: 2rem;
   display: flex;
   align-items: center;
@@ -12,11 +12,11 @@
 }
 
 .post-job-card {
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--card-bg);
   backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-color);
   border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--card-shadow);
   padding: 4rem;
   width: 100%;
   max-width: 800px;
@@ -28,6 +28,7 @@
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -35,7 +36,7 @@
 }
 
 .post-job-card h2 {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--primary-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -46,19 +47,19 @@
 }
 
 .post-job-card .subtitle {
-  color: #cbd5e1;
+  color: var(--text-secondary);
   font-size: 1.1rem;
   margin: 0 0 1rem 0;
   font-weight: 500;
 }
 
 .form-hint {
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 0.85rem;
   margin-bottom: 2rem;
   padding: 0.75rem 1rem;
-  background: rgba(102, 126, 234, 0.05);
-  border-left: 3px solid #667eea;
+  background: var(--glass-bg);
+  border-left: 3px solid var(--primary-color);
   border-radius: 4px;
 }
 
@@ -73,7 +74,7 @@
   flex-direction: column;
   gap: 1.5rem;
   padding-bottom: 2rem;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 2px solid var(--border-color);
 }
 
 .form-section:last-of-type {
@@ -84,7 +85,7 @@
 .form-section-title {
   font-size: 0.95rem;
   font-weight: 600;
-  color: #667eea;
+  color: var(--primary-color);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 0.5rem;
@@ -114,13 +115,13 @@
 
 label {
   font-weight: 600;
-  color: #cbd5e1;
+  color: var(--text-secondary);
   font-size: 0.9rem;
   letter-spacing: 0.3px;
 }
 
 label .required {
-  color: #ef4444;
+  color: var(--error-color);
   margin-left: 2px;
   font-weight: 700;
 }
@@ -133,13 +134,13 @@ input[type="tel"],
 select,
 textarea {
   padding: 0.875rem 1.125rem;
-  border: 2px solid rgba(255, 255, 255, 0.1);
+  border: 2px solid var(--border-color);
   border-radius: 8px;
   font-size: 0.95rem;
   transition: all 0.3s ease;
   width: 100%;
-  background-color: rgba(255, 255, 255, 0.05);
-  color: #f8fafc;
+  background-color: var(--input-bg);
+  color: var(--input-text);
   font-family: inherit;
 }
 
@@ -150,7 +151,7 @@ input[type="url"]::placeholder,
 input[type="tel"]::placeholder,
 select,
 textarea::placeholder {
-  color: #64748b;
+  color: var(--text-muted);
 }
 
 input[type="text"]:focus,
@@ -161,9 +162,9 @@ input[type="tel"]:focus,
 select:focus,
 textarea:focus {
   outline: none;
-  border-color: #667eea;
-  background-color: rgba(102, 126, 234, 0.1);
-  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+  border-color: var(--primary-color);
+  background-color: var(--bg-tertiary);
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
   transform: translateY(-1px);
 }
 
@@ -304,12 +305,12 @@ select {
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
-  
+
   .form-actions {
     flex-direction: column-reverse;
     gap: 1rem;
   }
-  
+
   .btn-primary,
   .btn-secondary {
     width: 100%;

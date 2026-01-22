@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { jobs as jobService } from '../services/api';
 import { toast } from 'react-toastify';
 import './Dashboard.css';
@@ -11,6 +12,7 @@ import Applications from '../components/dashboard/Applications';
 import SavedJobs from '../components/dashboard/SavedJobs';
 import Profile from '../components/dashboard/Profile';
 import PostJob from '../components/dashboard/PostJob';
+import ThemeToggle from '../components/ThemeToggle';
 
 /**
  * Dashboard Component - Amdox Jobs
@@ -18,6 +20,7 @@ import PostJob from '../components/dashboard/PostJob';
  */
 const Dashboard = () => {
   const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
   const [recommendedJobs, setRecommendedJobs] = useState([]);
@@ -119,8 +122,8 @@ const Dashboard = () => {
           <div className="nav-user">
             <div className="nav-user-info">
               {user?.profile?.photoURL && (
-                <img 
-                  src={user.profile.photoURL} 
+                <img
+                  src={user.profile.photoURL}
                   alt={user.profile.name || user.email}
                   className="nav-user-avatar"
                 />
@@ -132,9 +135,12 @@ const Dashboard = () => {
                 </span>
               </div>
             </div>
-            <button onClick={logout} className="nav-logout-btn">
-              Logout
-            </button>
+            <div className="nav-actions">
+              <ThemeToggle />
+              <button onClick={logout} className="nav-logout-btn">
+                Logout
+              </button>
+            </div>
           </div>
         </div>
       </nav>
@@ -157,7 +163,7 @@ const Dashboard = () => {
                 {activeTab === 'company' && 'Company Profile'}
               </h2>
               <p className="page-subtitle">
-                {activeTab === 'overview' && (isJobSeeker 
+                {activeTab === 'overview' && (isJobSeeker
                   ? 'Track your job search progress and discover opportunities'
                   : 'Manage your hiring pipeline and track performance')}
                 {activeTab === 'jobs' && 'Explore 500+ tech jobs from top companies'}
@@ -173,14 +179,14 @@ const Dashboard = () => {
             {activeTab === 'overview' && (
               <div className="header-actions">
                 {isJobSeeker ? (
-                  <button 
+                  <button
                     className="primary-btn"
                     onClick={() => setActiveTab('jobs')}
                   >
                     Browse Jobs
                   </button>
                 ) : (
-                  <button 
+                  <button
                     className="primary-btn"
                     onClick={() => setActiveTab('postings')}
                   >
@@ -383,13 +389,13 @@ const Dashboard = () => {
               {activeTab === 'applications' && isJobSeeker && <Applications />}
               {activeTab === 'saved' && isJobSeeker && <SavedJobs />}
               {activeTab === 'profile' && isJobSeeker && <Profile />}
-              
+
               {/* Employer Tabs */}
               {activeTab === 'postings' && isEmployer && (
                 <div className="content-card">
                   <div className="card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <h3 className="card-title">Job Postings</h3>
-                    <button 
+                    <button
                       className="btn-primary"
                       onClick={() => navigate('/post-job')}
                     >
@@ -402,7 +408,7 @@ const Dashboard = () => {
                       <p className="empty-state-subtext">
                         Create your first job posting to get started
                       </p>
-                      <button 
+                      <button
                         className="btn-primary"
                         onClick={() => navigate('/post-job')}
                       >
@@ -412,7 +418,7 @@ const Dashboard = () => {
                   </div>
                 </div>
               )}
-              
+
               {activeTab === 'candidates' && isEmployer && (
                 <div className="content-card">
                   <div className="card-header">
@@ -428,7 +434,7 @@ const Dashboard = () => {
                   </div>
                 </div>
               )}
-              
+
               {activeTab === 'company' && isEmployer && (
                 <div className="content-card">
                   <div className="card-header">

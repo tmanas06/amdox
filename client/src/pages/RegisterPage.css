@@ -3,16 +3,17 @@
 
 .amdox-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 100%);
+  background: var(--bg-primary);
+  color: var(--text-primary);
   position: relative;
   overflow-x: hidden;
 }
 
 /* Header */
 .amdox-header {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--border-color);
   padding: 2rem 1.5rem;
-  background: rgba(10, 14, 26, 0.8);
+  background: var(--nav-bg);
   backdrop-filter: blur(12px);
   position: sticky;
   top: 0;
@@ -22,6 +23,9 @@
 .header-container {
   max-width: 1400px;
   margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .header-brand {
@@ -38,8 +42,8 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--glass-bg);
+  border: 1px solid var(--border-color);
 }
 
 .logo-image {
@@ -57,16 +61,13 @@
 .brand-title {
   font-size: 1.5rem;
   font-weight: 800;
-  background: linear-gradient(135deg, #f8fafc 0%, #cbd5e1 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--text-primary);
   margin: 0;
   line-height: 1.2;
 }
 
 .brand-subtitle {
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 0.875rem;
   margin: 0.25rem 0 0 0;
   font-weight: 500;
@@ -86,7 +87,7 @@
 
 /* Hero Section (Left - 60%) */
 .hero-section-dark {
-  color: white;
+  color: var(--text-primary);
 }
 
 .hero-heading-dark {
@@ -94,11 +95,7 @@
   font-weight: 800;
   line-height: 1.1;
   margin: 0 0 3rem 0;
-  color: #f8fafc;
-  background: linear-gradient(135deg, #f8fafc 0%, #cbd5e1 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--text-primary);
 }
 
 .hero-stats-dark {
@@ -125,7 +122,7 @@
 
 .stat-text-dark {
   font-size: 1.25rem;
-  color: #cbd5e1;
+  color: var(--text-secondary);
   line-height: 1.6;
 }
 
@@ -139,23 +136,23 @@
 .auth-card-dark {
   width: 100%;
   max-width: 440px;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--card-bg);
   backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-color);
   border-radius: 24px;
   padding: 2.5rem;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
 }
 
 .auth-title-dark {
   font-size: 2rem;
   font-weight: 700;
-  color: #f8fafc;
+  color: var(--text-primary);
   margin: 0 0 0.5rem 0;
 }
 
 .auth-subtitle-dark {
-  color: #94a3b8;
+  color: var(--text-secondary);
   font-size: 1rem;
   margin: 0 0 1.5rem 0;
   line-height: 1.5;
@@ -185,7 +182,7 @@
   margin: 0;
   flex: 1;
   font-size: 0.8rem;
-  color: #cbd5e1;
+  color: var(--text-secondary);
   line-height: 1.5;
 }
 
@@ -252,11 +249,11 @@
 .divider-line {
   flex: 1;
   height: 1px;
-  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.1), transparent);
+  background: var(--border-color);
 }
 
 .divider-text {
-  color: #64748b;
+  color: var(--text-muted);
   font-size: 0.75rem;
   padding: 0 0.75rem;
   text-transform: lowercase;
@@ -278,16 +275,16 @@
 .form-group-dark label {
   font-size: 0.875rem;
   font-weight: 600;
-  color: #cbd5e1;
+  color: var(--text-secondary);
 }
 
 .form-group-dark input,
 .form-group-dark select {
-  background: rgba(15, 23, 42, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--input-bg);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 0.875rem 1rem;
-  color: #f8fafc;
+  color: var(--input-text);
   font-size: 1rem;
   transition: all 0.3s ease;
   font-family: inherit;
@@ -300,9 +297,9 @@
 .form-group-dark input:focus,
 .form-group-dark select:focus {
   outline: none;
-  border-color: #10b981;
-  background: rgba(15, 23, 42, 0.6);
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+  border-color: var(--primary-color);
+  background: var(--bg-tertiary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
 }
 
 .form-group-dark input:disabled,
@@ -316,8 +313,8 @@
 }
 
 .role-select-dark option {
-  background: #1a1f2e;
-  color: #f8fafc;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
 }
 
 .submit-btn-dark {
@@ -347,10 +344,10 @@
 .auth-footer-dark {
   margin-top: 1.5rem;
   padding-top: 1.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid var(--border-color);
   text-align: center;
   font-size: 0.875rem;
-  color: #94a3b8;
+  color: var(--text-secondary);
 }
 
 .auth-link-dark {
@@ -367,10 +364,10 @@
 
 /* Footer */
 .amdox-footer {
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid var(--border-color);
   padding: 2rem 1.5rem;
   text-align: center;
-  background: rgba(10, 14, 26, 0.5);
+  background: var(--nav-bg);
 }
 
 .footer-text-dark {

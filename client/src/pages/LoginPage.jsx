@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
+import ThemeToggle from '../components/ThemeToggle';
 import './LoginPage.css';
 
 /**
@@ -9,8 +11,9 @@ import './LoginPage.css';
  */
 const LoginPage = () => {
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
   const { signInWithGoogle, loginWithEmail, isAuthenticated, loading, error, clearError } = useAuth();
-  
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showEmailForm, setShowEmailForm] = useState(false);
@@ -86,6 +89,9 @@ const LoginPage = () => {
               <p className="brand-subtitle">India's Fastest Tech Hiring Platform</p>
             </div>
           </div>
+          <div className="header-actions">
+            <ThemeToggle />
+          </div>
         </div>
       </header>
 
@@ -96,7 +102,7 @@ const LoginPage = () => {
           <h2 className="hero-heading-dark">
             Find Your Next Tech Role
           </h2>
-          
+
           <div className="hero-stats-dark">
             <div className="stat-item-dark">
               <div className="stat-bullet-dark"></div>
