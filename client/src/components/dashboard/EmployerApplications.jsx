@@ -279,7 +279,7 @@ const EmployerApplications = () => {
                   <div className="fade-in">
                     <h3 className="section-title">Interview Process</h3>
 
-                    {selectedApp.rounds?.length === 0 ? (
+                    {!selectedApp.rounds || selectedApp.rounds.length === 0 ? (
                       <div style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
                         No interview rounds scheduled yet.
                       </div>
@@ -289,7 +289,7 @@ const EmployerApplications = () => {
                           <div key={round._id} className="round-card">
                             <div className="round-header">
                               <span style={{ fontWeight: 600 }}>{round.name}</span>
-                              <span className={`round-status status-${round.status.toLowerCase()}`}>{round.status}</span>
+                              <span className={`round-status status-${(round.status || 'pending').toLowerCase()}`}>{round.status || 'Pending'}</span>
                             </div>
                             {round.scheduledDate && (
                               <div style={{ fontSize: '0.85rem', color: '#94a3b8', marginBottom: '0.5rem' }}>
@@ -332,7 +332,7 @@ const EmployerApplications = () => {
                   <div className="fade-in" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                     <div className="chat-container" style={{ flex: 1, height: '100%' }}>
                       <div className="chat-messages">
-                        {!selectedApp.messages?.length ? (
+                        {!selectedApp.messages || selectedApp.messages.length === 0 ? (
                           <div style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>Start a conversation with the candidate.</div>
                         ) : (
                           selectedApp.messages.map((msg, i) => {
