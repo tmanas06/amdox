@@ -171,11 +171,29 @@ export const user = {
   getDashboardStats: () => api.get('/users/dashboard/stats'),
 };
 
+export const messages = {
+  // Get all messages for an application
+  getApplicationMessages: (applicationId) => api.get(`/messages/application/${applicationId}`),
+
+  // Send a message
+  sendMessage: (data) => api.post('/messages', data),
+
+  // Mark message as read
+  markAsRead: (messageId) => api.put(`/messages/${messageId}/read`),
+
+  // Get unread message count
+  getUnreadCount: () => api.get('/messages/unread/count'),
+
+  // Delete a message
+  deleteMessage: (messageId) => api.delete(`/messages/${messageId}`),
+};
+
 const apiExports = {
   auth,
   jobs,
   applications,
   user,
+  messages,
 };
 
 export default apiExports;

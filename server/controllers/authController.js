@@ -100,20 +100,20 @@ exports.firebaseLogin = async (req, res) => {
         user.role = determineRole(emailLower, role);
       }
 
-      // Auto-populate company info if employer
+      // Always keep Google photo if not already set
+      if (!user.profile.photoURL && photoURL) {
+        user.profile.photoURL = photoURL;
+      }
+
+      // Auto-populate company info if employer (but don't override photo)
       if (user.role === 'employer') {
         const companyInfo = getCompanyInfo(emailLower);
         if (companyInfo) {
           if (!user.profile.company) user.profile.company = companyInfo.company;
           if (!user.profile.website) user.profile.website = companyInfo.website;
-          // Use Clearbit logo if available, otherwise keep existing
-          if (!user.profile.photoURL || user.profile.photoURL === photoURL) {
-            user.profile.photoURL = companyInfo.logo;
-          }
+          // Store suggested logo URL but don't override existing photo
+          // User can manually switch to company logo in profile settings
         }
-      } else {
-        // Keep Google photo for job seekers if not set
-        if (!user.profile.photoURL && photoURL) user.profile.photoURL = photoURL;
       }
 
       await user.save();
@@ -138,16 +138,16 @@ exports.firebaseLogin = async (req, res) => {
 
       const newUserProfile = {
         name: name || '',
-        photoURL: photoURL || ''
+        photoURL: photoURL || '' // Always use Google photo by default
       };
 
-      // Auto-populate company info for new employers
+      // Auto-populate company info for new employers (but keep Google photo)
       if (userRole === 'employer') {
         const companyInfo = getCompanyInfo(emailLower);
         if (companyInfo) {
           newUserProfile.company = companyInfo.company;
           newUserProfile.website = companyInfo.website;
-          newUserProfile.photoURL = companyInfo.logo; // Prefer company logo
+          // Keep Google photo - user can manually upload company logo later
         }
       }
 

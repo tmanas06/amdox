@@ -11,6 +11,7 @@ const authRoutes = require('./routes/auth');
 const jobRoutes = require('./routes/jobs');
 const userRoutes = require('./routes/users');
 const applicationRoutes = require('./routes/applications');
+const messageRoutes = require('./routes/messages');
 
 // Initialize Express app
 const app = express();
@@ -29,7 +30,7 @@ app.use(cors({
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
-    
+
     // Check if origin is in allowed list
     if (allowedOrigins.some(allowed => {
       if (typeof allowed === 'string') {
@@ -59,8 +60,8 @@ app.use(express.urlencoded({ extended: true }));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-  res.json({ 
-    success: true, 
+  res.json({
+    success: true,
     message: 'Server is running',
     timestamp: new Date().toISOString()
   });
@@ -71,6 +72,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/jobs', jobRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/applications', applicationRoutes);
+app.use('/api/messages', messageRoutes);
 
 // 404 handler
 app.use((req, res) => {
@@ -99,7 +101,7 @@ const connectDB = async () => {
       console.error('MongoDB URI is not defined in environment variables');
       throw new Error('MongoDB URI is missing');
     }
-    
+
     const conn = await mongoose.connect(process.env.MONGODB_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true
@@ -119,7 +121,7 @@ const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
   await connectDB();
-  
+
   // Only listen on port if not in Vercel (serverless)
   if (process.env.VERCEL !== '1') {
     app.listen(PORT, () => {
