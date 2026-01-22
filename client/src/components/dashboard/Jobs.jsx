@@ -95,9 +95,18 @@ const Jobs = () => {
       return;
     }
 
-    const newAppliedJobs = [...appliedJobs, job._id];
-    setAppliedJobs(newAppliedJobs);
-    localStorage.setItem('appliedJobs', JSON.stringify(newAppliedJobs));
+    (async () => {
+      try {
+        await jobService.apply(job._id, {});
+        const newAppliedJobs = [...appliedJobs, job._id];
+        setAppliedJobs(newAppliedJobs);
+        localStorage.setItem('appliedJobs', JSON.stringify(newAppliedJobs));
+        toast.success('Successfully applied to the job!');
+      } catch (err) {
+        console.error('Apply failed:', err);
+        toast.error(err.message || 'Failed to apply to job');
+      }
+    })();
     
     // Remove from saved jobs when applied
     if (savedJobs.includes(job._id)) {
@@ -105,8 +114,6 @@ const Jobs = () => {
       setSavedJobs(updatedSavedJobs);
       localStorage.setItem('savedJobs', JSON.stringify(updatedSavedJobs));
     }
-
-    toast.success('Successfully applied to the job!');
   };
 
   // Calculate total pages for pagination

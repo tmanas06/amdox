@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { jobs as jobService } from '../../services/api';
+import { applications as applicationService } from '../../services/api';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import './Applications.css';
@@ -20,32 +20,22 @@ const Applications = ({ onBrowseJobs }) => {
         setIsLoading(true);
         setError('');
 
-        // Dynamic flow (no static): use localStorage applied job IDs + real job data
-        const appliedIds = JSON.parse(localStorage.getItem('appliedJobs') || '[]');
-        if (!Array.isArray(appliedIds) || appliedIds.length === 0) {
-          setApplications([]);
-          return;
-        }
+        const response = await applicationService.getMyApplications();
+        const rows = (response.data?.data || [])
+          .filter(app => app?.job) // only keep apps with a linked job
+          .map((app) => ({
+            _id: app._id,
+            jobId: app.job?._id,
+            jobTitle: app.job?.title || '—',
+            company: app.job?.company || '—',
+            appliedDate: app.createdAt,
+            lastUpdated: app.updatedAt,
+            status: app.status || 'Applied',
+            jobDetails: { location: app.job?.location, type: app.job?.type },
+            nextSteps: 'Waiting for response from recruiter',
+          }));
 
-        const results = await Promise.allSettled(appliedIds.map((jobId) => jobService.getById(jobId)));
-        const jobs = results
-          .filter(r => r.status === 'fulfilled')
-          .map(r => r.value?.data?.data)
-          .filter(Boolean);
-
-        const appRows = jobs.map(j => ({
-          _id: j._id,
-          jobId: j._id,
-          jobTitle: j.title,
-          company: j.company,
-          appliedDate: j.createdAt || new Date().toISOString(),
-          lastUpdated: j.updatedAt || j.createdAt || new Date().toISOString(),
-          status: 'Applied',
-          jobDetails: { location: j.location, type: j.type },
-          nextSteps: 'Waiting for response from recruiter',
-        }));
-
-        setApplications(appRows);
+        setApplications(rows || []);
       } catch (err) {
         console.error('Error fetching applications:', err);
         setError(err.message || 'Failed to load applications');
@@ -94,13 +84,8 @@ const Applications = ({ onBrowseJobs }) => {
   };
 
   const handleUpdateStatus = async (applicationId, newStatus) => {
-    // No backend support yet; keep UX dynamic locally
-    setApplications(prev =>
-      prev.map(app =>
-        app._id === applicationId ? { ...app, status: newStatus, lastUpdated: new Date().toISOString() } : app
-      )
-    );
-    toast.success('Application status updated');
+    // Job seeker flow: status updates are employer-driven; keep this disabled/ignored
+    toast.info('Employers update application status.');
   };
 
   return (

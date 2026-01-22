@@ -109,16 +109,16 @@ export const jobs = {
   toggleStatus: (id) => api.patch(`/jobs/${id}/status`),
   
   // Apply to a job (job seeker only)
-  apply: (jobId, applicationData) => 
-    api.post(`/jobs/${jobId}/applications`, applicationData),
-  
-  // Get applications for a job (employer only)
-  getApplications: (jobId) => api.get(`/jobs/${jobId}/applications`),
+  apply: (jobId, applicationData = {}) =>
+    api.post(`/jobs/${jobId}/apply`, applicationData),
 };
 
 export const applications = {
   // Get all applications for current user (job seeker)
   getMyApplications: () => api.get('/applications/me'),
+
+  // Get all applications for employer jobs
+  getEmployerApplications: () => api.get('/applications/employer'),
   
   // Update application status (employer only)
   updateStatus: (applicationId, status) => 

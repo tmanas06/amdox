@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { check } = require('express-validator');
 const jobController = require('../controllers/jobController');
+const applicationController = require('../controllers/applicationController');
 const { authenticateToken, authorizeRole } = require('../middleware/auth');
 
 // Public routes
@@ -13,6 +14,7 @@ router.use(authenticateToken);
 // Employer routes - specific routes before generic :id route
 router.get('/employer/my-jobs', authorizeRole('employer', 'admin'), jobController.getEmployerJobs);
 router.patch('/:id/status', authorizeRole('employer', 'admin'), jobController.toggleJobStatus);
+router.post('/:id/apply', authorizeRole('job_seeker', 'admin'), applicationController.applyToJob);
 
 // POST and PUT routes with validation
 router.post(

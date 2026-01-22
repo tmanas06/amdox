@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { jobs as jobService } from '../services/api';
 import { toast } from 'react-toastify';
+import { useTheme } from '../context/ThemeContext';
 import './Dashboard.css';
 
 // Import components
@@ -10,6 +11,8 @@ import Jobs from '../components/dashboard/Jobs';
 import Applications from '../components/dashboard/Applications';
 import SavedJobs from '../components/dashboard/SavedJobs';
 import Profile from '../components/dashboard/Profile';
+import EmployerPostings from '../components/dashboard/EmployerPostings';
+import EmployerApplications from '../components/dashboard/EmployerApplications';
 
 /**
  * Dashboard Component - Amdox Jobs
@@ -17,6 +20,7 @@ import Profile from '../components/dashboard/Profile';
  */
 const Dashboard = () => {
   const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
   const [recommendedJobs, setRecommendedJobs] = useState([]);
@@ -125,6 +129,18 @@ const Dashboard = () => {
           </div>
 
           <div className="nav-user">
+            <div className="theme-toggle" onClick={toggleTheme}>
+              <div className={`theme-toggle-track ${theme}`}>
+                <div className="theme-toggle-thumb">
+                  <svg className="theme-toggle-icon sun" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                  <svg className="theme-toggle-icon moon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                  </svg>
+                </div>
+              </div>
+            </div>
             <div className="nav-user-info">
               {user?.profile?.photoURL && (
                 <img 
@@ -290,8 +306,8 @@ const Dashboard = () => {
                       </div>
                       <div className="card-content">
                         {loadingJobs ? (
-                          <div style={{ textAlign: 'center', padding: '2rem', color: '#94a3b8' }}>
-                            <p>Loading jobs...</p>
+                          <div style={{ textAlign: 'center', padding: '2rem' }}>
+                            <p style={{ color: 'var(--color-text-tertiary)' }}>Loading jobs...</p>
                           </div>
                         ) : recommendedJobs.length > 0 ? (
                           recommendedJobs.map((job) => (
@@ -316,8 +332,8 @@ const Dashboard = () => {
                           ))
                         ) : (
                           <div className="empty-state">
-                            <p className="empty-state-text">No jobs available</p>
-                            <p className="empty-state-subtext">Check back soon for new opportunities</p>
+                            <p className="empty-state-text" style={{ color: 'var(--color-text-tertiary)' }}>No jobs available</p>
+                            <p className="empty-state-subtext" style={{ color: 'var(--color-text-secondary)' }}>Check back soon for new opportunities</p>
                           </div>
                         )}
                       </div>
@@ -329,8 +345,8 @@ const Dashboard = () => {
                       </div>
                       <div className="card-content">
                         <div className="empty-state">
-                          <p className="empty-state-text">No applications yet</p>
-                          <p className="empty-state-subtext">Start applying to jobs to track your progress</p>
+                          <p className="empty-state-text" style={{ color: 'var(--color-text-tertiary)' }}>No applications yet</p>
+                          <p className="empty-state-subtext" style={{ color: 'var(--color-text-secondary)' }}>Start applying to jobs to track your progress</p>
                           <button className="btn-primary" onClick={() => setActiveTab('jobs')}>Browse Jobs</button>
                         </div>
                       </div>
@@ -393,33 +409,9 @@ const Dashboard = () => {
               {activeTab === 'profile' && isJobSeeker && <Profile />}
               
               {/* Employer Tabs */}
-              {activeTab === 'postings' && isEmployer && (
-                <div className="content-card">
-                  <div className="card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h3 className="card-title">Job Postings</h3>
-                    <button 
-                      className="btn-primary"
-                      onClick={() => navigate('/post-job')}
-                    >
-                      + Post New Job
-                    </button>
-                  </div>
-                  <div className="card-content">
-                    <div className="empty-state">
-                      <p className="empty-state-text">No job postings yet</p>
-                      <p className="empty-state-subtext">
-                        Create your first job posting to get started
-                      </p>
-                      <button 
-                        className="btn-primary"
-                        onClick={() => navigate('/post-job')}
-                      >
-                        Post Your First Job
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
+              {activeTab === 'postings' && isEmployer && <EmployerPostings />}
+
+              {activeTab === 'applications' && isEmployer && <EmployerApplications />}
               
               {activeTab === 'candidates' && isEmployer && (
                 <div className="content-card">

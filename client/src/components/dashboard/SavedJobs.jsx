@@ -82,8 +82,13 @@ const SavedJobs = ({ onBrowseJobs }) => {
   const handleApplyJob = async (jobId) => {
     try {
       const job = savedJobs.find(j => j._id === jobId);
+      // call backend apply
+      await jobService.apply(jobId, {});
+
       setSavedJobs(prev => prev.filter(j => j._id !== jobId));
-      setAppliedJobs(prev => [...prev, job]);
+      if (job) {
+        setAppliedJobs(prev => [...prev, job]);
+      }
 
       const appliedIds = JSON.parse(localStorage.getItem('appliedJobs') || '[]');
       const nextApplied = Array.isArray(appliedIds) ? appliedIds : [];
