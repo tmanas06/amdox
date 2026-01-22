@@ -15,6 +15,7 @@ import PostJob from '../components/dashboard/PostJob';
 import EmployerPostings from '../components/dashboard/EmployerPostings';
 import EmployerApplications from '../components/dashboard/EmployerApplications';
 import EmployerCandidates from '../components/dashboard/EmployerCandidates';
+import EmployerCompanyProfile from '../components/dashboard/EmployerCompanyProfile';
 import ThemeToggle from '../components/ThemeToggle';
 import Navbar from '../components/Navbar';
 
@@ -404,22 +405,7 @@ const Dashboard = () => {
 
               {activeTab === 'candidates' && isEmployer && <EmployerCandidates />}
 
-              {activeTab === 'company' && isEmployer && (
-                <div className="content-card">
-                  <div className="card-header">
-                    <h3 className="card-title">Company Profile</h3>
-                  </div>
-                  <div className="card-content">
-                    <div className="empty-state">
-                      <p className="empty-state-text">Company Profile</p>
-                      <p className="empty-state-subtext">
-                        Set up your company profile to attract top talent
-                      </p>
-                      <button className="btn-primary">Edit Company Profile</button>
-                    </div>
-                  </div>
-                </div>
-              )}
+              {activeTab === 'company' && isEmployer && <EmployerCompanyProfile />}
             </div>
           )}
         </div>

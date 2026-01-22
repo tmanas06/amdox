@@ -27,6 +27,11 @@ exports.updateProfile = async (req, res) => {
           'profile.experience': updates.experience || [],
           'profile.education': updates.education || [],
           'profile.skills': updates.skills || [],
+          'profile.company': updates.company,
+          'profile.bio': updates.bio,
+          'profile.website': updates.website,
+          'profile.industry': updates.industry,
+          'profile.companySize': updates.companySize,
         },
       },
       { new: true, runValidators: true }

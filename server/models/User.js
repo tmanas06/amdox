@@ -50,6 +50,18 @@ const userSchema = new mongoose.Schema({
     location: {
       type: String,
       trim: true
+    },
+    website: {
+      type: String,
+      trim: true
+    },
+    industry: {
+      type: String,
+      trim: true
+    },
+    companySize: {
+      type: String,
+      trim: true
     }
   },
   employer: {
@@ -81,7 +93,7 @@ userSchema.index({ email: 1 });
 userSchema.index({ firebaseUid: 1 });
 
 // Method to get user without sensitive data
-userSchema.methods.toJSON = function() {
+userSchema.methods.toJSON = function () {
   const userObject = this.toObject();
   delete userObject.password;
   return userObject;

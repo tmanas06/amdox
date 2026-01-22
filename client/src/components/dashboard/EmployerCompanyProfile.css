@@ -1,0 +1,215 @@
+.company-profile-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    color: var(--text-primary);
+}
+
+.company-header-card {
+    background: var(--card-bg);
+    /* Use theme variable */
+    border-radius: 16px;
+    padding: 2rem;
+    border: 1px solid var(--border-color);
+    /* Use theme variable */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Light mode specific override if variables aren't enough */
+[data-theme='light'] .company-header-card {
+    background: #ffffff;
+    border-color: #e2e8f0;
+    color: #1e293b;
+}
+
+.company-header-content {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+}
+
+.company-logo-upload {
+    width: 120px;
+    height: 120px;
+    border-radius: 16px;
+    background: var(--bg-secondary);
+    border: 2px dashed var(--border-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+    transition: all 0.2s;
+}
+
+.company-logo-upload:hover {
+    border-color: var(--primary-color);
+    background: rgba(56, 189, 248, 0.05);
+    /* Light blue tint */
+}
+
+.company-logo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    /* Changed to contain for logos */
+    padding: 0.5rem;
+}
+
+.company-info-display h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.company-meta-row {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 1rem;
+    color: var(--text-secondary);
+    flex-wrap: wrap;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.company-details-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.5rem;
+}
+
+.section-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+}
+
+[data-theme='light'] .section-card {
+    background: #ffffff;
+    border-color: #e2e8f0;
+}
+
+.section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.edit-form {
+    display: grid;
+    gap: 1.5rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.form-input,
+.form-textarea,
+.form-select {
+    padding: 0.75rem;
+    border-radius: 8px;
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+/* Light mode inputs */
+[data-theme='light'] .form-input,
+[data-theme='light'] .form-textarea,
+[data-theme='light'] .form-select {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    color: #0f172a;
+}
+
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.btn-cancel {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-weight: 500;
+}
+
+[data-theme='light'] .btn-cancel {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #475569;
+}
+
+.website-link {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.website-link:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .company-header-content {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .company-details-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .company-meta-row {
+        justify-content: center;
+    }
+}
