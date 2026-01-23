@@ -174,55 +174,20 @@ const Jobs = () => {
           <div className="search-box">
             <input
               type="text"
-              placeholder="Search by job title, company, or skills..."
               className="search-input"
+              placeholder="Search for jobs..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              aria-label="Search jobs"
             />
             <span className="search-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
               </svg>
             </span>
           </div>
 
-          <div className="filters-row">
-            <div className="filter-group">
-              <label htmlFor="job-type" className="filter-label">Job Type</label>
-              <select
-                id="job-type"
-                className="filter-select"
-                value={jobType}
-                onChange={(e) => setJobType(e.target.value)}
-                aria-label="Filter by job type"
-              >
-                <option value="">All Job Types</option>
-                {jobTypes.map(type => (
-                  <option key={type} value={type}>{type}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="filter-group">
-              <label htmlFor="location" className="filter-label">Location</label>
-              <select
-                id="location"
-                className="filter-select"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                aria-label="Filter by location"
-              >
-                <option value="">All Locations</option>
-                {locations.map(loc => (
-                  <option key={loc} value={loc}>
-                    {loc === 'remote' ? 'Remote' : loc}
-                  </option>
-                ))}
-              </select>
-            </div>
-
+          <div className="filter-actions">
             <button
               className="clear-filters"
               onClick={() => {
@@ -243,15 +208,47 @@ const Jobs = () => {
               onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
               aria-expanded={showAdvancedFilters}
             >
-              {showAdvancedFilters ? 'Hide Advanced' : 'Advanced Filters'}
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: '4px', transform: showAdvancedFilters ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+              {showAdvancedFilters ? 'Hide Filters' : 'Show Filters'}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="6 9 12 15 18 9"></polyline>
               </svg>
             </button>
           </div>
 
-          {showAdvancedFilters && (
-            <div className="advanced-filters">
+          <div className={`advanced-filters ${showAdvancedFilters ? 'is-visible' : ''}`}>
+            <div className="advanced-filters-grid">
+              <div className="filter-group">
+                <label htmlFor="job-type" className="filter-label">Job Type</label>
+                <select
+                  id="job-type"
+                  className="filter-select"
+                  value={jobType}
+                  onChange={(e) => setJobType(e.target.value)}
+                >
+                  <option value="">All Job Types</option>
+                  {jobTypes.map(type => (
+                    <option key={type} value={type}>{type}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="filter-group">
+                <label htmlFor="location" className="filter-label">Location</label>
+                <select
+                  id="location"
+                  className="filter-select"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                >
+                  <option value="">All Locations</option>
+                  {locations.map(loc => (
+                    <option key={loc} value={loc}>
+                      {loc === 'remote' ? 'Remote' : loc}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               <div className="filter-group">
                 <label htmlFor="min-salary" className="filter-label">Min Salary ($)</label>
                 <input
@@ -296,7 +293,7 @@ const Jobs = () => {
                 </select>
               </div>
             </div>
-          )}
+          </div>
           
           {(searchTerm || jobType || location || minSalary || maxSalary || experienceLevel) && (
             <div className="active-filters">
