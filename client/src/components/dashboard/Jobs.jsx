@@ -10,12 +10,16 @@ const Jobs = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [jobType, setJobType] = useState('');
   const [location, setLocation] = useState('');
+  const [minSalary, setMinSalary] = useState('');
+  const [maxSalary, setMaxSalary] = useState('');
+  const [experienceLevel, setExperienceLevel] = useState('');
   const [savedJobs, setSavedJobs] = useState([]);
   const [appliedJobs, setAppliedJobs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalJobs, setTotalJobs] = useState(0);
   const [jobs, setJobs] = useState([]);
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const jobsPerPage = 5;
 
   // Fetch jobs from API
@@ -29,6 +33,9 @@ const Jobs = () => {
         remote: location === 'remote' ? 'true' : '',
         page: currentPage,
         limit: jobsPerPage,
+        minSalary: minSalary || undefined,
+        maxSalary: maxSalary || undefined,
+        experienceLevel: experienceLevel || undefined
       };
 
       const response = await jobService.getAll(params);
@@ -48,7 +55,7 @@ const Jobs = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [searchTerm, jobType, location, currentPage]);
+  }, [searchTerm, jobType, location, minSalary, maxSalary, experienceLevel, currentPage]);
 
   // Load saved and applied jobs from localStorage on component mount
   useEffect(() => {
@@ -134,7 +141,7 @@ const Jobs = () => {
     );
   }
 
-  // Get unique job types and locations for filters
+  // Get unique job types, locations, and experience levels for filters
   const jobTypes = [...new Set(jobs.map(job => job.type).filter(Boolean))];
   const locations = [
     'remote',
@@ -143,6 +150,16 @@ const Jobs = () => {
         .flatMap(job => (job.isRemote ? [] : [job.location]))
         .filter(Boolean)
     ),
+  ];
+  
+  const experienceLevels = [
+    'Internship',
+    'Entry Level',
+    'Mid Level',
+    'Senior Level',
+    'Lead',
+    'Manager',
+    'Executive'
   ];
 
   return (
@@ -212,14 +229,76 @@ const Jobs = () => {
                 setSearchTerm('');
                 setJobType('');
                 setLocation('');
+                setMinSalary('');
+                setMaxSalary('');
+                setExperienceLevel('');
               }}
-              disabled={!searchTerm && !jobType && !location}
+              disabled={!searchTerm && !jobType && !location && !minSalary && !maxSalary && !experienceLevel}
             >
               Clear Filters
             </button>
+            
+            <button
+              className="advanced-filters-toggle"
+              onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+              aria-expanded={showAdvancedFilters}
+            >
+              {showAdvancedFilters ? 'Hide Advanced' : 'Advanced Filters'}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: '4px', transform: showAdvancedFilters ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
           </div>
 
-          {searchTerm || jobType || location ? (
+          {showAdvancedFilters && (
+            <div className="advanced-filters">
+              <div className="filter-group">
+                <label htmlFor="min-salary" className="filter-label">Min Salary ($)</label>
+                <input
+                  type="number"
+                  id="min-salary"
+                  className="filter-input"
+                  placeholder="Min"
+                  value={minSalary}
+                  onChange={(e) => setMinSalary(e.target.value)}
+                  min="0"
+                  step="1000"
+                />
+              </div>
+              
+              <div className="filter-group">
+                <label htmlFor="max-salary" className="filter-label">Max Salary ($)</label>
+                <input
+                  type="number"
+                  id="max-salary"
+                  className="filter-input"
+                  placeholder="Max"
+                  value={maxSalary}
+                  onChange={(e) => setMaxSalary(e.target.value)}
+                  min={minSalary || '0'}
+                  step="1000"
+                />
+              </div>
+              
+              <div className="filter-group">
+                <label htmlFor="experience-level" className="filter-label">Experience Level</label>
+                <select
+                  id="experience-level"
+                  className="filter-select"
+                  value={experienceLevel}
+                  onChange={(e) => setExperienceLevel(e.target.value)}
+                  aria-label="Filter by experience level"
+                >
+                  <option value="">Any Experience Level</option>
+                  {experienceLevels.map(level => (
+                    <option key={level} value={level}>{level}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          )}
+          
+          {(searchTerm || jobType || location || minSalary || maxSalary || experienceLevel) && (
             <div className="active-filters">
               <span>Active filters: </span>
               {searchTerm && (
@@ -240,8 +319,26 @@ const Jobs = () => {
                   <button onClick={() => setLocation('')} aria-label="Remove location filter">×</button>
                 </span>
               )}
+              {minSalary && (
+                <span className="filter-tag">
+                  ${minSalary}+ 
+                  <button onClick={() => setMinSalary('')} aria-label="Remove min salary filter">×</button>
+                </span>
+              )}
+              {maxSalary && (
+                <span className="filter-tag">
+                  Up to ${maxSalary}
+                  <button onClick={() => setMaxSalary('')} aria-label="Remove max salary filter">×</button>
+                </span>
+              )}
+              {experienceLevel && (
+                <span className="filter-tag">
+                  {experienceLevel}
+                  <button onClick={() => setExperienceLevel('')} aria-label="Remove experience level filter">×</button>
+                </span>
+              )}
             </div>
-          ) : null}
+          )}
         </div>
       </div>
 
