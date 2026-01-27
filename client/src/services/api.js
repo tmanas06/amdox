@@ -84,6 +84,9 @@ export const jobs = {
     if (params.location) queryParams.append('location', params.location);
     if (params.type) queryParams.append('type', params.type);
     if (params.remote) queryParams.append('remote', params.remote);
+    if (params.minSalary) queryParams.append('minSalary', params.minSalary);
+    if (params.maxSalary) queryParams.append('maxSalary', params.maxSalary);
+    if (params.experienceLevel) queryParams.append('experienceLevel', params.experienceLevel);
     if (params.page) queryParams.append('page', params.page);
     if (params.limit) queryParams.append('limit', params.limit);
 

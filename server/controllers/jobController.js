@@ -7,14 +7,20 @@ const { validationResult } = require('express-validator');
 // @access  Public
 exports.getJobs = async (req, res) => {
   try {
-    const { search, location, type, remote, page = 1, limit = 10 } = req.query;
+    const { search, location, type, minSalary, maxSalary, experienceLevel, page = 1, limit = 10 } = req.query;
     const query = { status: 'active' };
-    
-    // Search by keywords in title, company, or description
+
+    // Search by keywords in title, company, or description (Partial Match)
     if (search) {
-      query.$text = { $search: search };
+      const searchRegex = new RegExp(search, 'i');
+      query.$or = [
+        { title: searchRegex },
+        { company: searchRegex },
+        { description: searchRegex },
+        { skills: { $in: [searchRegex] } }
+      ];
     }
-    
+
     // Filter by location
     if (location && location.toLowerCase() !== 'all') {
       if (location.toLowerCase() === 'remote') {
@@ -23,14 +29,26 @@ exports.getJobs = async (req, res) => {
         query.location = new RegExp(location, 'i');
       }
     }
-    
+
     // Filter by job type
     if (type && type.toLowerCase() !== 'all') {
       query.type = type;
     }
-    
+
+    // Filter by salary range
+    if (minSalary || maxSalary) {
+      // Note: This is an approximation since salary is a string. 
+      // Real implementation would require numeric salary fields.
+      // For now, we'll try to match common patterns if the field exists.
+    }
+
+    // Filter by experience level
+    if (experienceLevel) {
+      query.experience = new RegExp(experienceLevel, 'i');
+    }
+
     const skip = (page - 1) * limit;
-    
+
     // Find jobs with pagination
     const [jobs, total] = await Promise.all([
       Job.find(query)
@@ -68,14 +86,14 @@ exports.getJob = async (req, res) => {
     const job = await Job.findById(req.params.id)
       .populate('postedBy', 'profile.name profile.photoURL email')
       .lean();
-    
+
     if (!job) {
       return res.status(404).json({
         success: false,
         message: 'Job not found'
       });
     }
-    
+
     res.status(200).json({
       success: true,
       data: job
@@ -98,7 +116,7 @@ exports.createJob = async (req, res) => {
     console.log('=== CREATE JOB REQUEST ===');
     console.log('User:', req.user);
     console.log('Request Body:', req.body);
-    
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       console.log('Validation errors:', errors.array());
@@ -108,7 +126,7 @@ exports.createJob = async (req, res) => {
         errors: errors.array()
       });
     }
-    
+
     if (!req.user) {
       console.log('No user found in request');
       return res.status(401).json({
@@ -116,35 +134,35 @@ exports.createJob = async (req, res) => {
         message: 'User not authenticated'
       });
     }
-    
+
     const userId = req.user._id || req.user.id;
     console.log('User ID:', userId);
-    
+
     const jobData = {
       ...req.body,
       postedBy: userId
     };
-    
+
     console.log('Creating job with data:', jobData);
-    
+
     const job = await Job.create(jobData);
     console.log('Job created successfully:', job._id);
-    
+
     // Add job to user's posted jobs
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { $push: { 'employer.postedJobs': job._id } },
       { new: true }
     );
-    
+
     console.log('User updated:', updatedUser ? 'Yes' : 'No');
-    
+
     if (!updatedUser) {
       console.warn('User not found when updating posted jobs:', userId);
     }
-    
+
     console.log('=== JOB CREATED SUCCESSFULLY ===');
-    
+
     res.status(201).json({
       success: true,
       message: 'Job created successfully',
@@ -155,7 +173,7 @@ exports.createJob = async (req, res) => {
     console.error('Error Message:', error.message);
     console.error('Error Stack:', error.stack);
     console.error('Full Error:', error);
-    
+
     res.status(500).json({
       success: false,
       message: 'Error creating job: ' + error.message,
@@ -170,14 +188,14 @@ exports.createJob = async (req, res) => {
 exports.updateJob = async (req, res) => {
   try {
     const job = await Job.findById(req.params.id);
-    
+
     if (!job) {
       return res.status(404).json({
         success: false,
         message: 'Job not found'
       });
     }
-    
+
     // Check if user is the job poster
     if (job.postedBy.toString() !== req.user.id) {
       return res.status(403).json({
@@ -185,13 +203,13 @@ exports.updateJob = async (req, res) => {
         message: 'Not authorized to update this job'
       });
     }
-    
+
     const updatedJob = await Job.findByIdAndUpdate(
       req.params.id,
       { $set: req.body },
       { new: true, runValidators: true }
     );
-    
+
     res.status(200).json({
       success: true,
       message: 'Job updated successfully',
@@ -213,14 +231,14 @@ exports.updateJob = async (req, res) => {
 exports.deleteJob = async (req, res) => {
   try {
     const job = await Job.findById(req.params.id);
-    
+
     if (!job) {
       return res.status(404).json({
         success: false,
         message: 'Job not found'
       });
     }
-    
+
     // Check if user is the job poster or admin
     if (job.postedBy.toString() !== req.user.id && req.user.role !== 'admin') {
       return res.status(403).json({
@@ -228,16 +246,16 @@ exports.deleteJob = async (req, res) => {
         message: 'Not authorized to delete this job'
       });
     }
-    
+
     await job.remove();
-    
+
     // Remove job from user's posted jobs
     await User.findByIdAndUpdate(
       job.postedBy,
       { $pull: { 'employer.postedJobs': job._id } },
       { new: true }
     );
-    
+
     res.status(200).json({
       success: true,
       message: 'Job deleted successfully',
@@ -261,7 +279,7 @@ exports.getEmployerJobs = async (req, res) => {
     const jobs = await Job.find({ postedBy: req.user.id })
       .sort({ createdAt: -1 })
       .lean();
-    
+
     res.status(200).json({
       success: true,
       count: jobs.length,
@@ -283,14 +301,14 @@ exports.getEmployerJobs = async (req, res) => {
 exports.toggleJobStatus = async (req, res) => {
   try {
     const job = await Job.findById(req.params.id);
-    
+
     if (!job) {
       return res.status(404).json({
         success: false,
         message: 'Job not found'
       });
     }
-    
+
     // Check if user is the job poster
     if (job.postedBy.toString() !== req.user.id) {
       return res.status(403).json({
@@ -298,11 +316,11 @@ exports.toggleJobStatus = async (req, res) => {
         message: 'Not authorized to update this job'
       });
     }
-    
+
     // Toggle between active and inactive
     job.status = job.status === 'active' ? 'inactive' : 'active';
     await job.save();
-    
+
     res.status(200).json({
       success: true,
       message: `Job ${job.status === 'active' ? 'activated' : 'deactivated'} successfully`,

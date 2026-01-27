@@ -20,14 +20,24 @@ const Jobs = () => {
   const [totalJobs, setTotalJobs] = useState(0);
   const [jobs, setJobs] = useState([]);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const jobsPerPage = 5;
+
+  // Debounce search term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+      setCurrentPage(1); // Reset to first page on search
+    }, 800);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   // Fetch jobs from API
   const fetchJobs = useCallback(async () => {
     try {
       setIsLoading(true);
       const params = {
-        search: searchTerm,
+        search: debouncedSearchTerm,
         location,
         type: jobType,
         remote: location === 'remote' ? 'true' : '',
@@ -55,7 +65,7 @@ const Jobs = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [searchTerm, jobType, location, minSalary, maxSalary, experienceLevel, currentPage]);
+  }, [debouncedSearchTerm, jobType, location, minSalary, maxSalary, experienceLevel, currentPage]);
 
   // Load saved and applied jobs from localStorage on component mount
   useEffect(() => {
@@ -83,16 +93,16 @@ const Jobs = () => {
   const toggleSaveJob = (jobId) => {
     const isSaved = savedJobs.includes(jobId);
     let updatedSavedJobs;
-    
+
     if (isSaved) {
       updatedSavedJobs = savedJobs.filter(id => id !== jobId);
     } else {
       updatedSavedJobs = [...savedJobs, jobId];
     }
-    
+
     setSavedJobs(updatedSavedJobs);
     localStorage.setItem('savedJobs', JSON.stringify(updatedSavedJobs));
-    
+
     toast.success(isSaved ? 'Job removed from saved' : 'Job saved successfully');
   };
 
@@ -114,7 +124,7 @@ const Jobs = () => {
         toast.error(err.message || 'Failed to apply to job');
       }
     })();
-    
+
     // Remove from saved jobs when applied
     if (savedJobs.includes(job._id)) {
       const updatedSavedJobs = savedJobs.filter(id => id !== job._id);
@@ -132,15 +142,6 @@ const Jobs = () => {
     // Don't need to call fetchJobs here as the useEffect will trigger it
   };
 
-  if (isLoading) {
-    return (
-      <div className="loading-container">
-        <div className="loading-spinner"></div>
-        <p>Finding the best jobs for you...</p>
-      </div>
-    );
-  }
-
   // Get unique job types, locations, and experience levels for filters
   const jobTypes = [...new Set(jobs.map(job => job.type).filter(Boolean))];
   const locations = [
@@ -151,7 +152,7 @@ const Jobs = () => {
         .filter(Boolean)
     ),
   ];
-  
+
   const experienceLevels = [
     'Internship',
     'Entry Level',
@@ -202,7 +203,7 @@ const Jobs = () => {
             >
               Clear Filters
             </button>
-            
+
             <button
               className="advanced-filters-toggle"
               onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
@@ -262,7 +263,7 @@ const Jobs = () => {
                   step="1000"
                 />
               </div>
-              
+
               <div className="filter-group">
                 <label htmlFor="max-salary" className="filter-label">Max Salary ($)</label>
                 <input
@@ -276,7 +277,7 @@ const Jobs = () => {
                   step="1000"
                 />
               </div>
-              
+
               <div className="filter-group">
                 <label htmlFor="experience-level" className="filter-label">Experience Level</label>
                 <select
@@ -294,7 +295,7 @@ const Jobs = () => {
               </div>
             </div>
           </div>
-          
+
           {(searchTerm || jobType || location || minSalary || maxSalary || experienceLevel) && (
             <div className="active-filters">
               <span>Active filters: </span>
@@ -318,7 +319,7 @@ const Jobs = () => {
               )}
               {minSalary && (
                 <span className="filter-tag">
-                  ${minSalary}+ 
+                  ${minSalary}+
                   <button onClick={() => setMinSalary('')} aria-label="Remove min salary filter">×</button>
                 </span>
               )}
@@ -341,7 +342,12 @@ const Jobs = () => {
 
       <div className="jobs-content">
         <div className="jobs-list">
-          {jobs.length > 0 ? (
+          {isLoading ? (
+            <div className="loading-container" style={{ padding: '4rem 0' }}>
+              <div className="loading-spinner"></div>
+              <p>Searching for jobs...</p>
+            </div>
+          ) : jobs.length > 0 ? (
             jobs.map((job) => (
               <article key={job._id} className="job-card">
                 <div className="job-card-header">
@@ -501,10 +507,10 @@ const Jobs = () => {
                 >
                   Clear All Filters
                 </button>
-                
+
                 {totalPages > 1 && (
                   <div className="pagination">
-                    <button 
+                    <button
                       className={`pagination-arrow ${currentPage === 1 ? 'disabled' : ''}`}
                       onClick={() => paginate(currentPage - 1)}
                       disabled={currentPage === 1}
@@ -515,7 +521,7 @@ const Jobs = () => {
                       </svg>
                       Previous
                     </button>
-                    
+
                     <div className="page-numbers">
                       {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                         let pageNum;
@@ -528,7 +534,7 @@ const Jobs = () => {
                         } else {
                           pageNum = currentPage - 2 + i;
                         }
-                        
+
                         return (
                           <button
                             key={pageNum}
@@ -541,13 +547,13 @@ const Jobs = () => {
                           </button>
                         );
                       })}
-                      
+
                       {totalPages > 5 && currentPage < totalPages - 2 && (
                         <span className="page-ellipsis">...</span>
                       )}
                     </div>
-                    
-                    <button 
+
+                    <button
                       className={`pagination-arrow ${currentPage === totalPages ? 'disabled' : ''}`}
                       onClick={() => paginate(currentPage + 1)}
                       disabled={currentPage === totalPages}
