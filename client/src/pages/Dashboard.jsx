@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
-import { jobs as jobService, user as userService } from '../services/api';
+import { jobs as jobService, user as userService, applications as applicationService } from '../services/api';
 import { toast } from 'react-toastify';
 import './Dashboard.css';
 
@@ -45,6 +45,8 @@ const Dashboard = () => {
     profileViews: 0
   });
   const [recentActivity, setRecentActivity] = useState([]);
+  const [loadingApps, setLoadingApps] = useState(false);
+  const [recentApplications, setRecentApplications] = useState([]);
 
   // Load saved jobs from localStorage on component mount
   useEffect(() => {
@@ -66,6 +68,7 @@ const Dashboard = () => {
   useEffect(() => {
     if (isJobSeeker) {
       fetchRecommendedJobs();
+      fetchMyApplications();
     } else if (isEmployer) {
       fetchEmployerStats();
     }
@@ -100,6 +103,20 @@ const Dashboard = () => {
     }
   };
 
+  const fetchMyApplications = async () => {
+    try {
+      setLoadingApps(true);
+      const res = await applicationService.getMyApplications();
+      if (res.data && res.data.success) {
+        setRecentApplications(res.data.data.slice(0, 3)); // show top 3
+      }
+    } catch (error) {
+      console.error('Error fetching applications:', error);
+    } finally {
+      setLoadingApps(false);
+    }
+  };
+
   // Handle save job
   const handleSaveJob = (jobId) => {
     if (savedJobs.includes(jobId)) {
@@ -109,6 +126,22 @@ const Dashboard = () => {
       setSavedJobs([...savedJobs, jobId]);
       toast.success('Job saved successfully!');
     }
+  };
+
+  const getStatusBadge = (status) => {
+    const statusClasses = {
+      'Applied': 'status-applied',
+      'Interview Scheduled': 'status-interview',
+      'Rejected': 'status-rejected',
+      'Offer Received': 'status-offer',
+      'Hired': 'status-hired'
+    };
+
+    return (
+      <span className={`status-badge ${statusClasses[status] || 'status-applied'}`}>
+        {status}
+      </span>
+    );
   };
 
   const jobSeekerTabs = [
@@ -319,11 +352,42 @@ const Dashboard = () => {
                         <h3 className="card-title">Application Status</h3>
                       </div>
                       <div className="card-content">
-                        <div className="empty-state">
-                          <p className="empty-state-text" style={{ color: 'var(--text-muted)' }}>No applications yet</p>
-                          <p className="empty-state-subtext" style={{ color: 'var(--text-secondary)' }}>Start applying to jobs to track your progress</p>
-                          <button className="btn-primary" onClick={() => setActiveTab('jobs')}>Browse Jobs</button>
-                        </div>
+                        {loadingApps ? (
+                          <div style={{ textAlign: 'center', padding: '2rem' }}>
+                            <p style={{ color: 'var(--text-muted)' }}>Loading applications...</p>
+                          </div>
+                        ) : recentApplications.length > 0 ? (
+                          <div className="application-status-list">
+                            {recentApplications.map((app) => (
+                              <div key={app._id} className="status-item" style={{
+                                padding: '1rem',
+                                borderBottom: '1px solid rgba(255,255,255,0.05)',
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center'
+                              }}>
+                                <div>
+                                  <div style={{ fontWeight: 600, color: '#f8fafc' }}>{app.job?.title || 'Unknown Job'}</div>
+                                  <div style={{ fontSize: '0.85rem', color: '#94a3b8' }}>{app.job?.company || 'Unknown Company'}</div>
+                                </div>
+                                {getStatusBadge(app.status)}
+                              </div>
+                            ))}
+                            <button
+                              className="btn-secondary"
+                              style={{ width: '100%', marginTop: '1rem' }}
+                              onClick={() => setActiveTab('applications')}
+                            >
+                              View All Applications
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="empty-state">
+                            <p className="empty-state-text" style={{ color: 'var(--text-muted)' }}>No applications yet</p>
+                            <p className="empty-state-subtext" style={{ color: 'var(--text-secondary)' }}>Start applying to jobs to track your progress</p>
+                            <button className="btn-primary" onClick={() => setActiveTab('jobs')}>Browse Jobs</button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </>
