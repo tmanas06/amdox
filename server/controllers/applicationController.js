@@ -1,6 +1,8 @@
 const Application = require('../models/Application');
 const Job = require('../models/Job');
 const User = require('../models/User');
+const Message = require('../models/Message');
+const { sendEmail } = require('../utils/emailService');
 
 // @desc    Apply to a job (job seeker)
 // @route   POST /api/jobs/:id/apply
@@ -180,7 +182,42 @@ exports.updateStatus = async (req, res) => {
     }
 
     application.status = status;
+
+    // Add system message to application
+    const systemMsg = `Application status updated to: ${status}`;
+    application.messages.push({
+      sender: req.user._id,
+      content: systemMsg,
+      timestamp: new Date()
+    });
+
     await application.save();
+
+    // Create Message document for the chat view
+    await Message.create({
+      application: application._id,
+      sender: req.user._id,
+      recipient: application.applicant,
+      content: systemMsg,
+      messageType: 'notification'
+    });
+
+    // Send Email notification
+    try {
+      const applicant = await User.findById(application.applicant);
+      const job = await Job.findById(application.job);
+
+      if (applicant && applicant.email) {
+        await sendEmail({
+          to: applicant.email,
+          subject: `Update on your application for ${job.title}`,
+          text: `Hi ${applicant.profile?.name || 'there'},\n\nYour application status for "${job.title}" at "${job.company}" has been updated to: ${status}.\n\nLog in to Amdox to see more details.\n\nBest regards,\nThe Amdox Team`,
+          html: `<p>Hi ${applicant.profile?.name || 'there'},</p><p>Your application status for <strong>${job.title}</strong> at <strong>${job.company}</strong> has been updated to: <strong>${status}</strong>.</p><p>Log in to <a href="${process.env.CLIENT_URL || 'http://localhost:3000'}/dashboard">Amdox</a> to see more details.</p><p>Best regards,<br>The Amdox Team</p>`
+        });
+      }
+    } catch (emailErr) {
+      console.error('Failed to send status update email:', emailErr);
+    }
 
     return res.status(200).json({
       success: true,
@@ -277,7 +314,41 @@ exports.addRound = async (req, res) => {
       status: 'Pending'
     });
 
+    // Add status message
+    const roundMsg = `New interview round scheduled: ${name}${scheduledDate ? ` on ${new Date(scheduledDate).toLocaleString()}` : ''}`;
+    application.messages.push({
+      sender: req.user._id,
+      content: roundMsg,
+      timestamp: new Date()
+    });
+
     await application.save();
+
+    // Create Message document
+    await Message.create({
+      application: application._id,
+      sender: req.user._id,
+      recipient: application.applicant,
+      content: roundMsg,
+      messageType: 'notification'
+    });
+
+    // Send Email
+    try {
+      const applicant = await User.findById(application.applicant);
+      const job = await Job.findById(application.job);
+
+      if (applicant && applicant.email) {
+        await sendEmail({
+          to: applicant.email,
+          subject: `Interview Scheduled: ${name}`,
+          text: `Hi ${applicant.profile?.name || 'there'},\n\nAn interview round "${name}" has been scheduled for your application as "${job.title}" at "${job.company}".\n\n${scheduledDate ? `Date: ${new Date(scheduledDate).toLocaleString()}` : 'Date: To be decided'}\n\nLog in to Amdox for more details.\n\nBest regards,\nThe Amdox Team`,
+          html: `<p>Hi ${applicant.profile?.name || 'there'},</p><p>An interview round <strong>${name}</strong> has been scheduled for your application as <strong>${job.title}</strong> at <strong>${job.company}</strong>.</p><p>${scheduledDate ? `<strong>Date:</strong> ${new Date(scheduledDate).toLocaleString()}` : '<strong>Date:</strong> To be decided'}</p><p>Log in to <a href="${process.env.CLIENT_URL || 'http://localhost:3000'}/dashboard">Amdox</a> for more details.</p><p>Best regards,<br>The Amdox Team</p>`
+        });
+      }
+    } catch (emailErr) {
+      console.error('Failed to send round addition email:', emailErr);
+    }
 
     res.status(200).json({
       success: true,

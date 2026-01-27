@@ -35,7 +35,8 @@ const Applications = ({ onBrowseJobs }) => {
             status: app.status || 'Applied',
             jobDetails: { location: app.job?.location, type: app.job?.type },
             nextSteps: 'Waiting for response from recruiter',
-            messages: app.messages || []
+            messages: app.messages || [],
+            rounds: app.rounds || []
           }));
 
         setApplications(rows || []);
@@ -170,6 +171,27 @@ const Applications = ({ onBrowseJobs }) => {
                 <h4>Next Steps:</h4>
                 <p>{application.nextSteps || 'Waiting for response from recruiter'}</p>
               </div>
+
+              {application.rounds && application.rounds.length > 0 && (
+                <div className="application-rounds" style={{ marginTop: '1rem', padding: '1rem', background: 'rgba(255,255,255,0.03)', borderRadius: '8px' }}>
+                  <h4 style={{ color: 'var(--primary-color)', marginBottom: '0.5rem' }}>Interview Rounds:</h4>
+                  {application.rounds.map((round, idx) => (
+                    <div key={idx} style={{ marginBottom: '0.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div>
+                        <strong>{round.name}</strong>
+                        {round.scheduledDate && (
+                          <div style={{ fontSize: '0.85rem', color: '#94a3b8' }}>
+                            Scheduled for: {new Date(round.scheduledDate).toLocaleString()}
+                          </div>
+                        )}
+                      </div>
+                      <span className={`status-badge status-${(round.status || 'pending').toLowerCase()}`} style={{ fontSize: '0.75rem' }}>
+                        {round.status}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
 
               {application.notes && (
                 <div className="application-notes">
