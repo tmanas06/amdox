@@ -58,12 +58,14 @@ const Profile = () => {
     }));
   };
 
+  /* 
   const handleEduChange = (id, field, value) => {
     setFormData(prev => ({
       ...prev,
       education: prev.education.map(edu => edu.id === id ? { ...edu, [field]: value } : edu)
     }));
   };
+  */
 
   const addExperience = () => {
     setFormData(prev => ({

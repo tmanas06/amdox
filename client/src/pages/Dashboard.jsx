@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useTheme } from '../context/ThemeContext';
+// import { useTheme } from '../context/ThemeContext';
 import { jobs as jobService, user as userService, applications as applicationService } from '../services/api';
 import { toast } from 'react-toastify';
 import './Dashboard.css';
@@ -16,7 +16,7 @@ import EmployerPostings from '../components/dashboard/EmployerPostings';
 import EmployerApplications from '../components/dashboard/EmployerApplications';
 import EmployerCandidates from '../components/dashboard/EmployerCandidates';
 import EmployerCompanyProfile from '../components/dashboard/EmployerCompanyProfile';
-// import ThemeToggle from '../components/ThemeToggle'; // Unused
+// // import ThemeToggle from '../components/ThemeToggle'; // Unused
 import Navbar from '../components/Navbar';
 
 /**
@@ -25,7 +25,6 @@ import Navbar from '../components/Navbar';
  */
 const Dashboard = () => {
   const { user } = useAuth(); // logout unused
-  const { theme } = useTheme(); // toggleTheme unused
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
   const [recommendedJobs, setRecommendedJobs] = useState([]);

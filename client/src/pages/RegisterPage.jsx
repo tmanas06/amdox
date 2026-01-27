@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useTheme } from '../context/ThemeContext';
+// // import { useTheme } from '../context/ThemeContext';
 import ThemeToggle from '../components/ThemeToggle';
 import './RegisterPage.css';
 
@@ -11,7 +11,7 @@ import './RegisterPage.css';
  */
 const RegisterPage = () => {
   const navigate = useNavigate();
-  const { theme, toggleTheme } = useTheme();
+  // const { theme, toggleTheme } = useTheme();
   const { registerWithEmail, signInWithGoogle, isAuthenticated, user, loading, error, clearError } = useAuth();
 
   const [formData, setFormData] = useState({

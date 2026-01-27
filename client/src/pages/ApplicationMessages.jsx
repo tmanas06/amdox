@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { applications as applicationService, messages as messageService } from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -19,7 +19,7 @@ const ApplicationMessages = () => {
 
     useEffect(() => {
         fetchData();
-    }, [applicationId]);
+    }, [fetchData]);
 
     useEffect(() => {
         if (chatEndRef.current) {
@@ -27,7 +27,7 @@ const ApplicationMessages = () => {
         }
     }, [messages]);
 
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         console.group('ApplicationMessages Fetch Debug');
         console.log('Timestamp:', new Date().toISOString());
         console.log('Application ID from URL:', applicationId);
@@ -58,15 +58,15 @@ const ApplicationMessages = () => {
 
             console.log('Final application object:', app);
             setApplication(app);
-
-        } catch (err) {
-            console.error('CRITICAL ERROR in fetchData:', err);
-            toast.error('Failed to load chat');
+        } catch (error) {
+            console.error('Critical Fetch Error:', error);
+            toast.error('Failed to load application data');
         } finally {
             setIsLoading(false);
             console.groupEnd();
         }
-    };
+    }, [applicationId]);
+
 
     const handleSendMessage = async (e) => {
         e.preventDefault();

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useTheme } from '../context/ThemeContext';
-import ThemeToggle from '../components/ThemeToggle';
+// // import { useTheme } from '../context/ThemeContext';
+// // import ThemeToggle from '../components/ThemeToggle';
 import Navbar from '../components/Navbar';
 import './LoginPage.css';
 
@@ -12,7 +12,7 @@ import './LoginPage.css';
  */
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { theme, toggleTheme } = useTheme();
+  // const { theme, toggleTheme } = useTheme();
   const { signInWithGoogle, loginWithEmail, isAuthenticated, user, loading, error, clearError } = useAuth();
 
   const [email, setEmail] = useState('');
