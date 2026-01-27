@@ -1,15 +1,15 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { applications as applicationService, messages as messageService } from '../../services/api';
+import { applications as applicationService } from '../../services/api';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import './EmployerApplications.css';
 
 const EmployerApplications = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
+  // const [error, setError] = useState('');
   const [apps, setApps] = useState([]);
 
   // Modal State

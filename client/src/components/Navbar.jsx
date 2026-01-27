@@ -7,20 +7,21 @@ import './Navbar.css';
 
 const Navbar = ({ tabs = [], activeTab, onTabChange, showTabs = true }) => {
     const { user, logout } = useAuth();
-    const navigate = useNavigate();
-    const [unreadCount, setUnreadCount] = useState(0);
+    // const navigate = useNavigate();
+    // const [unreadCount, setUnreadCount] = useState(0); // unreadCount unused since icon removed
 
     const isJobSeeker = user?.role === 'job_seeker';
     const isEmployer = user?.role === 'employer';
 
+    /*
     // Fetch unread message count
     useEffect(() => {
         const fetchUnreadCount = async () => {
             if (!user) return;
 
             try {
-                const res = await messageService.getUnreadCount();
-                setUnreadCount(res.data?.count || 0);
+                // const res = await messageService.getUnreadCount();
+                // setUnreadCount(res.data?.count || 0);
             } catch (err) {
                 console.error('Failed to fetch unread count:', err);
             }
@@ -33,6 +34,7 @@ const Navbar = ({ tabs = [], activeTab, onTabChange, showTabs = true }) => {
 
         return () => clearInterval(interval);
     }, [user]);
+    */
 
     // Message count effect removed as feature is hidden in navbar
 

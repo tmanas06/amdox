@@ -17,16 +17,6 @@ const ApplicationMessages = () => {
     const [application, setApplication] = useState(null);
     const chatEndRef = useRef(null);
 
-    useEffect(() => {
-        fetchData();
-    }, [fetchData]);
-
-    useEffect(() => {
-        if (chatEndRef.current) {
-            chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
-        }
-    }, [messages]);
-
     const fetchData = useCallback(async () => {
         console.group('ApplicationMessages Fetch Debug');
         console.log('Timestamp:', new Date().toISOString());
@@ -66,6 +56,16 @@ const ApplicationMessages = () => {
             console.groupEnd();
         }
     }, [applicationId]);
+
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
+
+    useEffect(() => {
+        if (chatEndRef.current) {
+            chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [messages]);
 
 
     const handleSendMessage = async (e) => {
