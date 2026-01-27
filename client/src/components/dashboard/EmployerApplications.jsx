@@ -9,7 +9,7 @@ const EmployerApplications = () => {
   // const navigate = useNavigate();
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
-  // const [error, setError] = useState('');
+  // Error state removed to satisfy build rules
   const [apps, setApps] = useState([]);
 
   // Modal State
@@ -26,12 +26,12 @@ const EmployerApplications = () => {
   const load = async () => {
     try {
       setIsLoading(true);
-      setError('');
+      // setError('');
       const res = await applicationService.getEmployerApplications();
       setApps(res.data?.data || []);
     } catch (err) {
       console.error(err);
-      setError(err.message || 'Failed to load applications');
+      // setError(err.message || 'Failed to load applications');
       toast.error(err.message || 'Failed to load applications');
     } finally {
       setIsLoading(false);

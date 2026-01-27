@@ -7,7 +7,7 @@ import './Navbar.css';
 
 const Navbar = ({ tabs = [], activeTab, onTabChange, showTabs = true }) => {
     const { user, logout } = useAuth();
-    // const navigate = useNavigate();
+    const navigate = useNavigate();
     // const [unreadCount, setUnreadCount] = useState(0); // unreadCount unused since icon removed
 
     const isJobSeeker = user?.role === 'job_seeker';
