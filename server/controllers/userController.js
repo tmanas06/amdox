@@ -165,8 +165,21 @@ const extractSectionText = (text, headers) => {
   let startIdx = -1;
 
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].toLowerCase();
-    if (headers.some(h => line === h || line.startsWith(h))) {
+    const line = lines[i];
+    const lowerLine = line.toLowerCase().trim();
+
+    // Strict header check
+    const isHeader = headers.some(h => {
+      // Exact match
+      if (lowerLine === h) return true;
+      // Match with colon
+      if (lowerLine === h + ':') return true;
+      // Match startsWith but only if line is short (preventing sentence matches)
+      if (lowerLine.startsWith(h) && lowerLine.length < h.length + 10) return true;
+      return false;
+    });
+
+    if (isHeader) {
       startIdx = i + 1;
       break;
     }
@@ -175,41 +188,131 @@ const extractSectionText = (text, headers) => {
   if (startIdx === -1) return '';
 
   let sectionContent = [];
-  const nextSectionHeaders = ['experience', 'education', 'skills', 'projects', 'summary', 'about', 'contact', 'languages', 'certifications'];
+  // Common section headers that indicate a new section
+  const nextSectionHeaders = [
+    'work experience', 'professional experience', 'experience', 'employment history', 'employment',
+    'education', 'academic background', 'qualification', 'qualifications',
+    'skills', 'technical skills', 'expertise', 'technologies', 'core competencies',
+    'projects', 'certifications', 'certificates', 'certification',
+    'summary', 'professional summary', 'profile', 'about me', 'about',
+    'contact', 'languages', 'awards', 'publications', 'references'
+  ];
 
   for (let i = startIdx; i < lines.length; i++) {
     const line = lines[i];
-    const lowerLine = line.toLowerCase();
+    if (!line) continue; // Skip empty lines
 
-    // Check if we hit another section
-    if (nextSectionHeaders.some(h => lowerLine === h || lowerLine.startsWith(h + ':'))) break;
-    if (line) sectionContent.push(line);
+    const lowerLine = line.toLowerCase().trim();
+
+    // Check if this line is a section header
+    const isNewSection = nextSectionHeaders.some(h => {
+      // Exact match (case-insensitive)
+      if (lowerLine === h) return true;
+      // Match with colon
+      if (lowerLine === h + ':') return true;
+      return false;
+    });
+
+    if (isNewSection) break;
+
+    sectionContent.push(line);
   }
 
-  return sectionContent.join('\n');
+  const result = sectionContent.join('\n');
+  return result;
 };
 
 const parseExperience = (expText) => {
-  if (!expText) return [];
+  if (!expText || expText.trim().length === 0) return [];
 
-  const lines = expText.split('\n').filter(Boolean);
+  const lines = expText.split('\n').map(l => l.trim()).filter(Boolean);
   const experiences = [];
 
-  // Attempt to identify blocks (usually 2-4 experiences max for parsing)
-  // This is a simplified version. In a real app, one might use NLP.
-  if (lines.length > 0) {
-    experiences.push({
-      id: Date.now(),
-      title: lines[0].slice(0, 50),
-      company: lines[1] ? lines[1].slice(0, 50) : '',
-      from: '',
-      to: '',
-      current: false,
-      description: lines.slice(2, 6).join(' ')
-    });
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i];
+    const lowerLine = line.toLowerCase().trim();
+
+    // Skip section headers
+    const sectionHeaders = ['work experience', 'professional experience', 'experience', 'employment history', 'employment'];
+    if (sectionHeaders.some(h => lowerLine === h || lowerLine === h + ':')) {
+      i++;
+      continue;
+    }
+
+    // Skip bullet points and technology lines at the start
+    if (line.startsWith('•') || line.startsWith('-') || lowerLine.startsWith('technolog')) {
+      i++;
+      continue;
+    }
+
+    // Potential job title (usually first non-bullet line)
+    const title = line;
+    i++;
+
+    if (i >= lines.length) break;
+
+    // Next line is usually company and location
+    let company = lines[i];
+    let from = '';
+    let to = '';
+    i++;
+
+    // Check if next line contains dates
+    if (i < lines.length) {
+      const dateLine = lines[i];
+      // Look for date patterns like "January 2021 - Present" or "2019 - 2020"
+      if (/\d{4}|january|february|march|april|may|june|july|august|september|october|november|december/i.test(dateLine)) {
+        // Extract dates
+        const dateParts = dateLine.split('-').map(d => d.trim());
+        if (dateParts.length >= 2) {
+          from = dateParts[0];
+          to = dateParts[1];
+        }
+        i++;
+      }
+    }
+
+    // Collect description lines (bullet points)
+    const descLines = [];
+    while (i < lines.length) {
+      const descLine = lines[i];
+      // Stop if we hit what looks like a new job title (not a bullet point)
+      const isBullet = descLine.startsWith('•') || descLine.startsWith('-');
+      const isTech = descLine.toLowerCase().startsWith('technolog');
+
+      console.log(`Desc line check: "${descLine.substring(0, 20)}..." | Bullet: ${isBullet} | Tech: ${isTech}`);
+
+      if (!isBullet && !isTech) {
+        console.log("Breaking description loop - new title candidate");
+        // This might be a new job title
+        break;
+      }
+      descLines.push(descLine.replace(/^[•\-]\s*/, ''));
+      i++;
+
+      // Limit description lines
+      if (descLines.length >= 5) break;
+    }
+
+    // Only add if we have at least a title
+    if (title && title.length > 2 && !title.startsWith('•')) {
+      experiences.push({
+        id: Date.now() + experiences.length,
+        title: title.slice(0, 100),
+        company: company.slice(0, 100),
+        from,
+        to,
+        current: /present|current/i.test(to),
+        description: descLines.join(' ').slice(0, 500)
+      });
+    }
+
+    // Limit to 5 experiences
+    if (experiences.length >= 5) break;
   }
 
-  return experiences;
+  return experiences.length > 0 ? experiences : [];
 };
 
 const parseEducation = (eduText) => {
@@ -231,29 +334,83 @@ const parseEducation = (eduText) => {
 
 exports.uploadResume = async (req, res) => {
   try {
+    console.log('📄 Resume upload request received');
+
     if (!req.file) {
+      console.log('❌ No file in request');
       return res.status(400).json({ success: false, message: 'Resume file is required' });
     }
 
+    console.log('📋 File details:', {
+      originalname: req.file.originalname,
+      mimetype: req.file.mimetype,
+      size: req.file.size,
+      bufferLength: req.file.buffer?.length
+    });
+
     if (req.user._id.toString() !== req.params.id && req.user.id !== req.params.id) {
+      console.log('❌ Unauthorized access attempt');
       return res.status(403).json({ success: false, message: 'Not authorized' });
     }
 
     let text = '';
-    if (req.file.mimetype === 'application/pdf') {
-      const data = await pdfParse(req.file.buffer);
-      text = data.text || '';
-    } else {
-      text = req.file.buffer.toString('utf-8');
+
+    // Extract text from file
+    try {
+      if (req.file.mimetype === 'application/pdf') {
+        console.log('📖 Parsing PDF file...');
+        const data = await pdfParse(req.file.buffer);
+        text = data.text || '';
+        console.log('✅ PDF parsed. Text length:', text.length);
+        console.log('📝 First 200 chars:', text.substring(0, 200));
+      } else {
+        console.log('📖 Reading text file...');
+        text = req.file.buffer.toString('utf-8');
+        console.log('✅ Text file read. Length:', text.length);
+        console.log('📝 First 200 chars:', text.substring(0, 200));
+      }
+    } catch (parseError) {
+      console.error('❌ Error parsing file:', parseError);
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to read resume file. Please ensure it\'s a valid PDF or text file.'
+      });
     }
 
+    if (!text || text.trim().length < 50) {
+      console.log('⚠️ Extracted text is too short or empty');
+      return res.status(400).json({
+        success: false,
+        message: 'Could not extract text from resume. Please ensure the PDF is not image-based or corrupted.'
+      });
+    }
+
+    // Extract information
+    console.log('🔍 Extracting information from text...');
+
     const name = extractName(text);
+    console.log('👤 Extracted name:', name);
+
     const email = extractEmail(text);
+    console.log('📧 Extracted email:', email);
+
     const phone = extractPhone(text);
+    console.log('📱 Extracted phone:', phone);
+
     const skills = extractSkills(text);
+    console.log('🛠️ Extracted skills:', skills.length, 'skills found');
+
     const summaryText = extractSectionText(text, ['summary', 'professional summary', 'profile', 'about me']);
+    console.log('📄 Extracted summary length:', summaryText.length);
+
     const expText = extractSectionText(text, ['experience', 'work experience', 'professional experience', 'employment history']);
+    console.log('💼 Extracted experience text length:', expText.length);
+
     const eduText = extractSectionText(text, ['education', 'academic background', 'qualification']);
+    console.log('🎓 Extracted education text length:', eduText.length);
+
+    const experience = parseExperience(expText);
+    const education = parseEducation(eduText);
 
     const profileSuggestions = {
       name,
@@ -263,18 +420,43 @@ exports.uploadResume = async (req, res) => {
       summary: summaryText.slice(0, 500) || text.split('\n').filter(l => l.length > 10).slice(0, 3).join(' ').slice(0, 500),
       headline: name ? `${name} | Tech Professional` : '',
       location: '',
-      experience: parseExperience(expText),
-      education: parseEducation(eduText),
+      experience,
+      education,
     };
+
+    console.log('✅ Profile suggestions generated:', {
+      hasName: !!name,
+      hasEmail: !!email,
+      hasPhone: !!phone,
+      skillsCount: skills.length,
+      hasSummary: !!profileSuggestions.summary,
+      experienceCount: experience.length,
+      educationCount: education.length
+    });
 
     res.status(200).json({
       success: true,
       message: 'Resume parsed successfully',
       profile: profileSuggestions,
+      debug: {
+        textLength: text.length,
+        extractedFields: {
+          name: !!name,
+          email: !!email,
+          phone: !!phone,
+          skills: skills.length,
+          experience: experience.length,
+          education: education.length
+        }
+      }
     });
   } catch (error) {
-    console.error('Error parsing resume:', error);
-    res.status(500).json({ success: false, message: 'Failed to parse resume' });
+    console.error('❌ Error parsing resume:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to parse resume. Please try again or contact support.',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 };
 // @desc    Get employer dashboard stats

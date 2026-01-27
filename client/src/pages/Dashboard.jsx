@@ -11,12 +11,12 @@ import Jobs from '../components/dashboard/Jobs';
 import Applications from '../components/dashboard/Applications';
 import SavedJobs from '../components/dashboard/SavedJobs';
 import Profile from '../components/dashboard/Profile';
-import PostJob from '../components/dashboard/PostJob';
+// import PostJob from '../components/dashboard/PostJob'; // Unused
 import EmployerPostings from '../components/dashboard/EmployerPostings';
 import EmployerApplications from '../components/dashboard/EmployerApplications';
 import EmployerCandidates from '../components/dashboard/EmployerCandidates';
 import EmployerCompanyProfile from '../components/dashboard/EmployerCompanyProfile';
-import ThemeToggle from '../components/ThemeToggle';
+// import ThemeToggle from '../components/ThemeToggle'; // Unused
 import Navbar from '../components/Navbar';
 
 /**
@@ -24,8 +24,8 @@ import Navbar from '../components/Navbar';
  * Professional role-based dashboard with glassmorphism navigation
  */
 const Dashboard = () => {
-  const { user, logout } = useAuth();
-  const { theme, toggleTheme } = useTheme();
+  const { user } = useAuth(); // logout unused
+  const { theme } = useTheme(); // toggleTheme unused
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
   const [recommendedJobs, setRecommendedJobs] = useState([]);

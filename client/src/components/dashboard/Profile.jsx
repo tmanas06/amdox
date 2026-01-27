@@ -121,6 +121,8 @@ const Profile = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    console.log('📄 File selected:', file.name, file.type, file.size);
+
     if (file.type !== 'application/pdf' && !file.type.startsWith('text/')) {
       toast.error('Please upload a PDF or text resume');
       return;
@@ -131,7 +133,23 @@ const Profile = () => {
 
     try {
       const parsed = await uploadResume(file);
+      console.log('✅ Parsed data received:', parsed);
 
+      // Check if we got meaningful data
+      const hasData = parsed.name || parsed.phone || parsed.skills?.length > 0 ||
+        parsed.experience?.length > 0 || parsed.education?.length > 0;
+
+      if (!hasData) {
+        toast.update(loadingToast, {
+          render: 'Could not extract information from resume. Please try a different file or fill in manually.',
+          type: 'warning',
+          isLoading: false,
+          autoClose: 5000
+        });
+        return;
+      }
+
+      // Merge parsed data with existing form data
       setFormData(prev => ({
         ...prev,
         name: parsed.name || prev.name,
@@ -144,18 +162,32 @@ const Profile = () => {
       }));
 
       setIsEditing(true);
+
+      // Build a helpful message about what was extracted
+      const extractedFields = [];
+      if (parsed.name) extractedFields.push('name');
+      if (parsed.phone) extractedFields.push('phone');
+      if (parsed.skills?.length) extractedFields.push(`${parsed.skills.length} skills`);
+      if (parsed.experience?.length) extractedFields.push('experience');
+      if (parsed.education?.length) extractedFields.push('education');
+
+      const message = extractedFields.length > 0
+        ? `Resume parsed! Extracted: ${extractedFields.join(', ')}. Review and save your profile.`
+        : 'Resume parsed! Review and save your updated profile.';
+
       toast.update(loadingToast, {
-        render: 'Resume parsed! Review and save your updated profile.',
+        render: message,
         type: 'success',
         isLoading: false,
-        autoClose: 3000
+        autoClose: 5000
       });
     } catch (err) {
+      console.error('❌ Resume upload failed:', err);
       toast.update(loadingToast, {
-        render: err.message || 'Failed to parse resume',
+        render: err.message || 'Failed to parse resume. Please try again.',
         type: 'error',
         isLoading: false,
-        autoClose: 3000
+        autoClose: 5000
       });
     } finally {
       setIsParsingResume(false);

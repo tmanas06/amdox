@@ -170,6 +170,93 @@ export const getCurrentUser = async () => {
 };
 
 /**
+ * Request password reset OTP
+ * @param {string} email - User email
+ * @returns {Promise<Object>} Response message
+ */
+export const forgotPassword = async (email) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to send OTP');
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    throw error;
+  }
+};
+
+/**
+ * Verify OTP
+ * @param {string} email - User email
+ * @param {string} otp - 6-digit OTP
+ * @returns {Promise<Object>} Response message
+ */
+export const verifyOTP = async (email, otp) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/verify-otp`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, otp }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'OTP verification failed');
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Verify OTP error:', error);
+    throw error;
+  }
+};
+
+/**
+ * Reset password
+ * @param {string} email - User email
+ * @param {string} otp - 6-digit OTP
+ * @param {string} newPassword - New password
+ * @returns {Promise<Object>} Response message
+ */
+export const resetPassword = async (email, otp, newPassword) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/reset-password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, otp, newPassword }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Password reset failed');
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Reset password error:', error);
+    throw error;
+  }
+};
+
+/**
  * Logout - removes token from localStorage
  */
 export const logout = () => {

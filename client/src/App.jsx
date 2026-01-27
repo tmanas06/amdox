@@ -4,6 +4,7 @@ import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import RegisterPage from './pages/RegisterPage';
 import Dashboard from './pages/Dashboard';
 import PostJob from './components/dashboard/PostJob';
@@ -13,6 +14,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import './styles/themes.css'; // Existing remote theme
 import './App.css';
 import './theme.css'; // My refined theme override
+import ApplicationMessages from './pages/ApplicationMessages';
 
 /**
  * Main App Component
@@ -26,6 +28,7 @@ function App() {
           <Routes>
             {/* Public routes */}
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/register" element={<RegisterPage />} />
 
             {/* Protected routes */}
@@ -50,6 +53,17 @@ function App() {
               element={
                 <ProtectedRoute>
                   <JobDetails />
+                </ProtectedRoute>
+              }
+            />
+
+
+
+            <Route
+              path="/applications/:applicationId/messages"
+              element={
+                <ProtectedRoute>
+                  <ApplicationMessages />
                 </ProtectedRoute>
               }
             />

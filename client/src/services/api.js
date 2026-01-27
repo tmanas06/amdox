@@ -117,6 +117,9 @@ export const applications = {
   // Get all applications for current user (job seeker)
   getMyApplications: () => api.get('/applications/me'),
 
+  // Get single application by ID
+  getById: (id) => api.get(`/applications/${id}`),
+
   // Get all applications for employer jobs
   getEmployerApplications: () => api.get('/applications/employer'),
 

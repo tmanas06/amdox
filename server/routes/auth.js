@@ -22,6 +22,24 @@ router.post('/register', authController.register);
 router.post('/login', authController.login);
 
 /**
+ * POST /api/auth/forgot-password
+ * Send OTP to email
+ */
+router.post('/forgot-password', authController.forgotPassword);
+
+/**
+ * POST /api/auth/verify-otp
+ * Verify email OTP
+ */
+router.post('/verify-otp', authController.verifyOTP);
+
+/**
+ * POST /api/auth/reset-password
+ * Reset password with OTP
+ */
+router.post('/reset-password', authController.resetPassword);
+
+/**
  * GET /api/auth/me
  * Get current authenticated user
  * Requires authentication

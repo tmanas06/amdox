@@ -236,3 +236,24 @@ GitHub Actions
 - Validate all user inputs on both client and server
 - Implement CSRF protection for production deployments
 - Regularly update dependencies for security patches
+
+
+
+
+4.2 Batch :
+
+Job Application
+Job seekers can apply 
+for jobs directly through 
+the portal.
+Employers can view 
+applications and 
+manage candidates
+
+Job Search
+Simple search 
+functionality for job 
+seekers to find listings.
+Basic search filters such 
+as job type, location, and 
+keyword.

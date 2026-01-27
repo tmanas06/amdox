@@ -1,19 +1,19 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { 
-  signInWithPopup, 
-  signInWithRedirect, 
+import {
+  signInWithPopup,
+  signInWithRedirect,
   signOut as firebaseSignOut,
-  onAuthStateChanged 
+  onAuthStateChanged
 } from 'firebase/auth';
 import { auth, googleProvider } from '../firebase/config';
 import { user as userApi } from '../services/api';
-import { 
-  firebaseLogin, 
-  login, 
-  register, 
-  getCurrentUser, 
+import {
+  firebaseLogin,
+  login,
+  register,
+  getCurrentUser,
   logout as removeToken,
-  getToken 
+  getToken
 } from '../services/authService';
 
 const AuthContext = createContext(null);
@@ -41,7 +41,7 @@ export const AuthProvider = ({ children }) => {
   const initializeAuth = async () => {
     try {
       setLoading(true);
-      
+
       // Check if we have a token
       const token = getToken();
       if (token) {
@@ -93,14 +93,14 @@ export const AuthProvider = ({ children }) => {
     try {
       setError(null);
       setLoading(true);
-      
+
       const result = await signInWithPopup(auth, googleProvider);
       const firebaseUser = result.user;
-      
+
       // Send to backend
       const response = await firebaseLogin(firebaseUser, role);
       setUser(response.user);
-      
+
       return response;
     } catch (error) {
       const errorMessage = error.message || 'Google sign-in failed';
@@ -139,10 +139,10 @@ export const AuthProvider = ({ children }) => {
     try {
       setError(null);
       setLoading(true);
-      
+
       const response = await login(email, password);
       setUser(response.user);
-      
+
       return response;
     } catch (error) {
       const errorMessage = error.message || 'Login failed';
@@ -161,10 +161,10 @@ export const AuthProvider = ({ children }) => {
     try {
       setError(null);
       setLoading(true);
-      
+
       const response = await register(userData);
       setUser(response.user);
-      
+
       return response;
     } catch (error) {
       const errorMessage = error.message || 'Registration failed';
@@ -182,15 +182,15 @@ export const AuthProvider = ({ children }) => {
     try {
       setError(null);
       setLoading(true);
-      
+
       // Sign out from Firebase if signed in
       if (auth.currentUser) {
         await firebaseSignOut(auth);
       }
-      
+
       // Remove token
       removeToken();
-      
+
       // Clear user state
       setUser(null);
     } catch (error) {
@@ -226,8 +226,25 @@ export const AuthProvider = ({ children }) => {
     if (!user?.id) {
       throw new Error('User not loaded');
     }
-    const response = await userApi.uploadResume(user.id, file);
-    return response.data?.profile || {};
+
+    try {
+      console.log('📤 Uploading resume file:', file.name, file.type, file.size);
+      const response = await userApi.uploadResume(user.id, file);
+      console.log('📥 Resume upload response:', response.data);
+
+      const profile = response.data?.profile;
+
+      if (!profile) {
+        console.error('❌ No profile data in response:', response.data);
+        throw new Error('Server did not return profile data');
+      }
+
+      console.log('✅ Parsed profile data:', profile);
+      return profile;
+    } catch (error) {
+      console.error('❌ Resume upload error:', error);
+      throw error;
+    }
   };
 
   const value = {

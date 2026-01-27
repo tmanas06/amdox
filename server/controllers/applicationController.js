@@ -80,6 +80,53 @@ exports.getMyApplications = async (req, res) => {
   }
 };
 
+// @desc    Get single application by ID
+// @route   GET /api/applications/:id
+// @access  Private
+exports.getApplicationById = async (req, res) => {
+  try {
+    const applicationId = req.params.id;
+    const application = await Application.findById(applicationId)
+      .populate('job')
+      .populate('applicant', 'name email profile')
+      .populate('employer', 'name email')
+      .lean();
+
+    if (!application) {
+      return res.status(404).json({
+        success: false,
+        message: 'Application not found'
+      });
+    }
+
+    // Authorization check
+    // Allow if user is the applicant, the employer, or an admin
+    const userId = req.user._id.toString();
+    const isApplicant = application.applicant?._id.toString() === userId || application.applicant.toString() === userId;
+    const isEmployer = application.employer?._id.toString() === userId || application.employer.toString() === userId;
+    const isAdmin = req.user.role === 'admin';
+
+    if (!isApplicant && !isEmployer && !isAdmin) {
+      return res.status(403).json({
+        success: false,
+        message: 'Not authorized to view this application'
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: application
+    });
+
+  } catch (error) {
+    console.error('Error fetching application by ID:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to fetch application'
+    });
+  }
+};
+
 // @desc    Get applications for employer jobs
 // @route   GET /api/applications/employer
 // @access  Private/employer

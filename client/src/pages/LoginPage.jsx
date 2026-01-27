@@ -204,6 +204,11 @@ const LoginPage = () => {
                     required
                     disabled={loading}
                   />
+                  <div style={{ textAlign: 'right', marginTop: '8px' }}>
+                    <Link to="/forgot-password" style={{ color: '#4F46E5', fontSize: '0.85rem', textDecoration: 'none' }}>
+                      Forgot Password?
+                    </Link>
+                  </div>
                 </div>
 
                 <button
@@ -245,7 +250,7 @@ const LoginPage = () => {
       <footer className="amdox-footer">
         {/* Footer content can be added here in the future */}
       </footer>
-    </div>
+    </div >
   );
 };
 

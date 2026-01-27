@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
+const { sendEmail } = require('../utils/emailService');
+const crypto = require('crypto');
 
 /**
  * Generate JWT token for user
@@ -400,5 +402,129 @@ exports.getCurrentUser = async (req, res) => {
       message: 'Failed to get user information',
       error: error.message
     });
+  }
+};
+/**
+ * POST /api/auth/forgot-password
+ * Generates OTP and sends to user email
+ */
+exports.forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ success: false, message: 'Email is required' });
+    }
+
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
+    if (!user) {
+      // For security reasons, don't reveal if user exists
+      return res.status(200).json({ success: true, message: 'If a user with that email exists, an OTP has been sent' });
+    }
+
+    // Generate 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // Save OTP to user (expires in 10 mins)
+    user.resetPasswordOTP = otp;
+    user.resetPasswordOTPExpires = Date.now() + 10 * 60 * 1000;
+    await user.save();
+
+    // Send email
+    try {
+      await sendEmail({
+        to: user.email,
+        subject: 'Password Reset OTP - Amdox',
+        text: `Your OTP for password reset is: ${otp}. It is valid for 10 minutes.`,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px;">
+            <h2 style="color: #333;">Password Reset</h2>
+            <p>You requested a password reset for your Amdox account.</p>
+            <p>Your OTP is:</p>
+            <div style="background-color: #f4f4f4; padding: 15px; font-size: 24px; font-weight: bold; text-align: center; letter-spacing: 5px; color: #4F46E5; border-radius: 5px;">
+              ${otp}
+            </div>
+            <p style="color: #666; margin-top: 20px;">This OTP is valid for 10 minutes. If you did not request this, please ignore this email.</p>
+            <p style="margin-top: 30px;">Best regards,<br>The Amdox Team</p>
+          </div>
+        `
+      });
+    } catch (emailError) {
+      console.error('Email sending failed:', emailError);
+      // We still return success because the OTP was generated and saved, 
+      // but in production, we'd want to handle this better.
+      return res.status(200).json({ success: true, message: 'OTP generated but email sending failed. Please check server logs.' });
+    }
+
+    res.status(200).json({ success: true, message: 'OTP sent to email. Please check your inbox and spam folder.' });
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    res.status(500).json({ success: false, message: 'Internal server error', error: error.message });
+  }
+};
+
+/**
+ * POST /api/auth/verify-otp
+ * Verifies if the provided OTP is correct and not expired
+ */
+exports.verifyOTP = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    if (!email || !otp) {
+      return res.status(400).json({ success: false, message: 'Email and OTP are required' });
+    }
+
+    const user = await User.findOne({
+      email: email.toLowerCase().trim(),
+      resetPasswordOTP: otp,
+      resetPasswordOTPExpires: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      return res.status(400).json({ success: false, message: 'Invalid or expired OTP' });
+    }
+
+    res.status(200).json({ success: true, message: 'OTP verified successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Internal server error', error: error.message });
+  }
+};
+
+/**
+ * POST /api/auth/reset-password
+ * Resets the user's password after OTP verification
+ */
+exports.resetPassword = async (req, res) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+
+    if (!email || !otp || !newPassword) {
+      return res.status(400).json({ success: false, message: 'Email, OTP, and new password are required' });
+    }
+
+    const user = await User.findOne({
+      email: email.toLowerCase().trim(),
+      resetPasswordOTP: otp,
+      resetPasswordOTPExpires: { $gt: Date.now() }
+    }).select('+password +resetPasswordOTP +resetPasswordOTPExpires');
+
+    if (!user) {
+      return res.status(400).json({ success: false, message: 'Invalid or expired OTP' });
+    }
+
+    // Hash new password
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPassword, salt);
+
+    // Clear OTP fields
+    user.resetPasswordOTP = undefined;
+    user.resetPasswordOTPExpires = undefined;
+
+    await user.save();
+
+    res.status(200).json({ success: true, message: 'Password reset successful' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Internal server error', error: error.message });
   }
 };

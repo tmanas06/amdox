@@ -114,6 +114,14 @@ const userSchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Job'
     }]
+  },
+  resetPasswordOTP: {
+    type: String,
+    select: false
+  },
+  resetPasswordOTPExpires: {
+    type: Date,
+    select: false
   }
 }, {
   timestamps: true // Adds createdAt and updatedAt fields

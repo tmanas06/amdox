@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { applications as applicationService } from '../../services/api';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+// import { useAuth } from '../../context/AuthContext'; // Unused
 import './Applications.css';
 
 const Applications = ({ onBrowseJobs }) => {
   const navigate = useNavigate();
+  // const { user } = useAuth(); // Unused
   const [applications, setApplications] = useState([]);
   const [filteredApplications, setFilteredApplications] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -33,6 +35,7 @@ const Applications = ({ onBrowseJobs }) => {
             status: app.status || 'Applied',
             jobDetails: { location: app.job?.location, type: app.job?.type },
             nextSteps: 'Waiting for response from recruiter',
+            messages: app.messages || []
           }));
 
         setApplications(rows || []);
@@ -75,7 +78,7 @@ const Applications = ({ onBrowseJobs }) => {
       'Offer Received': 'status-offer',
       'Hired': 'status-hired'
     };
-    
+
     return (
       <span className={`status-badge ${statusClasses[status] || 'status-applied'}`}>
         {status}
@@ -93,7 +96,7 @@ const Applications = ({ onBrowseJobs }) => {
       <div className="applications-header">
         <h2>My Applications</h2>
         <div className="applications-filters">
-          <select 
+          <select
             className="filter-select"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
@@ -105,7 +108,7 @@ const Applications = ({ onBrowseJobs }) => {
             <option value="rejected">Rejected</option>
             <option value="hired">Hired</option>
           </select>
-          <select 
+          <select
             className="filter-select"
             value={sortFilter}
             onChange={(e) => setSortFilter(e.target.value)}
@@ -143,7 +146,7 @@ const Applications = ({ onBrowseJobs }) => {
                   {getStatusBadge(application.status)}
                 </div>
               </div>
-              
+
               <div className="application-details">
                 <div className="detail-item">
                   <span className="detail-label">Applied:</span>
@@ -162,26 +165,39 @@ const Applications = ({ onBrowseJobs }) => {
                   <span>{application.jobDetails?.type || 'N/A'}</span>
                 </div>
               </div>
-              
+
               <div className="application-next-steps">
                 <h4>Next Steps:</h4>
                 <p>{application.nextSteps || 'Waiting for response from recruiter'}</p>
               </div>
-              
+
               {application.notes && (
                 <div className="application-notes">
                   <h4>My Notes:</h4>
                   <p>{application.notes}</p>
                 </div>
               )}
-              
+
               <div className="application-actions">
-                <button className="btn-outline" onClick={() => navigate(`/jobs/${application.jobId}`)}>View Job</button>
-                <button className="btn-outline">Add Note</button>
-                <select 
+                <button className="btn-outline" onClick={(e) => {
+                  e.stopPropagation();
+                  navigate(`/jobs/${application.jobId}`);
+                }}>View Job</button>
+
+                <button
+                  className="btn-outline"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/applications/${application._id}/messages`);
+                  }}
+                >
+                  Message
+                </button>
+                <select
                   className="btn-outline"
                   value={application.status}
                   onChange={(e) => {
+                    e.stopPropagation();
                     if (e.target.value !== application.status) {
                       handleUpdateStatus(application._id, e.target.value);
                     }
