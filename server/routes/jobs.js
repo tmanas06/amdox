@@ -11,8 +11,11 @@ router.get('/', jobController.getJobs);
 // Protected routes (require authentication)
 router.use(authenticateToken);
 
-// Employer routes - specific routes before generic :id route
+// Specific routes before generic :id routes!
+router.get('/saved', authorizeRole('job_seeker', 'admin'), jobController.getSavedJobs);
 router.get('/employer/my-jobs', authorizeRole('employer', 'admin'), jobController.getEmployerJobs);
+router.post('/:id/save', authorizeRole('job_seeker', 'admin'), jobController.saveJob);
+router.delete('/:id/save', authorizeRole('job_seeker', 'admin'), jobController.unsaveJob);
 router.patch('/:id/status', authorizeRole('employer', 'admin'), jobController.toggleJobStatus);
 router.post('/:id/apply', authorizeRole('job_seeker', 'admin'), applicationController.applyToJob);
 

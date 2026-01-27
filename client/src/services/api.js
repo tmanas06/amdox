@@ -111,9 +111,14 @@ export const jobs = {
   // Toggle job status (active/inactive)
   toggleStatus: (id) => api.patch(`/jobs/${id}/status`),
 
-  // Apply to a job (job seeker only)
+  // Save to a job (job seeker only)
   apply: (jobId, applicationData = {}) =>
     api.post(`/jobs/${jobId}/apply`, applicationData),
+
+  // Saved Jobs (job seeker only)
+  save: (jobId) => api.post(`/jobs/${jobId}/save`),
+  unsave: (jobId) => api.delete(`/jobs/${jobId}/save`),
+  getSaved: () => api.get('/jobs/saved'),
 };
 
 export const applications = {

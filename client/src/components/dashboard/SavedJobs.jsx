@@ -19,18 +19,17 @@ const SavedJobs = ({ onBrowseJobs }) => {
         setIsLoading(true);
         setError('');
 
-        const savedIds = JSON.parse(localStorage.getItem('savedJobs') || '[]');
         const appliedIds = JSON.parse(localStorage.getItem('appliedJobs') || '[]');
 
-        const [savedRes, appliedRes] = await Promise.all([
-          Promise.allSettled((Array.isArray(savedIds) ? savedIds : []).map((jobId) => jobService.getById(jobId))),
-          Promise.allSettled((Array.isArray(appliedIds) ? appliedIds : []).map((jobId) => jobService.getById(jobId))),
-        ]);
+        // Fetch saved jobs from backend
+        const savedRes = await jobService.getSaved();
 
-        const saved = savedRes
-          .filter(r => r.status === 'fulfilled')
-          .map(r => r.value?.data?.data)
-          .filter(Boolean);
+        // Fetch applied jobs details if needed (locally kept for now, ideally backend too)
+        const appliedRes = await Promise.allSettled(
+          (Array.isArray(appliedIds) ? appliedIds : []).map((id) => jobService.getById(id))
+        );
+
+        const saved = savedRes.data?.data || [];
         const applied = appliedRes
           .filter(r => r.status === 'fulfilled')
           .map(r => r.value?.data?.data)
@@ -51,16 +50,16 @@ const SavedJobs = ({ onBrowseJobs }) => {
   }, []);
 
   const allJobs = [...savedJobs, ...appliedJobs];
-  const filteredJobs = activeTab === 'all' 
+  const filteredJobs = activeTab === 'all'
     ? allJobs
-    : activeTab === 'saved' 
-      ? savedJobs 
+    : activeTab === 'saved'
+      ? savedJobs
       : appliedJobs;
 
   const getJobStatus = (job) => {
     const inSaved = savedJobs.find(j => j._id === job._id);
     const inApplied = appliedJobs.find(j => j._id === job._id);
-    
+
     if (inApplied) return 'applied';
     if (inSaved) return 'saved';
     return 'unknown';
@@ -68,10 +67,8 @@ const SavedJobs = ({ onBrowseJobs }) => {
 
   const handleRemoveJob = async (jobId) => {
     try {
+      await jobService.unsave(jobId);
       setSavedJobs(prev => prev.filter(job => job._id !== jobId));
-      const savedIds = JSON.parse(localStorage.getItem('savedJobs') || '[]');
-      const next = (Array.isArray(savedIds) ? savedIds : []).filter(id => id !== jobId);
-      localStorage.setItem('savedJobs', JSON.stringify(next));
       toast.success('Job removed from saved');
     } catch (err) {
       console.error('Error removing job:', err);
@@ -84,6 +81,7 @@ const SavedJobs = ({ onBrowseJobs }) => {
       const job = savedJobs.find(j => j._id === jobId);
       // call backend apply
       await jobService.apply(jobId, {});
+      await jobService.unsave(jobId);
 
       setSavedJobs(prev => prev.filter(j => j._id !== jobId));
       if (job) {
@@ -94,10 +92,6 @@ const SavedJobs = ({ onBrowseJobs }) => {
       const nextApplied = Array.isArray(appliedIds) ? appliedIds : [];
       if (!nextApplied.includes(jobId)) nextApplied.push(jobId);
       localStorage.setItem('appliedJobs', JSON.stringify(nextApplied));
-
-      const savedIds = JSON.parse(localStorage.getItem('savedJobs') || '[]');
-      const nextSaved = (Array.isArray(savedIds) ? savedIds : []).filter(id => id !== jobId);
-      localStorage.setItem('savedJobs', JSON.stringify(nextSaved));
 
       toast.success('Applied to job successfully!');
     } catch (err) {
@@ -111,19 +105,19 @@ const SavedJobs = ({ onBrowseJobs }) => {
       <div className="saved-jobs-header">
         <h2>Saved Jobs</h2>
         <div className="saved-jobs-tabs">
-          <button 
+          <button
             className={`tab-btn ${activeTab === 'all' ? 'active' : ''}`}
             onClick={() => setActiveTab('all')}
           >
             All Jobs
           </button>
-          <button 
+          <button
             className={`tab-btn ${activeTab === 'saved' ? 'active' : ''}`}
             onClick={() => setActiveTab('saved')}
           >
             Saved
           </button>
-          <button 
+          <button
             className={`tab-btn ${activeTab === 'applied' ? 'active' : ''}`}
             onClick={() => setActiveTab('applied')}
           >
@@ -155,25 +149,25 @@ const SavedJobs = ({ onBrowseJobs }) => {
                 <div className="saved-job-info">
                   <h3 className="job-title">{job.title}</h3>
                   <p className="company-name">{job.company}</p>
-                  
+
                   <div className="job-meta">
                     <span className="job-location">{job.location}</span>
                     <span className="job-type">{job.type}</span>
                     <span className="job-salary">{job.salary}</span>
                   </div>
-                  
+
                   <div className="job-skills">
                     {job.skills?.slice(0, 4).map((skill, index) => (
                       <span key={index} className="skill-tag">{skill}</span>
                     ))}
                     {job.skills?.length > 4 && <span className="skill-tag more">+{job.skills.length - 4}</span>}
                   </div>
-                  
+
                   <div className="saved-date">
                     Posted on {new Date(job.createdAt).toLocaleDateString()}
                   </div>
                 </div>
-                
+
                 <div className="saved-job-actions">
                   <button
                     className="btn-outline"
@@ -182,7 +176,7 @@ const SavedJobs = ({ onBrowseJobs }) => {
                     View
                   </button>
                   {getJobStatus(job) === 'saved' && (
-                    <button 
+                    <button
                       className="btn-apply"
                       onClick={() => handleApplyJob(job._id)}
                     >
@@ -194,7 +188,7 @@ const SavedJobs = ({ onBrowseJobs }) => {
                       Applied ✓
                     </span>
                   )}
-                  <button 
+                  <button
                     className="btn-remove"
                     onClick={() => handleRemoveJob(job._id)}
                   >

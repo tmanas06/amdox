@@ -67,12 +67,25 @@ const Jobs = () => {
     }
   }, [debouncedSearchTerm, jobType, location, minSalary, maxSalary, experienceLevel, currentPage]);
 
-  // Load saved and applied jobs from localStorage on component mount
+  // Load saved and applied jobs on component mount
   useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem('savedJobs') || '[]');
-    const applied = JSON.parse(localStorage.getItem('appliedJobs') || '[]');
-    setSavedJobs(saved);
-    setAppliedJobs(applied);
+    const fetchSavedAndApplied = async () => {
+      try {
+        const applied = JSON.parse(localStorage.getItem('appliedJobs') || '[]');
+        setAppliedJobs(applied);
+
+        // Fetch saved jobs from backend
+        const res = await jobService.getSaved();
+        if (res.data && res.data.success) {
+          const fetchedSavedIds = res.data.data.map(job => job._id);
+          setSavedJobs(fetchedSavedIds);
+        }
+      } catch (err) {
+        console.error('Error fetching saved/applied jobs:', err);
+      }
+    };
+
+    fetchSavedAndApplied();
   }, []);
 
   // Fetch jobs when filters or page change
@@ -90,20 +103,23 @@ const Jobs = () => {
   }, [appliedJobs]);
 
   // Toggle save job
-  const toggleSaveJob = (jobId) => {
+  const toggleSaveJob = async (jobId) => {
     const isSaved = savedJobs.includes(jobId);
-    let updatedSavedJobs;
 
-    if (isSaved) {
-      updatedSavedJobs = savedJobs.filter(id => id !== jobId);
-    } else {
-      updatedSavedJobs = [...savedJobs, jobId];
+    try {
+      if (isSaved) {
+        await jobService.unsave(jobId);
+        setSavedJobs(prev => prev.filter(id => id !== jobId));
+        toast.success('Job removed from saved');
+      } else {
+        await jobService.save(jobId);
+        setSavedJobs(prev => [...prev, jobId]);
+        toast.success('Job saved successfully');
+      }
+    } catch (err) {
+      console.error('Error toggling save job:', err);
+      toast.error(err.message || 'Failed to update saved jobs');
     }
-
-    setSavedJobs(updatedSavedJobs);
-    localStorage.setItem('savedJobs', JSON.stringify(updatedSavedJobs));
-
-    toast.success(isSaved ? 'Job removed from saved' : 'Job saved successfully');
   };
 
   const handleApplyJob = (job) => {

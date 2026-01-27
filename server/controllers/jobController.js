@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Job = require('../models/Job');
 const User = require('../models/User');
 const { validationResult } = require('express-validator');
@@ -83,9 +84,15 @@ exports.getJobs = async (req, res) => {
 // @access  Public
 exports.getJob = async (req, res) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      console.warn(`[getJob] Invalid ObjectId received: "${req.params.id}" for URL: ${req.originalUrl}`);
+      if (req.user) {
+        console.warn(`[getJob] User: ${req.user.email} (Role: ${req.user.role})`);
+      }
+      return res.status(404).json({ success: false, message: 'Job not found' });
+    }
     const job = await Job.findById(req.params.id)
-      .populate('postedBy', 'profile.name profile.photoURL email')
-      .lean();
+      .populate('postedBy', 'profile.name profile.photoURL');
 
     if (!job) {
       return res.status(404).json({
@@ -187,7 +194,10 @@ exports.createJob = async (req, res) => {
 // @access  Private/Employer
 exports.updateJob = async (req, res) => {
   try {
-    const job = await Job.findById(req.params.id);
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(404).json({ success: false, message: 'Job not found' });
+    }
+    let job = await Job.findById(req.params.id);
 
     if (!job) {
       return res.status(404).json({
@@ -230,6 +240,9 @@ exports.updateJob = async (req, res) => {
 // @access  Private/Employer
 exports.deleteJob = async (req, res) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(404).json({ success: false, message: 'Job not found' });
+    }
     const job = await Job.findById(req.params.id);
 
     if (!job) {
@@ -300,6 +313,9 @@ exports.getEmployerJobs = async (req, res) => {
 // @access  Private/Employer
 exports.toggleJobStatus = async (req, res) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(404).json({ success: false, message: 'Job not found' });
+    }
     const job = await Job.findById(req.params.id);
 
     if (!job) {
@@ -335,3 +351,67 @@ exports.toggleJobStatus = async (req, res) => {
     });
   }
 };
+
+// @desc    Save a job
+// @route   POST /api/jobs/:id/save
+// @access  Private/JobSeeker
+exports.saveJob = async (req, res) => {
+  try {
+    const job = await Job.findById(req.params.id);
+    if (!job) {
+      return res.status(404).json({ success: false, message: 'Job not found' });
+    }
+
+    const user = await User.findById(req.user.id);
+    if (user.jobSeeker.savedJobs.includes(job._id)) {
+      return res.status(400).json({ success: false, message: 'Job already saved' });
+    }
+
+    user.jobSeeker.savedJobs.push(job._id);
+    await user.save();
+
+    res.status(200).json({ success: true, message: 'Job saved successfully' });
+  } catch (error) {
+    console.error('Error saving job:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+// @desc    Unsave a job
+// @route   DELETE /api/jobs/:id/save
+// @access  Private/JobSeeker
+exports.unsaveJob = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    user.jobSeeker.savedJobs = user.jobSeeker.savedJobs.filter(
+      id => id.toString() !== req.params.id
+    );
+    await user.save();
+
+    res.status(200).json({ success: true, message: 'Job removed from saved' });
+  } catch (error) {
+    console.error('Error unsaving job:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+// @desc    Get saved jobs
+// @route   GET /api/jobs/saved
+// @access  Private/JobSeeker
+exports.getSavedJobs = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).populate({
+      path: 'jobSeeker.savedJobs',
+      populate: { path: 'postedBy', select: 'profile.name profile.photoURL' }
+    });
+
+    res.status(200).json({
+      success: true,
+      data: user.jobSeeker.savedJobs
+    });
+  } catch (error) {
+    console.error('Error fetching saved jobs:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+

@@ -48,19 +48,31 @@ const Dashboard = () => {
   const [loadingApps, setLoadingApps] = useState(false);
   const [recentApplications, setRecentApplications] = useState([]);
 
-  // Load saved jobs from localStorage on component mount
+  // Load saved jobs from backend on component mount
   useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem('savedJobs') || '[]');
-    setSavedJobs(saved);
-  }, []);
+    const fetchSaved = async () => {
+      try {
+        if (isJobSeeker) {
+          const res = await jobService.getSaved();
+          if (res.data && res.data.success) {
+            setSavedJobs(res.data.data.map(j => j._id));
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching saved jobs for dashboard:', err);
+      }
+    };
+    fetchSaved();
+  }, [isJobSeeker]);
 
   useEffect(() => {
     const applied = JSON.parse(localStorage.getItem('appliedJobs') || '[]');
     setAppliedJobs(applied);
   }, []);
 
-  // Save to localStorage when savedJobs change
+  // Sync to localStorage as a fallback/cache if desired, or just remove
   useEffect(() => {
+    // We can keep this for instant UI feedback but the source of truth is now backend
     localStorage.setItem('savedJobs', JSON.stringify(savedJobs));
   }, [savedJobs]);
 
