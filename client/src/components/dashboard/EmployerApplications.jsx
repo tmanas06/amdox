@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { applications as applicationService } from '../../services/api';
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import './EmployerApplications.css';
 

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { messages as messageService } from '../services/api';
+// import { messages as messageService } from '../services/api';
 import ThemeToggle from './ThemeToggle';
 import './Navbar.css';
 
