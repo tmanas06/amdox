@@ -432,7 +432,7 @@ exports.forgotPassword = async (req, res) => {
 
     // Send email
     try {
-      await sendEmail({
+      const emailInfo = await sendEmail({
         to: user.email,
         subject: 'Password Reset OTP - Amdox',
         text: `Your OTP for password reset is: ${otp}. It is valid for 10 minutes.`,
@@ -449,14 +449,30 @@ exports.forgotPassword = async (req, res) => {
           </div>
         `
       });
+
+      // Special message if it was a mock success
+      if (emailInfo && emailInfo.messageId === 'mock-id-placeholder') {
+        return res.status(200).json({
+          success: true,
+          message: 'OTP generated. Note: Email sending is mocked (check server console) because credentials are not configured.'
+        });
+      }
+
+      res.status(200).json({ success: true, message: 'OTP sent to email. Please check your inbox and spam folder.' });
     } catch (emailError) {
       console.error('Email sending failed:', emailError);
-      // We still return success because the OTP was generated and saved, 
-      // but in production, we'd want to handle this better.
-      return res.status(200).json({ success: true, message: 'OTP generated but email sending failed. Please check server logs.' });
-    }
 
-    res.status(200).json({ success: true, message: 'OTP sent to email. Please check your inbox and spam folder.' });
+      // If we are in development, we might want the user to see the error clearly
+      const errorMessage = process.env.NODE_ENV === 'development'
+        ? `OTP generated but email sending failed: ${emailError.message}`
+        : 'OTP generated but we encountered an issue sending the email. Please contact support.';
+
+      return res.status(500).json({
+        success: false,
+        message: errorMessage,
+        error: emailError.message
+      });
+    }
   } catch (error) {
     console.error('Forgot password error:', error);
     res.status(500).json({ success: false, message: 'Internal server error', error: error.message });

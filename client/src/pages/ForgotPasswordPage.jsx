@@ -21,8 +21,8 @@ const ForgotPasswordPage = () => {
 
         setLoading(true);
         try {
-            await forgotPassword(email);
-            toast.success('OTP sent to your email');
+            const response = await forgotPassword(email);
+            toast.success(response.message || 'OTP sent to your email');
             setStep(2);
         } catch (err) {
             toast.error(err.message || 'Failed to send OTP');
@@ -35,8 +35,8 @@ const ForgotPasswordPage = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            await verifyOTP(email, otp);
-            toast.success('OTP verified');
+            const response = await verifyOTP(email, otp);
+            toast.success(response.message || 'OTP verified');
             setStep(3);
         } catch (err) {
             toast.error(err.message || 'Invalid or expired OTP');
@@ -56,8 +56,8 @@ const ForgotPasswordPage = () => {
 
         setLoading(true);
         try {
-            await resetPassword(email, otp, newPassword);
-            toast.success('Password reset successful. Please login.');
+            const response = await resetPassword(email, otp, newPassword);
+            toast.success(response.message || 'Password reset successful. Please login.');
             navigate('/login');
         } catch (err) {
             toast.error(err.message || 'Failed to reset password');

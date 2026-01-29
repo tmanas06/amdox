@@ -260,7 +260,8 @@ exports.deleteJob = async (req, res) => {
       });
     }
 
-    await job.remove();
+    // Delete the job
+    await Job.findByIdAndDelete(req.params.id);
 
     // Remove job from user's posted jobs
     await User.findByIdAndUpdate(

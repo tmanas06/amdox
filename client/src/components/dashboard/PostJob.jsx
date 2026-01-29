@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Navbar from '../Navbar';
 import { jobs as jobService } from '../../services/api';
@@ -9,6 +9,9 @@ import './PostJob.css';
 const PostJob = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { id } = useParams();
+  const isEdit = !!id;
+  const [isLoading, setIsLoading] = useState(isEdit);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
@@ -37,6 +40,42 @@ const PostJob = () => {
       }));
     }
   }, [user]);
+
+  // Fetch job details if in edit mode
+  useEffect(() => {
+    const fetchJob = async () => {
+      if (isEdit) {
+        try {
+          setIsLoading(true);
+          const res = await jobService.getById(id);
+          if (res.data && res.data.success) {
+            const job = res.data.data;
+            setFormData({
+              title: job.title || '',
+              company: job.company || '',
+              location: job.location || '',
+              type: job.type || 'Full-time',
+              salary: job.salary || '',
+              description: job.description || '',
+              skills: Array.isArray(job.skills) ? job.skills.join(', ') : '',
+              experience: job.experience || '',
+              isRemote: job.isRemote || false,
+              companySize: job.companySize || '',
+              industry: job.industry || '',
+              benefits: Array.isArray(job.benefits) ? job.benefits.join(', ') : ''
+            });
+          }
+        } catch (err) {
+          console.error('Error fetching job details:', err);
+          toast.error('Failed to load job details');
+          navigate('/');
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+    fetchJob();
+  }, [id, isEdit, navigate]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -96,21 +135,25 @@ const PostJob = () => {
       };
 
       console.log('Submitting job data:', jobData);
-      console.log('Token in localStorage:', localStorage.getItem('authToken'));
 
-      const response = await jobService.create(jobData);
+      let response;
+      if (isEdit) {
+        response = await jobService.update(id, jobData);
+      } else {
+        response = await jobService.create(jobData);
+      }
 
       console.log('API Response:', response);
       console.log('API Response Data:', response.data);
 
       if (response.data && response.data.success) {
-        toast.success('Job posted successfully!');
+        toast.success(isEdit ? 'Job updated successfully!' : 'Job posted successfully!');
         // Navigate to dashboard instead of home to avoid full refresh
         setTimeout(() => {
           navigate('/', { replace: true });
         }, 1500);
       } else {
-        const errMsg = response.data?.message || 'Failed to post job';
+        const errMsg = response.data?.message || `Failed to ${isEdit ? 'update' : 'post'} job`;
         console.error('Server error response:', errMsg);
         toast.error(errMsg);
       }
@@ -136,12 +179,23 @@ const PostJob = () => {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="post-job-container">
+        <Navbar showTabs={false} />
+        <div className="post-job-card" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
+          <p>Loading job details...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="post-job-container">
       <Navbar showTabs={false} />
       <div className="post-job-card">
-        <h2>Post a New Job</h2>
-        <p className="subtitle">Create a compelling job posting to attract top talent</p>
+        <h2>{isEdit ? 'Edit Job Posting' : 'Post a New Job'}</h2>
+        <p className="subtitle">{isEdit ? 'Update your job listing details' : 'Create a compelling job posting to attract top talent'}</p>
         <p className="form-hint">Fields marked with <span className="required">*</span> are required</p>
 
         <form onSubmit={handleSubmit} className="job-form">
@@ -340,7 +394,7 @@ const PostJob = () => {
               className="btn-primary"
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Posting Job...' : 'Post Job'}
+              {isSubmitting ? (isEdit ? 'Updating...' : 'Posting...') : (isEdit ? 'Update Job' : 'Post Job')}
             </button>
           </div>
         </form>

@@ -42,10 +42,11 @@ router.put(
     check('type', 'Job type is required').isIn(['Full-time', 'Part-time', 'Contract', 'Internship', 'Temporary']),
     check('description', 'Job description is required').not().isEmpty()
   ],
+  authorizeRole('employer', 'admin'),
   jobController.updateJob
 );
 
-router.delete('/:id', jobController.deleteJob);
+router.delete('/:id', authorizeRole('employer', 'admin'), jobController.deleteJob);
 router.get('/:id', jobController.getJob);
 
 module.exports = router;

@@ -41,7 +41,7 @@ function App() {
               }
             />
             <Route
-              path="/post-job"
+              path="/post-job/:id?"
               element={
                 <ProtectedRoute>
                   <PostJob />
