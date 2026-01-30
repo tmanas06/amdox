@@ -25,7 +25,7 @@ const EmployerCompanyProfile = () => {
 
     useEffect(() => {
         if (user?.profile) {
-            setFormData({
+            const profileData = {
                 name: user.profile.name || '',
                 company: user.profile.company || '',
                 bio: user.profile.bio || '',
@@ -34,7 +34,18 @@ const EmployerCompanyProfile = () => {
                 industry: user.profile.industry || '',
                 companySize: user.profile.companySize || '',
                 photoURL: user.profile.photoURL || ''
-            });
+            };
+            setFormData(profileData);
+
+            // Automatic enrichment if company details are missing
+            if (!user.profile.company && !user.profile.photoURL && user.role === 'employer') {
+                const domain = user.email?.split('@')[1]?.toLowerCase();
+                const genericDomains = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com'];
+                if (domain && !genericDomains.includes(domain)) {
+                    console.log('✨ Auto-triggering AI enrichment for', domain);
+                    handleEnrich();
+                }
+            }
         }
     }, [user]);
 
@@ -230,7 +241,15 @@ const EmployerCompanyProfile = () => {
                 <div className="company-header-content">
                     <div className="company-logo-upload">
                         {formData.photoURL ? (
-                            <img src={formData.photoURL} alt="Company Logo" className="company-logo-img" />
+                            <img
+                                src={formData.photoURL}
+                                alt="Company Logo"
+                                className="company-logo-img"
+                                onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMzYjgyZjYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cmVjdCB4PSIyIiB5PSI3IiB3aWR0aD0iMjAiIGhlaWdodD0iMTQiIHJ4PSIyIiByeT0iMiI+PC9yZWN0PjxwYXRoIGQ9Ik0xNiAyMXYtMkE0IDQgMCAwIDAgMTIgMTVIOEE0IDQgMCAwIDAgNCAxN3YyIj48L3BhdGg+PGNpcmNsZSBjeD0iMTIiIGN5PSI3IiByPSI0Ij48L2NpcmNsZT48L3N2Zz4=';
+                                }}
+                            />
                         ) : (
                             <div style={{ fontSize: '2rem', color: 'var(--text-muted)' }}>🏢</div>
                         )}

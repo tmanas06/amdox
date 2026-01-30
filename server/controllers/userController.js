@@ -474,16 +474,33 @@ exports.enrichCompanyInfo = async (req, res) => {
     }
 
     const email = user.email;
-    const domain = email.split('@')[1];
+    let domain = email.split('@')[1].toLowerCase();
 
     // List of common/generic domains to skip
     const genericDomains = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com', 'icloud.com', 'protonmail.com', 'zoho.com'];
-    if (genericDomains.includes(domain.toLowerCase())) {
+    if (genericDomains.includes(domain)) {
       return res.status(200).json({
         success: true,
         message: 'Generic email detected. Please enter company details manually.',
         data: null
       });
+    }
+
+    // Improve domain resolution: extract root domain from subdomains (e.g. corp.example.com -> example.com)
+    const parts = domain.split('.');
+    if (parts.length > 2) {
+      // Very basic root domain extraction (assumes last two parts are root domain)
+      // For more complex cases (like .co.uk), this might need a library, but for now this is better than nothing.
+      // We only do this if it's not a known common multi-part TLD (though we don't have a list here, let's keep it simple)
+      const lastTwo = parts.slice(-2).join('.');
+      const lastThree = parts.slice(-3).join('.');
+
+      // If the second to last part is very short (like co.uk, edu.in), we might need 3 parts
+      if (parts[parts.length - 2].length <= 3 && parts.length >= 3) {
+        domain = lastThree;
+      } else {
+        domain = lastTwo;
+      }
     }
 
     console.log(`[Enrich] Enriching for domain: ${domain}`);
