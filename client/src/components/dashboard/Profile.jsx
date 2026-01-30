@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { toast } from 'react-toastify';
 import './Profile.css';
@@ -31,7 +31,7 @@ const Profile = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [isParsingResume, setIsParsingResume] = useState(false);
 
-  const resetForm = () => {
+  const resetForm = useCallback(() => {
     if (user) {
       setFormData({
         name: user.profile?.name || user.name || '',
@@ -58,11 +58,11 @@ const Profile = () => {
       });
       setIsLoading(false);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
     resetForm();
-  }, [user]);
+  }, [resetForm]);
 
   const handleCancel = () => {
     resetForm();
