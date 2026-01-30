@@ -35,6 +35,7 @@ const Dashboard = () => {
   const isEmployer = user?.role === 'employer';
   const [savedJobs, setSavedJobs] = useState([]);
   const [appliedJobs, setAppliedJobs] = useState([]);
+  const [myApplicationsCount, setMyApplicationsCount] = useState(0);
 
   // Employer Stats State
   const [employerStats, setEmployerStats] = useState({
@@ -120,6 +121,7 @@ const Dashboard = () => {
       const res = await applicationService.getMyApplications();
       if (res.data && res.data.success) {
         setRecentApplications(res.data.data.slice(0, 3)); // show top 3
+        setMyApplicationsCount(res.data.data.length);
       }
     } catch (error) {
       console.error('Error fetching applications:', error);
@@ -253,9 +255,9 @@ const Dashboard = () => {
                       <div className="stat-card">
                         <div className="stat-header">
                           <span className="stat-label">My Applications</span>
-                          <span className="stat-trend">{appliedJobs.length}</span>
+                          <span className="stat-trend">{myApplicationsCount}</span>
                         </div>
-                        <div className="stat-value">{appliedJobs.length}</div>
+                        <div className="stat-value">{myApplicationsCount}</div>
                         <div className="stat-description">Applications submitted</div>
                       </div>
                       <div className="stat-card">
