@@ -17,17 +17,17 @@ exports.updateProfile = async (req, res) => {
 
     const updates = req.body || {};
 
-    const cleanList = (list) => {
+    const cleanList = (list, allowedFields) => {
       if (!list || !Array.isArray(list)) return [];
       return list.map(item => {
-        const newItem = { ...item };
-        // Remove frontend-only numeric IDs or string IDs that aren't ObjectIds
-        if (newItem.id && (typeof newItem.id === 'number' || (typeof newItem.id === 'string' && newItem.id.length !== 24))) {
-          delete newItem.id;
-        }
-        // If _id is present but invalid, remove it
-        if (newItem._id && (typeof newItem._id === 'number' || (typeof newItem._id === 'string' && newItem._id.length !== 24))) {
-          delete newItem._id;
+        const newItem = {};
+        // Only keep allowed fields
+        allowedFields.forEach(field => {
+          if (item[field] !== undefined) newItem[field] = item[field];
+        });
+        // Keep _id only if it's a valid MongoDB ObjectId (24 hex chars)
+        if (item._id && typeof item._id === 'string' && /^[0-9a-fA-F]{24}$/.test(item._id)) {
+          newItem._id = item._id;
         }
         return newItem;
       });
@@ -42,10 +42,10 @@ exports.updateProfile = async (req, res) => {
           'profile.location': updates.location,
           'profile.headline': updates.headline,
           'profile.summary': updates.summary,
-          'profile.experience': cleanList(updates.experience),
-          'profile.education': cleanList(updates.education),
-          'profile.projects': cleanList(updates.projects),
-          'profile.certifications': cleanList(updates.certifications),
+          'profile.experience': cleanList(updates.experience, ['title', 'company', 'from', 'to', 'current', 'description']),
+          'profile.education': cleanList(updates.education, ['school', 'degree', 'field', 'from', 'to']),
+          'profile.projects': cleanList(updates.projects, ['title', 'description', 'link']),
+          'profile.certifications': cleanList(updates.certifications, ['name', 'issuer', 'date']),
           'profile.skills': updates.skills || [],
           'profile.company': updates.company,
           'profile.bio': updates.bio,

@@ -270,6 +270,32 @@ const Profile = () => {
     }
   };
 
+  const handleClearProfile = () => {
+    if (window.confirm('Are you sure you want to clear ALL your profile information? This will reset all fields, including your Resume and CV links. This action cannot be undone unless you cancel without saving.')) {
+      setFormData({
+        name: user.name || '',
+        email: user.email || '',
+        phone: '',
+        location: '',
+        headline: '',
+        summary: '',
+        experience: [{ id: Date.now(), title: '', company: '', from: '', to: '', current: false, description: '' }],
+        education: [{ id: Date.now() + 1, school: '', degree: '', field: '', from: '', to: '' }],
+        skills: [],
+        newSkill: '',
+        projects: [],
+        certifications: [],
+        linkedin: '',
+        github: '',
+        portfolio: '',
+        resumeURL: '',
+        cvURL: ''
+      });
+      setIsEditing(true);
+      toast.info('Profile fields cleared. Don\'t forget to Save Changes if you want to persist this.');
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSaving(true);
@@ -330,7 +356,10 @@ const Profile = () => {
         <div className="profile-card-header">
           <h3>Resume & Career Info</h3>
           {!isEditing ? (
-            <button className="btn-edit" onClick={() => setIsEditing(true)}>Edit Profile</button>
+            <div style={{ display: 'flex', gap: '1rem' }}>
+              <button className="btn-edit" onClick={handleClearProfile} style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', color: 'var(--error-color)', border: '1px solid rgba(239, 68, 68, 0.2)' }}>Clear All Data</button>
+              <button className="btn-edit" onClick={() => setIsEditing(true)}>Edit Profile</button>
+            </div>
           ) : (
             <div className="edit-actions">
               <button className="btn-cancel" onClick={handleCancel}>Cancel</button>
