@@ -110,20 +110,13 @@ const extractEmail = (text) => {
 };
 
 const extractPhone = (text) => {
-  // Matches various formats: +91 9999999999, (123) 456-7890, etc.
   const match = text.match(/(\+?\d{1,3}[-.\s]?)?(\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4})/);
   return match ? match[0] : '';
 };
 
 const extractSocialLinks = (text) => {
-  const links = {
-    linkedin: '',
-    github: '',
-    portfolio: ''
-  };
-
+  const links = { linkedin: '', github: '', portfolio: '' };
   const lines = text.split('\n').map(l => l.trim());
-
   lines.forEach(line => {
     if (/linkedin\.com\/in\/[a-zA-Z0-9_-]+/i.test(line)) {
       const match = line.match(/linkedin\.com\/in\/[a-zA-Z0-9_-]+/i);
@@ -138,21 +131,15 @@ const extractSocialLinks = (text) => {
       if (match) links.portfolio = match[0];
     }
   });
-
   return links;
 };
 
 const extractName = (text) => {
   const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 2);
   if (!lines.length) return '';
-
-  // Usually the name is in the first 3 lines
   for (let i = 0; i < Math.min(3, lines.length); i++) {
     const line = lines[i];
-    // Ignore lines that look like headers or common titles
-    if (!/resume|curriculum|vitae|contact|profile|summary|email/i.test(line)) {
-      return line;
-    }
+    if (!/resume|curriculum|vitae|contact|profile|summary|email/i.test(line)) return line;
   }
   return lines[0];
 };
@@ -161,21 +148,13 @@ const extractSkills = (text) => {
   const skillsList = [
     'JavaScript', 'Python', 'Java', 'C++', 'React', 'Node.js', 'Express', 'MongoDB',
     'SQL', 'Docker', 'Kubernetes', 'AWS', 'Azure', 'GCP', 'HTML', 'CSS', 'TypeScript',
-    'Angular', 'Vue', 'Django', 'Flask', 'Spring Boot', 'PostgreSQL', 'Redis', 'Git',
-    'Agile', 'Scrum', 'Figma', 'UI/UX', 'Mobile App', 'Android', 'iOS', 'Flutter'
+    'Angular', 'Vue', 'Django', 'Flask', 'Spring Boot', 'PostgreSQL', 'Redis', 'Git'
   ];
-
   const foundSkills = new Set();
-
-  // Method 1: Keyword matching
   skillsList.forEach(skill => {
     const regex = new RegExp(`\\b${skill.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
-    if (regex.test(text)) {
-      foundSkills.add(skill);
-    }
+    if (regex.test(text)) foundSkills.add(skill);
   });
-
-  // Method 2: Section extraction
   const lines = text.split('\n').map(l => l.trim());
   const idx = lines.findIndex(l => /^(skills|technical skills|technologies|expertise)/i.test(l));
   if (idx !== -1) {
@@ -187,235 +166,159 @@ const extractSkills = (text) => {
     const extracted = skillText.split(/[,\u2022;•|-]/).map(s => s.trim()).filter(s => s.length > 1 && s.length < 30);
     extracted.forEach(s => foundSkills.add(s));
   }
-
   return Array.from(foundSkills).slice(0, 15);
 };
 
 const extractSectionText = (text, headers) => {
-  // Collapse repetitive consecutive lines (common in some PDF outputs)
-  const lines = text.split('\n')
-    .map(l => l.trim())
-    .filter((l, i, arr) => !l || l !== arr[i - 1] || i === 0);
-
+  const lines = text.split('\n').map(l => l.trim()).filter((l, i, arr) => !l || l !== arr[i - 1] || i === 0);
   let startIdx = -1;
-
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    const lowerLine = line.toLowerCase().trim();
-
-    // Strict header check
-    const isHeader = headers.some(h => {
-      // Exact match
-      if (lowerLine === h) return true;
-      // Match with colon
-      if (lowerLine === h + ':') return true;
-      // Match with "Our" or "My" prefix
-      if (lowerLine === 'my ' + h || lowerLine === 'our ' + h) return true;
-      // Match startsWith but only if line is short (preventing sentence matches)
-      if (lowerLine.startsWith(h) && lowerLine.length < h.length + 10) return true;
-      return false;
-    });
-
-    if (isHeader) {
+    const lowerLine = lines[i].toLowerCase();
+    if (headers.some(h => lowerLine === h || lowerLine === h + ':' || lowerLine.startsWith(h) && lowerLine.length < h.length + 10)) {
       startIdx = i + 1;
       break;
     }
   }
-
   if (startIdx === -1) return '';
-
-  let sectionContent = [];
-  // Common section headers that indicate a new section
-  const nextSectionHeaders = [
-    'work experience', 'professional experience', 'experience', 'employment history', 'employment',
-    'education', 'academic background', 'qualification', 'qualifications',
-    'skills', 'technical skills', 'expertise', 'technologies', 'core competencies',
-    'projects', 'certifications', 'certificates', 'certification',
-    'summary', 'professional summary', 'profile', 'about me', 'about',
-    'contact', 'languages', 'awards', 'publications', 'references'
-  ];
-
+  let content = [];
+  const nx = ['work experience', 'experience', 'education', 'academic background', 'qualification', 'qualifications', 'skills', 'technical skills', 'expertise', 'technologies', 'core competencies', 'projects', 'personal projects', 'key projects', 'certifications', 'certificates', 'certification', 'summary', 'professional summary', 'profile', 'about me', 'about', 'contact', 'achievements', 'awards', 'publications', 'references'];
   for (let i = startIdx; i < lines.length; i++) {
-    const line = lines[i];
-    if (!line) continue; // Skip empty lines
-
-    const lowerLine = line.toLowerCase().trim();
-
-    // Check if this line is a section header
-    const isNewSection = nextSectionHeaders.some(h => {
-      // Exact match (case-insensitive)
-      if (lowerLine === h) return true;
-      // Match with colon
-      if (lowerLine === h + ':') return true;
-      return false;
-    });
-
-    if (isNewSection) break;
-
-    sectionContent.push(line);
+    if (!lines[i]) continue;
+    if (nx.some(h => lines[i].toLowerCase() === h || lines[i].toLowerCase() === h + ':')) break;
+    content.push(lines[i]);
   }
-
-  const result = sectionContent.join('\n');
-  return result;
+  return content.join('\n');
 };
 
 const parseExperience = (expText) => {
-  if (!expText || expText.trim().length === 0) return [];
-
+  if (!expText) return [];
   const lines = expText.split('\n').map(l => l.trim()).filter(Boolean);
   const experiences = [];
-
   let i = 0;
-  while (i < lines.length) {
-    let line = lines[i];
-    const lowerLine = line.toLowerCase().trim();
 
-    // Skip section headers
-    const sectionHeaders = ['work experience', 'professional experience', 'experience', 'employment history', 'employment'];
-    if (sectionHeaders.some(h => lowerLine === h || lowerLine === h + ':')) {
-      i++;
-      continue;
+  while (i < lines.length && experiences.length < 5) {
+    const line = lines[i];
+    // Skip section headers accidentally included
+    if (/experience|history|employment/i.test(line) && line.length < 15) { i++; continue; }
+
+    let title = '', company = '', from = '', to = '', description = '';
+
+    // Advanced line parsing for common PDF merged patterns
+    // e.g., "Blockchain DeveloperJul 2024 – May 2025" or "EvangelistMay – Oct 2024"
+    const rangePattern = /(([A-Z][a-z]{2}\s+)?\d{4}|[A-Z][a-z]{2})\s*[-–—|]\s*(([A-Z][a-z]{2}\s+)?\d{4}|present|current)/i;
+    const singleDatePattern = /([A-Z][a-z]{2}\s+\d{4}|\d{4})$/i;
+
+    const rangeMatch = line.match(rangePattern);
+    const singleMatch = line.match(singleDatePattern);
+
+    if (rangeMatch) {
+      from = rangeMatch[1];
+      to = rangeMatch[2];
+      title = line.substring(0, line.indexOf(rangeMatch[0])).trim();
+      // Clean title of typical merged artifacts (delimiters, months, years)
+      title = title.replace(/([-–—|]|[A-Z][a-z]{2}|[0-9]{4})\s*$/, '').trim();
+    } else if (singleMatch) {
+      from = singleMatch[1];
+      title = line.substring(0, line.indexOf(singleMatch[0])).trim();
+      title = title.replace(/([-–—|]|[A-Z][a-z]{2})\s*$/, '').trim();
     }
-
-    // Skip bullet points and technology lines at the start of a potential entry
-    if (line.startsWith('•') || line.startsWith('-') || lowerLine.startsWith('technolog')) {
-      i++;
-      continue;
-    }
-
-    let title = '';
-    let company = '';
-    let from = '';
-    let to = '';
-    let description = '';
-
-    // Check if line contains common delimiters (|, -, ,) which often separate title, company, dates
-    // Using a more specific hyphen check to avoid matching "Full-Stack" or similar within a title
-    // But allow "Role-Company" format seen in the user's resume
-    if (line.includes('|') || (line.includes('-') && !/\b\w+-\w+\b/.test(line) && !/\d{4}-\d{4}/.test(line)) || line.includes(' - ') || (line.includes(',') && line.split(',').length > 1) || (line.includes('-') && line.split('-').length === 2 && line.length < 60)) {
-      const parts = line.split(/[|]|\s-\s|,|-(?=\w)/).map(p => p.trim()).filter(Boolean);
-
-      // Try to identify which part is which
+    else if (line.includes('|') || line.includes(' - ') || line.includes(' – ') || (line.includes(',') && line.split(',').length > 1)) {
+      const parts = line.split(/[|]|\s[-–—]\s|,/).map(p => p.trim()).filter(Boolean);
       parts.forEach(part => {
-        const lowerPart = part.toLowerCase();
-        // Check for dates
-        if (/\d{4}|present|current/i.test(part) && (lowerPart.includes('present') || lowerPart.includes('current') || /jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|\d{4}/i.test(part))) {
-          if (!from) from = part;
-          else if (!to) to = part;
-        } else if (!title) {
-          title = part;
-        } else if (!company) {
-          company = part;
-        }
+        if (/\d{4}|present|current/i.test(part)) {
+          if (!from) from = part; else if (!to) to = part;
+        } else if (!title) title = part; else if (!company) company = part;
       });
-
-      // If we didn't find specific dates in the same line, check next line
-      if (!from && i + 1 < lines.length) {
-        const nextLine = lines[i + 1];
-        if (/\d{4}|present|current/i.test(nextLine)) {
-          const dateParts = nextLine.split('-').map(d => d.trim());
-          from = dateParts[0] || '';
-          to = dateParts[1] || '';
-          i++; // Consume date line
-        }
-      }
-    } else {
-      // Simple case: title on one line, company on next
+    } else if (!line.startsWith('•') && !line.startsWith('-')) {
       title = line;
-      if (i + 1 < lines.length) {
-        const nextLine = lines[i + 1];
-        if (!nextLine.startsWith('•') && !nextLine.startsWith('-')) {
-          company = nextLine;
-          i++;
-        }
-      }
+    }
+
+    // Try to find company on next line if not found
+    if (i + 1 < lines.length && !company && !lines[i + 1].startsWith('•') && !lines[i + 1].startsWith('-')) {
+      company = lines[i + 1];
+      // Clean company of artifacts like "Remote" merged at the end
+      if (company.endsWith('Remote')) company = company.replace(/Remote$/, '').trim();
+      i++;
     }
 
     i++;
-
-    // Collect description lines (bullet points and their continuations)
     const descLines = [];
     while (i < lines.length) {
-      const descLine = lines[i];
-      const isBullet = descLine.startsWith('•') || descLine.startsWith('-');
-      const isTech = descLine.toLowerCase().startsWith('technolog');
+      const nextLine = lines[i];
+      // If next line looks like a new entry (capitalized, short, might contain date), stop
+      if (!nextLine.startsWith('•') && !nextLine.startsWith('-') && nextLine.length < 60 &&
+        (nextLine.includes('|') || nextLine.includes(' - ') || nextLine.includes(' – ') || nextLine.match(/\d{4}/))) break;
 
-      // Heuristic for new title: line with delimiter, relatively short, few words, and doesn't look like a sentence
-      const commonWords = ['that', 'with', 'this', 'from', 'into', 'under', 'these', 'those'];
-      const isSentence = commonWords.some(w => descLine.toLowerCase().includes(' ' + w + ' '));
-      const hasTitleCase = descLine.split(/[ |-]/).every(p => p.length === 0 || /^[A-Z0-9\(&]/.test(p) || ['and', 'of', 'for', 'in', 'at'].includes(p.toLowerCase()));
-
-      const isNewTitleCandidate = (descLine.includes('|') || descLine.includes(' - ') || (descLine.includes('-') && descLine.split('-').length === 2 && descLine.split(' ').length < 8 && hasTitleCase)) && descLine.length < 60 && !isSentence;
-
-      if (!isBullet && !isTech && isNewTitleCandidate) {
-        // This definitely looks like a new experience entry
-        break;
-      }
-
-      // If it's not a bullet but doesn't look like a title, it's probably a continuation of the description
-      descLines.push(descLine.replace(/^[•\-]\s*/, ''));
+      descLines.push(nextLine.replace(/^[•\-]\s*/, ''));
       i++;
-
-      // Optional: limit description length per entry to prevent runaway
-      if (descLines.length > 10) break;
+      if (descLines.length > 8) break;
     }
-    description = descLines.join(' ');
 
-    if (title && title.length > 3) {
+    if (title || company) {
       experiences.push({
-        id: Date.now() + experiences.length,
-        title: title.slice(0, 100).trim(),
-        company: (company || 'Company').slice(0, 100).trim(),
-        from: (from || '').slice(0, 50).trim(),
-        to: (to || '').slice(0, 50).trim(),
+        title: title || 'Professional Experience',
+        company: company || 'Organization',
+        from,
+        to,
         current: /present|current/i.test(to),
-        description: description.slice(0, 500).trim()
+        description: descLines.join(' ')
       });
     }
-
-    if (experiences.length >= 5) break;
   }
-
   return experiences;
 };
 
 const parseEducation = (eduText) => {
   if (!eduText) return [];
-  const lines = eduText.split('\n').filter(Boolean);
-
-  if (lines.length > 0) {
-    return [{
-      school: lines[0].slice(0, 100),
-      degree: lines[1] ? lines[1].slice(0, 100) : '',
-      field: '',
-      from: '',
-      to: '',
-    }];
+  const lines = eduText.split('\n').map(l => l.trim()).filter(Boolean);
+  const education = [];
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (/university|college|institute|school/i.test(line) || education.length === 0) {
+      let degree = '', field = '', from = '', to = '';
+      let j = i + 1;
+      while (j < Math.min(i + 4, lines.length)) {
+        const nl = lines[j];
+        if (/(bachelor|master|doctor|phd|diploma|degree|b\.s\.|m\.s\.)/i.test(nl)) {
+          degree = nl;
+          if (nl.includes(' of ')) field = nl.split(' of ')[1]; else if (nl.includes(' in ')) field = nl.split(' in ')[1];
+        } else if (/\d{4}/.test(nl)) {
+          const p = nl.split(/[-–—|]/).map(d => d.trim());
+          from = p[0] || ''; to = p[1] || '';
+        } else if (/computer science|engineering|business/i.test(nl) && !field) field = nl;
+        if (/university|college|institute|school/i.test(nl) && j > i + 1) break;
+        j++;
+      }
+      education.push({ school: line, degree, field, from, to });
+      i = j - 1;
+    }
+    if (education.length >= 3) break;
   }
-  return [];
+  return education;
 };
 
 const parseProjects = (projText) => {
   if (!projText) return [];
   const lines = projText.split('\n').map(l => l.trim()).filter(Boolean);
   const projects = [];
-
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
-    // Skip section headers
     if (/^(projects|personal projects|key projects)/i.test(line)) continue;
-
-    // Bullet points are usually project names or descriptions
     if (!line.startsWith('•') && !line.startsWith('-')) {
       const title = line;
-      let description = '';
+      let description = '', link = '';
+      const lm = line.match(/https?:\/\/[^\s]+/);
+      if (lm) link = lm[0];
       let j = i + 1;
-      while (j < lines.length && (lines[j].startsWith('•') || lines[j].startsWith('-'))) {
+      while (j < lines.length && (lines[j].startsWith('•') || lines[j].startsWith('-') || lines[j].length > 40)) {
         description += ' ' + lines[j].replace(/^[•\-]\s*/, '');
+        const dlm = lines[j].match(/https?:\/\/[^\s]+/);
+        if (dlm && !link) link = dlm[0];
+        if (j + 1 < lines.length && !lines[j + 1].startsWith('•') && !lines[j + 1].startsWith('-') && lines[j + 1].length < 50 && /^[A-Z]/.test(lines[j + 1])) break;
         j++;
       }
       i = j - 1;
-      projects.push({ title, description: description.trim() });
+      projects.push({ title: title.replace(/https?:\/\/[^\s]+/, '').replace(/[\s||\-–—]+$/, '').trim(), description: description.trim(), link });
     }
     if (projects.length >= 5) break;
   }
@@ -426,239 +329,96 @@ const parseCertifications = (certText) => {
   if (!certText) return [];
   const lines = certText.split('\n').map(l => l.trim()).filter(Boolean);
   const certs = [];
-
-  lines.forEach(line => {
-    if (line.toLowerCase().includes('certificat')) {
-      certs.push({ name: line.replace(/^[•\-]|\bcertificate|\bcertification/gi, '').trim(), issuer: '', date: '' });
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const issuers = ['aws', 'google', 'microsoft', 'cisco', 'oracle', 'coursera', 'udemy'];
+    let issuer = '';
+    issuers.forEach(is => { if (line.toLowerCase().includes(is)) issuer = is.charAt(0).toUpperCase() + is.slice(1); });
+    if (line.toLowerCase().includes('certificat') || line.toLowerCase().includes('certified') || issuer) {
+      let date = '';
+      const dm = line.match(/(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\s+\d{4}|\d{4}/i);
+      if (dm) date = dm[0]; else {
+        let j = i + 1;
+        while (j < Math.min(i + 3, lines.length)) {
+          const ndm = lines[j].match(/(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\s+\d{4}|\d{4}/i);
+          if (ndm) { date = ndm[0]; if (lines[j].length < 30) i = j; break; }
+          j++;
+        }
+      }
+      certs.push({ name: line.replace(/^[•\-]|\bcertificate|\bcertification/gi, '').trim(), issuer, date });
     }
-  });
-
+  }
   return certs.slice(0, 5);
 };
 
 exports.uploadResume = async (req, res) => {
   try {
-    console.log('📄 Resume upload request received');
-
-    if (!req.file) {
-      console.log('❌ No file in request');
-      return res.status(400).json({ success: false, message: 'Resume file is required' });
-    }
-
-    console.log('📋 File details:', {
-      originalname: req.file.originalname,
-      mimetype: req.file.mimetype,
-      size: req.file.size,
-      bufferLength: req.file.buffer?.length
-    });
-
-    if (req.user._id.toString() !== req.params.id && req.user.id !== req.params.id) {
-      console.log('❌ Unauthorized access attempt');
-      return res.status(403).json({ success: false, message: 'Not authorized' });
-    }
+    if (!req.file) return res.status(400).json({ success: false, message: 'Resume file is required' });
+    if (req.user._id.toString() !== req.params.id && req.user.id !== req.params.id) return res.status(403).json({ success: false, message: 'Not authorized' });
 
     let text = '';
-
-    // Extract text from file
-    try {
-      if (req.file.mimetype === 'application/pdf') {
-        console.log('📖 Parsing PDF file...');
-        const data = await pdfParse(req.file.buffer);
-        text = data.text || '';
-        console.log('✅ PDF parsed. Text length:', text.length);
-        console.log('📝 First 200 chars:', text.substring(0, 200));
-      } else {
-        console.log('📖 Reading text file...');
-        text = req.file.buffer.toString('utf-8');
-        console.log('✅ Text file read. Length:', text.length);
-        console.log('📝 First 200 chars:', text.substring(0, 200));
-      }
-    } catch (parseError) {
-      console.error('❌ Error parsing file:', parseError);
-      return res.status(500).json({
-        success: false,
-        message: 'Failed to read resume file. Please ensure it\'s a valid PDF or text file.'
-      });
+    if (req.file.mimetype === 'application/pdf') {
+      const data = await pdfParse(req.file.buffer);
+      text = data.text || '';
+    } else {
+      text = req.file.buffer.toString('utf-8');
     }
-
-    if (!text || text.trim().length < 50) {
-      console.log('⚠️ Extracted text is too short or empty');
-      return res.status(400).json({
-        success: false,
-        message: 'Could not extract text from resume. Please ensure the PDF is not image-based or corrupted.'
-      });
-    }
-
-    // Extract information
-    console.log('🔍 Extracting information from text...');
 
     const name = extractName(text);
-    console.log('👤 Extracted name:', name);
-
     const email = extractEmail(text);
-    console.log('📧 Extracted email:', email);
-
     const phone = extractPhone(text);
-    console.log('📱 Extracted phone:', phone);
-
     const skills = extractSkills(text);
-    console.log('🛠️ Extracted skills:', skills.length, 'skills found');
-
-    const summaryText = extractSectionText(text, ['summary', 'professional summary', 'profile', 'about me', 'introduction']);
-    console.log('📄 Extracted summary length:', summaryText.length);
-
-    const expText = extractSectionText(text, ['experience', 'work experience', 'professional experience', 'employment history', 'employment']);
-    console.log('💼 Extracted experience text length:', expText.length);
-
-    const eduText = extractSectionText(text, ['education', 'academic background', 'qualification']);
-    const projText = extractSectionText(text, ['projects', 'personal projects', 'key projects']);
-    const certText = extractSectionText(text, ['certifications', 'certificates', 'certification']);
-
-    const experience = parseExperience(expText);
-    const education = parseEducation(eduText);
-    const projects = parseProjects(projText);
-    const certifications = parseCertifications(certText);
+    const summary = extractSectionText(text, ['summary', 'profile', 'about me', 'introduction']);
+    const experience = parseExperience(extractSectionText(text, ['experience', 'history']));
+    const education = parseEducation(extractSectionText(text, ['education']));
+    const projects = parseProjects(extractSectionText(text, ['projects']));
+    const certifications = parseCertifications(extractSectionText(text, ['certifications', 'certificates']));
     const socials = extractSocialLinks(text);
 
-    // Save physical file
     let resumeURL = '';
-    try {
-      const fileName = `resume_${req.params.id}_${Date.now()}.pdf`;
-      const filePath = path.join(__dirname, '..', 'uploads', fileName);
-      fs.writeFileSync(filePath, req.file.buffer);
-      resumeURL = `/uploads/${fileName}`;
-      console.log('💾 Resume file saved to:', filePath);
-    } catch (saveError) {
-      console.error('❌ Error saving resume file:', saveError);
-    }
-
-    const profileSuggestions = {
-      name,
-      email,
-      phone,
-      skills,
-      summary: summaryText.slice(0, 500) || text.split('\n').filter(l => l.length > 10).slice(0, 3).join(' ').slice(0, 500),
-      headline: name ? `${name} | Tech Professional` : '',
-      location: '',
-      experience,
-      education,
-      projects,
-      certifications,
-      ...socials,
-      resumeURL
-    };
-
-    console.log('✅ Profile suggestions generated:', {
-      hasName: !!name,
-      experienceCount: experience.length,
-      projectsCount: projects.length,
-      certificationsCount: certifications.length,
-      hasResumeURL: !!resumeURL
-    });
+    const fileName = `resume_${req.params.id}_${Date.now()}.pdf`;
+    const filePath = path.join(__dirname, '..', 'uploads', fileName);
+    fs.writeFileSync(filePath, req.file.buffer);
+    resumeURL = `/uploads/${fileName}`;
 
     res.status(200).json({
       success: true,
-      message: 'Resume parsed and uploaded successfully',
-      profile: profileSuggestions
+      profile: { name, email, phone, skills, summary, headline: name ? `${name} | Tech Professional` : '', experience, education, projects, certifications, ...socials, resumeURL }
     });
   } catch (error) {
-    console.error('❌ Error parsing resume:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to parse resume. Please try again or contact support.',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
+    console.error('Error parsing resume:', error);
+    res.status(500).json({ success: false, message: 'Failed to parse resume.' });
   }
 };
 
 exports.downloadResume = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
-    if (!user || !user.profile.resumeURL) {
-      return res.status(404).json({ success: false, message: 'Resume not found' });
-    }
-
+    if (!user || !user.profile.resumeURL) return res.status(404).json({ success: false, message: 'Resume not found' });
     const filePath = path.join(__dirname, '..', user.profile.resumeURL);
-    if (!fs.existsSync(filePath)) {
-      return res.status(404).json({ success: false, message: 'Resume file not found on server' });
-    }
-
+    if (!fs.existsSync(filePath)) return res.status(404).json({ success: false, message: 'Resume file not found' });
     res.download(filePath);
   } catch (error) {
-    console.error('❌ Error downloading resume:', error);
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 };
-// @desc    Get employer dashboard stats
-// @route   GET /api/users/dashboard/stats
-// @access  Private (Employer only)
+
 exports.getEmployerStats = async (req, res) => {
   try {
     const employerId = req.user._id;
-
-    // Parallelize queries for performance
     const [activeJobsCount, totalApplicationsCount, applications, recentJobs, activeCandidates] = await Promise.all([
-      // 1. Active Postings
       require('../models/Job').countDocuments({ postedBy: employerId, status: 'active' }),
-
-      // 2. Total Applications
       require('../models/Application').countDocuments({ employer: employerId }),
-
-      // 3. Recent Applications (Last 5)
-      require('../models/Application').find({ employer: employerId })
-        .sort({ createdAt: -1 })
-        .limit(5)
-        .populate('job', 'title')
-        .populate('applicant', 'profile.name email')
-        .lean(),
-
-      // 4. Recent Jobs (Last 5)
-      require('../models/Job').find({ postedBy: employerId })
-        .sort({ createdAt: -1 })
-        .limit(5)
-        .select('title createdAt status')
-        .lean(),
-
-      // 5. Active Candidates (Unique applicants)
+      require('../models/Application').find({ employer: employerId }).sort({ createdAt: -1 }).limit(5).populate('job', 'title').populate('applicant', 'profile.name email').lean(),
+      require('../models/Job').find({ postedBy: employerId }).sort({ createdAt: -1 }).limit(5).select('title createdAt status').lean(),
       require('../models/Application').distinct('applicant', { employer: employerId })
     ]);
-
-    // Combine and sort activities
     const activities = [
-      ...applications.map(app => ({
-        id: app._id,
-        type: 'Application',
-        description: `New application for ${app.job?.title || 'a job'}`,
-        candidate: app.applicant?.profile?.name || app.applicant?.email || 'Candidate',
-        time: app.createdAt
-      })),
-      ...recentJobs.map(job => ({
-        id: job._id,
-        type: 'Job',
-        description: `Posted new job: ${job.title}`,
-        candidate: job.status === 'active' ? 'Active' : 'Inactive', // Reusing candidate field for status/info
-        time: job.createdAt
-      }))
+      ...applications.map(app => ({ id: app._id, type: 'Application', description: `New application for ${app.job?.title || 'a job'}`, candidate: app.applicant?.profile?.name || app.applicant?.email || 'Candidate', time: app.createdAt })),
+      ...recentJobs.map(job => ({ id: job._id, type: 'Job', description: `Posted new job: ${job.title}`, candidate: job.status === 'active' ? 'Active' : 'Inactive', time: job.createdAt }))
     ].sort((a, b) => new Date(b.time) - new Date(a.time)).slice(0, 5);
-
-    res.status(200).json({
-      success: true,
-      stats: {
-        activePostings: activeJobsCount,
-        totalApplications: totalApplicationsCount,
-        activeCandidates: activeCandidates.length,
-        profileViews: Math.floor(Math.random() * 50) + 10 // Placeholder for now
-      },
-      recentActivity: activities
-    });
-
+    res.status(200).json({ success: true, stats: { activePostings: activeJobsCount, totalApplications: totalApplicationsCount, activeCandidates: activeCandidates.length, profileViews: Math.floor(Math.random() * 50) + 10 }, recentActivity: activities });
   } catch (error) {
-    console.error('Error fetching dashboard stats:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch dashboard statistics'
-    });
+    res.status(500).json({ success: false, message: 'Failed to fetch dashboard statistics' });
   }
 };
-
-

@@ -459,6 +459,7 @@ const Profile = () => {
                 <div className="form-grid">
                   <div className="form-group"><label>School/University</label><input type="text" value={edu.school} onChange={(e) => handleEduChange(edu.id || edu._id, 'school', e.target.value)} disabled={!isEditing} /></div>
                   <div className="form-group"><label>Degree</label><input type="text" value={edu.degree} onChange={(e) => handleEduChange(edu.id || edu._id, 'degree', e.target.value)} disabled={!isEditing} /></div>
+                  <div className="form-group"><label>Field of Study</label><input type="text" value={edu.field} onChange={(e) => handleEduChange(edu.id || edu._id, 'field', e.target.value)} disabled={!isEditing} placeholder="e.g. Computer Science" /></div>
                   <div className="form-group"><label>From</label><input type="text" value={edu.from} onChange={(e) => handleEduChange(edu.id || edu._id, 'from', e.target.value)} disabled={!isEditing} /></div>
                   <div className="form-group"><label>To</label><input type="text" value={edu.to} onChange={(e) => handleEduChange(edu.id || edu._id, 'to', e.target.value)} disabled={!isEditing} /></div>
                 </div>
