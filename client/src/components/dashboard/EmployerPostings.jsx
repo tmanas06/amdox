@@ -84,35 +84,27 @@ const EmployerPostings = () => {
             <button className="btn-primary" onClick={() => navigate('/post-job')}>Post Your First Job</button>
           </div>
         ) : (
-          <div style={{ display: 'grid', gap: '1rem' }}>
+          <div className="jobs-grid">
             {jobs.map(j => (
-              <div key={j._id} style={{ padding: '1rem', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.08)', background: 'rgba(0,0,0,0.20)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 700, color: '#f8fafc' }}>{j.title}</div>
-                    <div style={{ color: '#94a3b8', marginTop: '0.25rem' }}>{j.company} • {j.isRemote ? 'Remote' : j.location} • {j.type}</div>
+              <div key={j._id} className="job-posting-card">
+                <div className="job-posting-content">
+                  <div className="job-posting-info">
+                    <div className="job-posting-title">{j.title}</div>
+                    <div className="job-posting-meta">{j.company} • {j.isRemote ? 'Remote' : j.location} • {j.type}</div>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    <div style={{ color: '#94a3b8' }}>
-                      Status: <span style={{ color: j.status === 'active' ? '#34d399' : '#fbbf24' }}>{j.status}</span>
+                  <div className="job-posting-actions">
+                    <div className="job-posting-status">
+                      Status: <span className={`status-badge status-${j.status}`}>{j.status}</span>
                     </div>
-                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <div className="job-posting-buttons">
                       <button
-                        className="btn-secondary"
-                        style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
+                        className="btn-secondary btn-sm"
                         onClick={() => navigate(`/post-job/${j._id}`)}
                       >
                         Edit
                       </button>
                       <button
-                        className="btn-secondary"
-                        style={{
-                          padding: '0.4rem 0.8rem',
-                          fontSize: '0.85rem',
-                          color: '#ef4444',
-                          borderColor: 'rgba(239, 68, 68, 0.2)',
-                          background: 'rgba(239, 68, 68, 0.05)'
-                        }}
+                        className="btn-secondary btn-sm btn-danger"
                         onClick={() => handleDelete(j._id)}
                       >
                         Delete
