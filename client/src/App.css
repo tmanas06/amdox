@@ -14,10 +14,10 @@
   --border: rgba(255, 255, 255, 0.10);
   --border-2: rgba(255, 255, 255, 0.16);
 
-  --text-0: #f8fafc;
-  --text-1: #e2e8f0;
-  --text-2: #94a3b8;
-  --text-3: #64748b;
+  --text-0: #60a5fa;
+  --text-1: #93c5fd;
+  --text-2: #3b82f6;
+  --text-3: #2563eb;
 
   /* Radius / Shadow */
   --r-sm: 10px;
@@ -39,10 +39,10 @@
   --border: rgba(15, 23, 42, 0.08);
   --border-2: rgba(15, 23, 42, 0.12);
 
-  --text-0: #0f172a;
-  --text-1: #1f2937;
-  --text-2: #475569;
-  --text-3: #6b7280;
+  --text-0: #1e3a8a;
+  --text-1: #1e40af;
+  --text-2: #3b82f6;
+  --text-3: #2563eb;
 }
 
 * {

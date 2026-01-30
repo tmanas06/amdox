@@ -23,10 +23,12 @@
     --glass-border-hover: rgba(255, 255, 255, 0.12);
 
     /* Text */
-    --text-primary: #f8fafc;
-    --text-secondary: #94a3b8;
-    /* Swapped secondary and muted for better hierarchy */
-    --text-muted: #64748b;
+    --text-primary: #60a5fa;
+    /* Brightest blue for Dark Mode */
+    --text-secondary: #93c5fd;
+    /* Soft blue */
+    --text-muted: #3b82f6;
+    /* Stronger blue for muted/labels */
 
     /* Shadows & Radius */
     --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
@@ -57,9 +59,12 @@
     --glass-border: rgba(0, 0, 0, 0.08);
     --glass-border-hover: rgba(0, 0, 0, 0.12);
 
-    --text-primary: #0f172a;
-    --text-secondary: #334155;
-    --text-muted: #64748b;
+    --text-primary: #1e3a8a;
+    /* Deep blue for Light Mode - high visibility */
+    --text-secondary: #1e40af;
+    /* Secondary deep blue */
+    --text-muted: #3b82f6;
+    /* Primary blue for muted */
 
     --card-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.1);
     --nav-bg: rgba(248, 252, 255, 0.8);

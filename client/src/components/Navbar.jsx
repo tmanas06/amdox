@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 // import { messages as messageService } from '../services/api';
-import ThemeToggle from './ThemeToggle';
+import ThemeCustomizer from './ThemeCustomizer';
 import './Navbar.css';
 
 const Navbar = ({ tabs = [], activeTab, onTabChange, showTabs = true }) => {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
+    const [isCustomizerOpen, setIsCustomizerOpen] = useState(false);
     // const [unreadCount, setUnreadCount] = useState(0); // unreadCount unused since icon removed
 
     const isJobSeeker = user?.role === 'job_seeker';
@@ -87,7 +88,13 @@ const Navbar = ({ tabs = [], activeTab, onTabChange, showTabs = true }) => {
                                 {/* Message Notification Icon */}
                                 {/* Message icon removed as requested */}
 
-                                <ThemeToggle />
+                                <button
+                                    className="theme-settings-btn"
+                                    onClick={() => setIsCustomizerOpen(true)}
+                                    title="Theme Settings"
+                                >
+                                    🎨
+                                </button>
                                 <button onClick={logout} className="nav-logout-btn">
                                     Logout
                                 </button>
@@ -95,11 +102,22 @@ const Navbar = ({ tabs = [], activeTab, onTabChange, showTabs = true }) => {
                         </>
                     ) : (
                         <div className="nav-actions">
-                            <ThemeToggle />
+                            <button
+                                className="theme-settings-btn"
+                                onClick={() => setIsCustomizerOpen(true)}
+                                title="Theme Settings"
+                            >
+                                🎨
+                            </button>
                         </div>
                     )}
                 </div>
             </div>
+
+            <ThemeCustomizer
+                isOpen={isCustomizerOpen}
+                onClose={() => setIsCustomizerOpen(false)}
+            />
         </nav>
     );
 };

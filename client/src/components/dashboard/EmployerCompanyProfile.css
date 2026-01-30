@@ -17,9 +17,9 @@
 
 /* Light mode specific override if variables aren't enough */
 [data-theme='light'] .company-header-card {
-    background: #ffffff;
-    border-color: #e2e8f0;
-    color: #1e293b;
+    background: var(--bg-primary);
+    border-color: var(--glass-border);
+    color: var(--text-primary);
 }
 
 .company-header-content {
@@ -143,9 +143,9 @@
 [data-theme='light'] .form-input,
 [data-theme='light'] .form-textarea,
 [data-theme='light'] .form-select {
-    background: #f8fafc;
-    border-color: #cbd5e1;
-    color: #0f172a;
+    background: var(--bg-secondary);
+    border-color: var(--glass-border);
+    color: var(--text-primary);
 }
 
 .form-input:focus,
@@ -180,9 +180,9 @@
 }
 
 [data-theme='light'] .btn-cancel {
-    background: #f1f5f9;
-    border-color: #cbd5e1;
-    color: #475569;
+    background: var(--bg-secondary);
+    border-color: var(--glass-border);
+    color: var(--text-secondary);
 }
 
 .website-link {
