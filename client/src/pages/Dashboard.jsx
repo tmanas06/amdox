@@ -27,10 +27,8 @@ const Dashboard = () => {
   const { user } = useAuth(); // logout unused
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
-  const [recommendedJobs, setRecommendedJobs] = useState([]);
   const [aiRecommendedJobs, setAiRecommendedJobs] = useState([]);
   const [loadingAIJobs, setLoadingAIJobs] = useState(false);
-  const [loadingJobs, setLoadingJobs] = useState(false);
   const [totalJobsCount, setTotalJobsCount] = useState(0);
 
   const isJobSeeker = user?.role === 'job_seeker';
@@ -81,7 +79,7 @@ const Dashboard = () => {
   // Fetch recommended jobs on component mount
   useEffect(() => {
     if (isJobSeeker) {
-      fetchRecommendedJobs();
+      fetchRecommendedJobsCount();
       fetchAIRecommendedJobs();
       fetchMyApplications();
     } else if (isEmployer) {
@@ -103,20 +101,15 @@ const Dashboard = () => {
     }
   };
 
-  const fetchRecommendedJobs = async () => {
+  const fetchRecommendedJobsCount = async () => {
     try {
-      setLoadingJobs(true);
-      const response = await jobService.getAll({ limit: 2 });
-      if (response.data && response.data.data) {
-        setRecommendedJobs(response.data.data.slice(0, 2));
+      const response = await jobService.getAll({ limit: 1 });
+      if (response.data) {
         setTotalJobsCount(response.data.total || 0);
       }
     } catch (error) {
-      console.error('Error fetching recommended jobs:', error);
-      setRecommendedJobs([]);
+      console.error('Error fetching job count:', error);
       setTotalJobsCount(0);
-    } finally {
-      setLoadingJobs(false);
     }
   };
 
@@ -370,46 +363,6 @@ const Dashboard = () => {
                           <div className="empty-state">
                             <p className="empty-state-text" style={{ fontSize: '0.9rem' }}>No AI picks yet</p>
                             <p className="empty-state-subtext" style={{ fontSize: '0.8rem' }}>Complete your profile for better matches</p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="content-card">
-                      <div className="card-header">
-                        <h3 className="card-title">Recommended Jobs</h3>
-                        <button className="card-action" onClick={() => setActiveTab('jobs')}>View All</button>
-                      </div>
-                      <div className="card-content">
-                        {loadingJobs ? (
-                          <div style={{ textAlign: 'center', padding: '2rem' }}>
-                            <p style={{ color: 'var(--text-muted)' }}>Loading jobs...</p>
-                          </div>
-                        ) : recommendedJobs.length > 0 ? (
-                          recommendedJobs.map((job) => (
-                            <div className="job-item" key={job._id}>
-                              <div className="job-item-header">
-                                <h4 className="job-item-title">{job.title}</h4>
-                                <span className="job-item-badge">{job.isRemote ? 'Remote' : 'On-site'}</span>
-                              </div>
-                              <p className="job-item-company">{job.company}</p>
-                              <div className="job-item-meta">
-                                <span>{job.location}</span>
-                                <span>•</span>
-                                <span>{job.type}</span>
-                                <span>•</span>
-                                <span>{job.salary}</span>
-                              </div>
-                              <div className="job-item-actions">
-                                <button className="btn-secondary" onClick={() => handleSaveJob(job._id)}>Save</button>
-                                <button className="btn-primary" onClick={() => navigate(`/jobs/${job._id}`)}>View</button>
-                              </div>
-                            </div>
-                          ))
-                        ) : (
-                          <div className="empty-state">
-                            <p className="empty-state-text" style={{ color: 'var(--text-muted)' }}>No jobs available</p>
-                            <p className="empty-state-subtext" style={{ color: 'var(--text-secondary)' }}>Check back soon for new opportunities</p>
                           </div>
                         )}
                       </div>
