@@ -161,7 +161,11 @@ const extractSkills = (text) => {
 };
 
 const extractSectionText = (text, headers) => {
-  const lines = text.split('\n').map(l => l.trim());
+  // Collapse repetitive consecutive lines (common in some PDF outputs)
+  const lines = text.split('\n')
+    .map(l => l.trim())
+    .filter((l, i, arr) => !l || l !== arr[i - 1] || i === 0);
+
   let startIdx = -1;
 
   for (let i = 0; i < lines.length; i++) {
@@ -255,8 +259,10 @@ const parseExperience = (expText) => {
     let description = '';
 
     // Check if line contains common delimiters (|, -, ,) which often separate title, company, dates
-    if (line.includes('|') || line.includes(' - ') || (line.includes(',') && line.split(',').length > 1)) {
-      const parts = line.split(/[|]|\s-\s|,/).map(p => p.trim()).filter(Boolean);
+    // Using a more specific hyphen check to avoid matching "Full-Stack" or similar within a title
+    // But allow "Role-Company" format seen in the user's resume
+    if (line.includes('|') || (line.includes('-') && !/\b\w+-\w+\b/.test(line) && !/\d{4}-\d{4}/.test(line)) || line.includes(' - ') || (line.includes(',') && line.split(',').length > 1) || (line.includes('-') && line.split('-').length === 2 && line.length < 60)) {
+      const parts = line.split(/[|]|\s-\s|,|-(?=\w)/).map(p => p.trim()).filter(Boolean);
 
       // Try to identify which part is which
       parts.forEach(part => {
@@ -296,31 +302,43 @@ const parseExperience = (expText) => {
 
     i++;
 
-    // Collect description lines (bullet points)
+    // Collect description lines (bullet points and their continuations)
     const descLines = [];
     while (i < lines.length) {
       const descLine = lines[i];
       const isBullet = descLine.startsWith('•') || descLine.startsWith('-');
       const isTech = descLine.toLowerCase().startsWith('technolog');
 
-      if (!isBullet && !isTech) {
-        // This might be a new experience entry
+      // Heuristic for new title: line with delimiter, relatively short, few words, and doesn't look like a sentence
+      const commonWords = ['that', 'with', 'this', 'from', 'into', 'under', 'these', 'those'];
+      const isSentence = commonWords.some(w => descLine.toLowerCase().includes(' ' + w + ' '));
+      const hasTitleCase = descLine.split(/[ |-]/).every(p => p.length === 0 || /^[A-Z0-9\(&]/.test(p) || ['and', 'of', 'for', 'in', 'at'].includes(p.toLowerCase()));
+
+      const isNewTitleCandidate = (descLine.includes('|') || descLine.includes(' - ') || (descLine.includes('-') && descLine.split('-').length === 2 && descLine.split(' ').length < 8 && hasTitleCase)) && descLine.length < 60 && !isSentence;
+
+      if (!isBullet && !isTech && isNewTitleCandidate) {
+        // This definitely looks like a new experience entry
         break;
       }
+
+      // If it's not a bullet but doesn't look like a title, it's probably a continuation of the description
       descLines.push(descLine.replace(/^[•\-]\s*/, ''));
       i++;
+
+      // Optional: limit description length per entry to prevent runaway
+      if (descLines.length > 10) break;
     }
     description = descLines.join(' ');
 
-    if (title) {
+    if (title && title.length > 3) {
       experiences.push({
         id: Date.now() + experiences.length,
-        title: title.slice(0, 100),
-        company: (company || 'Company').slice(0, 100),
-        from: from.slice(0, 50),
-        to: to.slice(0, 50),
+        title: title.slice(0, 100).trim(),
+        company: (company || 'Company').slice(0, 100).trim(),
+        from: (from || '').slice(0, 50).trim(),
+        to: (to || '').slice(0, 50).trim(),
         current: /present|current/i.test(to),
-        description: description.slice(0, 500)
+        description: description.slice(0, 500).trim()
       });
     }
 
@@ -545,4 +563,5 @@ exports.getEmployerStats = async (req, res) => {
     });
   }
 };
+
 
