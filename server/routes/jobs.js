@@ -51,4 +51,7 @@ router.put(
 router.delete('/:id', authorizeRole('employer', 'admin'), jobController.deleteJob);
 router.get('/:id', jobController.getJob);
 
+// AI Job Description Generation
+router.post('/generate-description', aiController.generateJobDescription);
+
 module.exports = router;

@@ -13,6 +13,7 @@ const PostJob = () => {
   const isEdit = !!id;
   const [isLoading, setIsLoading] = useState(isEdit);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     company: '',
@@ -83,6 +84,38 @@ const PostJob = () => {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
+  };
+
+  const handleGenerateJD = async () => {
+    if (!formData.title.trim()) {
+      toast.warn('Please enter a job title first to generate a description');
+      return;
+    }
+
+    setIsGenerating(true);
+    try {
+      const res = await jobService.generateDescription({
+        title: formData.title,
+        company: formData.company,
+        industry: formData.industry,
+        location: formData.location
+      });
+
+      if (res.data && res.data.success) {
+        const { description, skills } = res.data.data;
+        setFormData(prev => ({
+          ...prev,
+          description: description || prev.description,
+          skills: skills || prev.skills
+        }));
+        toast.success('Job details generated! ✨');
+      }
+    } catch (err) {
+      console.error('JD Generation Error:', err);
+      toast.error('Failed to generate job description');
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -294,14 +327,24 @@ const PostJob = () => {
           {/* Job Details Section */}
           <div className="form-section">
             <div className="form-group">
-              <label htmlFor="description">Job Description <span className="required">*</span></label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <label htmlFor="description" style={{ marginBottom: 0 }}>Job Description <span className="required">*</span></label>
+                <button
+                  type="button"
+                  className="btn-ai-generate"
+                  onClick={handleGenerateJD}
+                  disabled={isGenerating}
+                >
+                  {isGenerating ? '✨ Generating...' : '✨ AI Generate'}
+                </button>
+              </div>
               <textarea
                 id="description"
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
                 required
-                rows={6}
+                rows={12}
                 placeholder="Enter detailed job description, responsibilities, and requirements..."
               />
             </div>

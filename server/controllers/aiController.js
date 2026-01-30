@@ -143,3 +143,91 @@ INSTRUCTIONS:
         });
     }
 };
+
+/**
+ * @desc    Generate a job description based on title and company info
+ * @route   POST /api/jobs/generate-description
+ * @access  Private/Employer
+ */
+exports.generateJobDescription = async (req, res) => {
+    try {
+        const { title, company, industry, location } = req.body;
+
+        if (!title) {
+            return res.status(400).json({
+                success: false,
+                message: 'Job title is required for generation'
+            });
+        }
+
+        const groqApiKey = process.env.VITE_GROQ_API_KEY;
+        if (!groqApiKey) {
+            return res.status(500).json({
+                success: false,
+                message: 'AI service configuration error'
+            });
+        }
+
+        const prompt = `
+            You are a professional HR assistant and technical writer. 
+            Generate a comprehensive and compelling job posting for the following role:
+            - Title: ${title}
+            - Company: ${company || 'Our Company'}
+            - Industry: ${industry || 'Technology'}
+            - Location: ${location || 'Remote/On-site'}
+
+            Return ONLY a JSON object with two fields:
+            1. "description": A structured job description in markdown. Include "About the Role", "Key Responsibilities", and "About the Company".
+            2. "skills": A comma-separated string of the top 8-10 required technical skills and soft skills for this specific role.
+
+            JSON ONLY. Do not include any other text.
+        `;
+
+        const groqResponse = await axios.post(
+            'https://api.groq.com/openai/v1/chat/completions',
+            {
+                model: 'llama-3.3-70b-versatile',
+                messages: [
+                    { role: 'system', content: 'You are a professional HR content generator. Return ONLY JSON.' },
+                    { role: 'user', content: prompt }
+                ],
+                temperature: 0.7,
+                max_tokens: 1500
+            },
+            {
+                headers: {
+                    'Authorization': `Bearer ${groqApiKey}`,
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
+
+        const content = groqResponse.data.choices[0].message.content.trim();
+        let result = { description: '', skills: '' };
+
+        try {
+            const jsonMatch = content.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+                result = JSON.parse(jsonMatch[0]);
+            } else {
+                result = JSON.parse(content);
+            }
+        } catch (parseError) {
+            console.error('[AI JD] Failed to parse JSON, falling back to raw content');
+            result = { description: content, skills: '' };
+        }
+
+        res.status(200).json({
+            success: true,
+            data: result
+        });
+
+    } catch (error) {
+        console.error('AI JD Generation Error:', error.response?.data || error.message);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to generate job description',
+            error: error.message
+        });
+    }
+};

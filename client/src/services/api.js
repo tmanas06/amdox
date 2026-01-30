@@ -99,6 +99,9 @@ export const jobs = {
   // Create a new job (employer only)
   create: (jobData) => api.post('/jobs', jobData),
 
+  // Generate job description using AI
+  generateDescription: (data) => api.post('/jobs/generate-description', data),
+
   // Update a job (employer only)
   update: (id, jobData) => api.put(`/jobs/${id}`, jobData),
 
