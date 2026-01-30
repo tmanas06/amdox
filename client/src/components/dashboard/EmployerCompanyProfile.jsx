@@ -8,6 +8,7 @@ const EmployerCompanyProfile = () => {
     const { user, updateUser } = useAuth();
     const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [isEnriching, setIsEnriching] = useState(false);
 
     const [formData, setFormData] = useState({
         name: '', // This might be the user's name, but for company profile we want company name. 
@@ -93,6 +94,35 @@ const EmployerCompanyProfile = () => {
             toast.error('Failed to update profile');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleEnrich = async () => {
+        setIsEnriching(true);
+        try {
+            const res = await userService.enrichCompany();
+            if (res.data.success && res.data.data) {
+                const enriched = res.data.data;
+                setFormData(prev => ({
+                    ...prev,
+                    company: enriched.company || prev.company,
+                    industry: enriched.industry || prev.industry,
+                    companySize: enriched.companySize || prev.companySize,
+                    bio: enriched.bio || prev.bio,
+                    location: enriched.location || prev.location,
+                    website: enriched.website || prev.website,
+                    photoURL: enriched.photoURL || prev.photoURL
+                }));
+                toast.success('Company info enriched ✨');
+                if (!isEditing) setIsEditing(true); // Switch to edit mode to see results
+            } else if (res.data.message) {
+                toast.info(res.data.message);
+            }
+        } catch (err) {
+            console.error('Enrichment failed:', err);
+            toast.error('Failed to fetch company info');
+        } finally {
+            setIsEnriching(false);
         }
     };
 
@@ -219,7 +249,17 @@ const EmployerCompanyProfile = () => {
                                 <h2>{formData.company || 'Company Name'}</h2>
                                 <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>{formData.industry || 'Industry not set'}</p>
                             </div>
-                            <button className="btn-primary" onClick={() => setIsEditing(true)}>Edit Profile</button>
+                            <div className="action-buttons-group" style={{ display: 'flex', gap: '0.75rem' }}>
+                                <button
+                                    className="btn-secondary"
+                                    onClick={handleEnrich}
+                                    disabled={isEnriching}
+                                    title="Auto-fill company info using AI based on your email domain"
+                                >
+                                    {isEnriching ? '✨ Thinking...' : '✨ Auto-fill with AI'}
+                                </button>
+                                <button className="btn-primary" onClick={() => setIsEditing(true)}>Edit Profile</button>
+                            </div>
                         </div>
 
                         <div className="company-meta-row">

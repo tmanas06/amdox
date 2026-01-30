@@ -18,6 +18,9 @@ router.get('/job-seekers', userController.getJobSeekers);
 // Employer Dashboard Stats
 router.get('/dashboard/stats', userController.getEmployerStats);
 
+// Enrich company info
+router.get('/enrich-company', userController.enrichCompanyInfo);
+
 // Profile update
 router.put('/:id/profile', userController.updateProfile);
 

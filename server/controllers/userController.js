@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const axios = require('axios');
 const pdfParse = require('pdf-parse');
 const fs = require('fs');
 const path = require('path');
@@ -461,3 +462,102 @@ exports.getEmployerStats = async (req, res) => {
     res.status(500).json({ success: false, message: 'Failed to fetch dashboard statistics' });
   }
 };
+
+// @desc    Enrich company information based on email domain
+// @route   GET /api/users/enrich-company
+// @access  Private
+exports.enrichCompanyInfo = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user || user.role !== 'employer') {
+      return res.status(403).json({ success: false, message: 'Only employers can enrich company info' });
+    }
+
+    const email = user.email;
+    const domain = email.split('@')[1];
+
+    // List of common/generic domains to skip
+    const genericDomains = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com', 'icloud.com', 'protonmail.com', 'zoho.com'];
+    if (genericDomains.includes(domain.toLowerCase())) {
+      return res.status(200).json({
+        success: true,
+        message: 'Generic email detected. Please enter company details manually.',
+        data: null
+      });
+    }
+
+    console.log(`[Enrich] Enriching for domain: ${domain}`);
+
+    const groqApiKey = process.env.VITE_GROQ_API_KEY;
+    if (!groqApiKey) {
+      console.warn('[Enrich] Groq API key missing, returning basic info');
+      return res.status(200).json({
+        success: true,
+        data: {
+          photoURL: `https://logo.clearbit.com/${domain}`,
+          website: `https://${domain}`
+        }
+      });
+    }
+
+    const prompt = `
+      You are a corporate researcher. Provide factual information about the company with the domain "${domain}".
+      Return ONLY a JSON object with these fields:
+      - company: Formal name of the company
+      - industry: Primary industry (e.g., Technology, Finance, Education)
+      - companySize: Estimate size (1-10, 11-50, 51-200, 201-500, 500+)
+      - bio: A professional 2-3 sentence description of the company
+      - location: Global headquarters location
+      
+      If you don't know the company, provide reasonable guesses based on the domain or keep fields empty.
+      
+      JSON ONLY.
+    `;
+
+    const groqResponse = await axios.post(
+      'https://api.groq.com/openai/v1/chat/completions',
+      {
+        model: 'llama-3.3-70b-versatile',
+        messages: [
+          { role: 'system', content: 'You are a professional corporate analyst. Return ONLY JSON.' },
+          { role: 'user', content: prompt }
+        ],
+        temperature: 0.1,
+        max_tokens: 300
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${groqApiKey}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    let enrichedData = {};
+    try {
+      const content = groqResponse.data.choices[0].message.content;
+      enrichedData = JSON.parse(content.substring(content.indexOf('{'), content.lastIndexOf('}') + 1));
+    } catch (parseError) {
+      console.error('[Enrich] Failed to parse Groq response:', parseError);
+    }
+
+    const result = {
+      ...enrichedData,
+      photoURL: `https://logo.clearbit.com/${domain}`,
+      website: `https://${domain}`
+    };
+
+    res.status(200).json({
+      success: true,
+      data: result
+    });
+  } catch (error) {
+    console.error('Company Enrichment Error:', error.response?.data || error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to enrich company info',
+      error: error.message
+    });
+  }
+};
+

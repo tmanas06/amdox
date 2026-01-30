@@ -181,6 +181,9 @@ export const user = {
 
   // Get employer dashboard stats
   getDashboardStats: () => api.get('/users/dashboard/stats'),
+
+  // Enrich company info using AI
+  enrichCompany: () => api.get('/users/enrich-company'),
 };
 
 export const messages = {

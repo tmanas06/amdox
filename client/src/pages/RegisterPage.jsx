@@ -118,7 +118,7 @@ const RegisterPage = () => {
             </div>
             <div className="brand-text">
               <h1 className="brand-title">Amdox Jobs™</h1>
-              <p className="brand-subtitle">India's Fastest Tech Hiring Platform</p>
+              <p className="brand-subtitle">India's Leading Tech Hiring Platform</p>
             </div>
           </div>
           <div className="header-actions">

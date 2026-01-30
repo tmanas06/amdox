@@ -43,11 +43,11 @@ const Navbar = ({ tabs = [], activeTab, onTabChange, showTabs = true }) => {
             <div className="nav-container">
                 <div className="nav-brand" onClick={() => navigate('/')}>
                     <div className="nav-logo">
-                        <img src="/logo/logo.png" alt="Amdox Jobs" className="nav-logo-img" />
+                        <img src="/logo/logo.png" alt="Amdox Jobs™" className="nav-logo-img" />
                     </div>
                     <div className="nav-brand-text">
-                        <h1 className="nav-title">Amdox Jobs</h1>
-                        <span className="nav-subtitle">Tech Hiring Platform</span>
+                        <h1 className="nav-title">Amdox Jobs™</h1>
+                        <span className="nav-subtitle">India's Leading Tech Hiring Platform</span>
                     </div>
                 </div>
 

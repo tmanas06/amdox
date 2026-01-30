@@ -90,7 +90,7 @@ const LoginPage = () => {
         {/* Left Column - Hero Section (60%) */}
         <div className="hero-section-dark">
           <h2 className="hero-heading-dark">
-            Find Your Next Tech Role
+            Find Your Next Tech Role at Amdox Jobs™
           </h2>
 
           <div className="hero-stats-dark">

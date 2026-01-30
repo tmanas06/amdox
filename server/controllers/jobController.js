@@ -145,9 +145,14 @@ exports.createJob = async (req, res) => {
     const userId = req.user._id || req.user.id;
     console.log('User ID:', userId);
 
+    // Fetch employer profile for logo defaulting
+    const employer = await User.findById(userId).lean();
+    const employerLogo = employer?.profile?.photoURL || '';
+
     const jobData = {
       ...req.body,
-      postedBy: userId
+      postedBy: userId,
+      logo: req.body.logo || employerLogo // Default to employer logo if not provided
     };
 
     console.log('Creating job with data:', jobData);
