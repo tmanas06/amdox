@@ -174,6 +174,8 @@ const extractSectionText = (text, headers) => {
       if (lowerLine === h) return true;
       // Match with colon
       if (lowerLine === h + ':') return true;
+      // Match with "Our" or "My" prefix
+      if (lowerLine === 'my ' + h || lowerLine === 'our ' + h) return true;
       // Match startsWith but only if line is short (preventing sentence matches)
       if (lowerLine.startsWith(h) && lowerLine.length < h.length + 10) return true;
       return false;
@@ -230,7 +232,7 @@ const parseExperience = (expText) => {
 
   let i = 0;
   while (i < lines.length) {
-    const line = lines[i];
+    let line = lines[i];
     const lowerLine = line.toLowerCase().trim();
 
     // Skip section headers
@@ -240,79 +242,92 @@ const parseExperience = (expText) => {
       continue;
     }
 
-    // Skip bullet points and technology lines at the start
+    // Skip bullet points and technology lines at the start of a potential entry
     if (line.startsWith('•') || line.startsWith('-') || lowerLine.startsWith('technolog')) {
       i++;
       continue;
     }
 
-    // Potential job title (usually first non-bullet line)
-    const title = line;
-    i++;
-
-    if (i >= lines.length) break;
-
-    // Next line is usually company and location
-    let company = lines[i];
+    let title = '';
+    let company = '';
     let from = '';
     let to = '';
-    i++;
+    let description = '';
 
-    // Check if next line contains dates
-    if (i < lines.length) {
-      const dateLine = lines[i];
-      // Look for date patterns like "January 2021 - Present" or "2019 - 2020"
-      if (/\d{4}|january|february|march|april|may|june|july|august|september|october|november|december/i.test(dateLine)) {
-        // Extract dates
-        const dateParts = dateLine.split('-').map(d => d.trim());
-        if (dateParts.length >= 2) {
-          from = dateParts[0];
-          to = dateParts[1];
+    // Check if line contains common delimiters (|, -, ,) which often separate title, company, dates
+    if (line.includes('|') || line.includes(' - ') || (line.includes(',') && line.split(',').length > 1)) {
+      const parts = line.split(/[|]|\s-\s|,/).map(p => p.trim()).filter(Boolean);
+
+      // Try to identify which part is which
+      parts.forEach(part => {
+        const lowerPart = part.toLowerCase();
+        // Check for dates
+        if (/\d{4}|present|current/i.test(part) && (lowerPart.includes('present') || lowerPart.includes('current') || /jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|\d{4}/i.test(part))) {
+          if (!from) from = part;
+          else if (!to) to = part;
+        } else if (!title) {
+          title = part;
+        } else if (!company) {
+          company = part;
         }
-        i++;
+      });
+
+      // If we didn't find specific dates in the same line, check next line
+      if (!from && i + 1 < lines.length) {
+        const nextLine = lines[i + 1];
+        if (/\d{4}|present|current/i.test(nextLine)) {
+          const dateParts = nextLine.split('-').map(d => d.trim());
+          from = dateParts[0] || '';
+          to = dateParts[1] || '';
+          i++; // Consume date line
+        }
+      }
+    } else {
+      // Simple case: title on one line, company on next
+      title = line;
+      if (i + 1 < lines.length) {
+        const nextLine = lines[i + 1];
+        if (!nextLine.startsWith('•') && !nextLine.startsWith('-')) {
+          company = nextLine;
+          i++;
+        }
       }
     }
+
+    i++;
 
     // Collect description lines (bullet points)
     const descLines = [];
     while (i < lines.length) {
       const descLine = lines[i];
-      // Stop if we hit what looks like a new job title (not a bullet point)
       const isBullet = descLine.startsWith('•') || descLine.startsWith('-');
       const isTech = descLine.toLowerCase().startsWith('technolog');
 
-      console.log(`Desc line check: "${descLine.substring(0, 20)}..." | Bullet: ${isBullet} | Tech: ${isTech}`);
-
       if (!isBullet && !isTech) {
-        console.log("Breaking description loop - new title candidate");
-        // This might be a new job title
+        // This might be a new experience entry
         break;
       }
       descLines.push(descLine.replace(/^[•\-]\s*/, ''));
       i++;
-
-      // Limit description lines
-      if (descLines.length >= 5) break;
     }
+    description = descLines.join(' ');
 
-    // Only add if we have at least a title
-    if (title && title.length > 2 && !title.startsWith('•')) {
+    if (title) {
       experiences.push({
         id: Date.now() + experiences.length,
         title: title.slice(0, 100),
-        company: company.slice(0, 100),
-        from,
-        to,
+        company: (company || 'Company').slice(0, 100),
+        from: from.slice(0, 50),
+        to: to.slice(0, 50),
         current: /present|current/i.test(to),
-        description: descLines.join(' ').slice(0, 500)
+        description: description.slice(0, 500)
       });
     }
 
-    // Limit to 5 experiences
     if (experiences.length >= 5) break;
   }
 
-  return experiences.length > 0 ? experiences : [];
+  return experiences;
 };
 
 const parseEducation = (eduText) => {
@@ -400,10 +415,10 @@ exports.uploadResume = async (req, res) => {
     const skills = extractSkills(text);
     console.log('🛠️ Extracted skills:', skills.length, 'skills found');
 
-    const summaryText = extractSectionText(text, ['summary', 'professional summary', 'profile', 'about me']);
+    const summaryText = extractSectionText(text, ['summary', 'professional summary', 'profile', 'about me', 'introduction']);
     console.log('📄 Extracted summary length:', summaryText.length);
 
-    const expText = extractSectionText(text, ['experience', 'work experience', 'professional experience', 'employment history']);
+    const expText = extractSectionText(text, ['experience', 'work experience', 'professional experience', 'employment history', 'employment']);
     console.log('💼 Extracted experience text length:', expText.length);
 
     const eduText = extractSectionText(text, ['education', 'academic background', 'qualification']);
@@ -530,3 +545,4 @@ exports.getEmployerStats = async (req, res) => {
     });
   }
 };
+

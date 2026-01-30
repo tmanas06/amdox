@@ -75,14 +75,25 @@ exports.firebaseLogin = async (req, res) => {
       });
     }
 
-    // Find user by firebaseUid
-    let user = await User.findOne({ firebaseUid });
-
     const emailLower = email.toLowerCase().trim();
     const isPublicDomain = PUBLIC_DOMAINS.includes(emailLower.split('@')[1]);
 
+    // Find user by firebaseUid
+    let user = await User.findOne({ firebaseUid });
+
+    // If not found by UID, check if user exists with the same email
+    if (!user) {
+      console.log(`🔍 User not found by firebaseUid, checking for email: ${emailLower}`);
+      user = await User.findOne({ email: emailLower });
+
+      if (user) {
+        console.log(`🔗 Linking existing account for ${emailLower} with firebaseUid: ${firebaseUid}`);
+        user.firebaseUid = firebaseUid;
+      }
+    }
+
     if (user) {
-      // User exists - update profile information
+      // User exists or was linked - update profile information
       user.email = emailLower;
       if (name) user.profile.name = name;
 
