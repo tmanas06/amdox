@@ -207,7 +207,7 @@ exports.firebaseLogin = async (req, res) => {
       return res.status(500).json({
         success: false,
         message: 'Database connection error',
-        error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        error: error.message || 'Internal server error'
       });
     }
 
