@@ -16,7 +16,13 @@ const Profile = () => {
     experience: [],
     education: [],
     skills: [],
-    newSkill: ''
+    newSkill: '',
+    projects: [],
+    certifications: [],
+    linkedin: '',
+    github: '',
+    portfolio: '',
+    resumeURL: ''
   });
 
   const [isEditing, setIsEditing] = useState(false);
@@ -24,7 +30,7 @@ const Profile = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [isParsingResume, setIsParsingResume] = useState(false);
 
-  useEffect(() => {
+  const resetForm = () => {
     if (user) {
       setFormData({
         name: user.profile?.name || user.name || '',
@@ -40,11 +46,26 @@ const Profile = () => {
           ? user.profile.education
           : [{ id: Date.now() + 1, school: '', degree: '', field: '', from: '', to: '' }],
         skills: user.profile?.skills || [],
-        newSkill: ''
+        newSkill: '',
+        projects: user.profile?.projects || [],
+        certifications: user.profile?.certifications || [],
+        linkedin: user.profile?.linkedin || '',
+        github: user.profile?.github || '',
+        portfolio: user.profile?.portfolio || '',
+        resumeURL: user.profile?.resumeURL || ''
       });
       setIsLoading(false);
     }
+  };
+
+  useEffect(() => {
+    resetForm();
   }, [user]);
+
+  const handleCancel = () => {
+    resetForm();
+    setIsEditing(false);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -54,18 +75,9 @@ const Profile = () => {
   const handleExpChange = (id, field, value) => {
     setFormData(prev => ({
       ...prev,
-      experience: prev.experience.map(exp => exp.id === id ? { ...exp, [field]: value } : exp)
+      experience: prev.experience.map(exp => (exp.id === id || exp._id === id) ? { ...exp, [field]: value } : exp)
     }));
   };
-
-  /* 
-  const handleEduChange = (id, field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      education: prev.education.map(edu => edu.id === id ? { ...edu, [field]: value } : edu)
-    }));
-  };
-  */
 
   const addExperience = () => {
     setFormData(prev => ({
@@ -81,7 +93,30 @@ const Profile = () => {
     if (formData.experience.length > 1) {
       setFormData(prev => ({
         ...prev,
-        experience: prev.experience.filter(exp => exp.id !== id)
+        experience: prev.experience.filter(exp => (exp.id !== id && exp._id !== id))
+      }));
+    }
+  };
+
+  const handleEduChange = (id, field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      education: prev.education.map(edu => (edu.id === id || edu._id === id) ? { ...edu, [field]: value } : edu)
+    }));
+  };
+
+  const addEducation = () => {
+    setFormData(prev => ({
+      ...prev,
+      education: [...prev.education, { id: Date.now() + 1, school: '', degree: '', field: '', from: '', to: '' }]
+    }));
+  };
+
+  const removeEducation = (id) => {
+    if (formData.education.length > 1) {
+      setFormData(prev => ({
+        ...prev,
+        education: prev.education.filter(edu => (edu.id !== id && edu._id !== id))
       }));
     }
   };
@@ -104,10 +139,65 @@ const Profile = () => {
     }));
   };
 
+  const handleProjectChange = (id, field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      projects: prev.projects.map(p => (p.id === id || p._id === id) ? { ...p, [field]: value } : p)
+    }));
+  };
+
+  const addProject = () => {
+    setFormData(prev => ({
+      ...prev,
+      projects: [...prev.projects, { id: Date.now(), title: '', description: '', link: '' }]
+    }));
+  };
+
+  const removeProject = (id) => {
+    setFormData(prev => ({
+      ...prev,
+      projects: prev.projects.filter(p => (p.id !== id && p._id !== id))
+    }));
+  };
+
+  const handleCertChange = (id, field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      certifications: prev.certifications.map(c => (c.id === id || c._id === id) ? { ...c, [field]: value } : c)
+    }));
+  };
+
+  const addCert = () => {
+    setFormData(prev => ({
+      ...prev,
+      certifications: [...prev.certifications, { id: Date.now(), name: '', issuer: '', date: '' }]
+    }));
+  };
+
+  const removeCert = (id) => {
+    setFormData(prev => ({
+      ...prev,
+      certifications: prev.certifications.filter(c => (c.id !== id && c._id !== id))
+    }));
+  };
+
+  const handleDownloadResume = () => {
+    if (!formData.resumeURL) {
+      toast.error('No resume uploaded yet');
+      return;
+    }
+    const downloadUrl = `/api/users/${user.id}/resume/download`;
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = `resume_${formData.name}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSaving(true);
-
     try {
       await updateProfile(formData);
       toast.success('Profile updated successfully!');
@@ -123,8 +213,6 @@ const Profile = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    console.log('📄 File selected:', file.name, file.type, file.size);
-
     if (file.type !== 'application/pdf' && !file.type.startsWith('text/')) {
       toast.error('Please upload a PDF or text resume');
       return;
@@ -135,11 +223,9 @@ const Profile = () => {
 
     try {
       const parsed = await uploadResume(file);
-      console.log('✅ Parsed data received:', parsed);
 
-      // Check if we got meaningful data
       const hasData = parsed.name || parsed.phone || parsed.skills?.length > 0 ||
-        parsed.experience?.length > 0 || parsed.education?.length > 0;
+        parsed.experience?.length > 0 || parsed.education?.length > 0 || parsed.projects?.length > 0;
 
       if (!hasData) {
         toast.update(loadingToast, {
@@ -151,7 +237,6 @@ const Profile = () => {
         return;
       }
 
-      // Merge parsed data with existing form data
       setFormData(prev => ({
         ...prev,
         name: parsed.name || prev.name,
@@ -159,34 +244,26 @@ const Profile = () => {
         headline: parsed.headline || prev.headline,
         summary: parsed.summary || prev.summary,
         skills: parsed.skills?.length ? [...new Set([...prev.skills, ...parsed.skills])] : prev.skills,
-        experience: parsed.experience?.length ? parsed.experience : prev.experience,
-        education: parsed.education?.length ? parsed.education : prev.education,
+        experience: parsed.experience?.length ? parsed.experience.map(e => ({ ...e, id: e.id || Date.now() + Math.random() })) : prev.experience,
+        education: parsed.education?.length ? parsed.education.map(e => ({ ...e, id: e.id || Date.now() + Math.random() })) : prev.education,
+        projects: parsed.projects?.length ? parsed.projects.map(p => ({ ...p, id: p.id || Date.now() + Math.random() })) : prev.projects,
+        certifications: parsed.certifications?.length ? parsed.certifications.map(c => ({ ...c, id: c.id || Date.now() + Math.random() })) : prev.certifications,
+        linkedin: parsed.linkedin || prev.linkedin,
+        github: parsed.github || prev.github,
+        portfolio: parsed.portfolio || prev.portfolio,
+        resumeURL: parsed.resumeURL || prev.resumeURL
       }));
 
       setIsEditing(true);
-
-      // Build a helpful message about what was extracted
-      const extractedFields = [];
-      if (parsed.name) extractedFields.push('name');
-      if (parsed.phone) extractedFields.push('phone');
-      if (parsed.skills?.length) extractedFields.push(`${parsed.skills.length} skills`);
-      if (parsed.experience?.length) extractedFields.push('experience');
-      if (parsed.education?.length) extractedFields.push('education');
-
-      const message = extractedFields.length > 0
-        ? `Resume parsed! Extracted: ${extractedFields.join(', ')}. Review and save your profile.`
-        : 'Resume parsed! Review and save your updated profile.';
-
       toast.update(loadingToast, {
-        render: message,
+        render: 'Resume parsed! Review and save your updated profile.',
         type: 'success',
         isLoading: false,
         autoClose: 5000
       });
     } catch (err) {
-      console.error('❌ Resume upload failed:', err);
       toast.update(loadingToast, {
-        render: err.message || 'Failed to parse resume. Please try again.',
+        render: err.message || 'Failed to parse resume.',
         type: 'error',
         isLoading: false,
         autoClose: 5000
@@ -199,12 +276,15 @@ const Profile = () => {
 
   const calculateCompletion = () => {
     let score = 0;
-    if (formData.name) score += 15;
-    if (formData.headline) score += 15;
-    if (formData.summary) score += 20;
-    if (formData.experience.some(e => e.company)) score += 20;
-    if (formData.education.some(e => e.school)) score += 15;
-    if (formData.skills.length > 3) score += 15;
+    if (formData.name) score += 10;
+    if (formData.headline) score += 10;
+    if (formData.summary) score += 15;
+    if (formData.experience.some(e => e.company)) score += 15;
+    if (formData.education.some(e => e.school)) score += 10;
+    if (formData.skills.length > 3) score += 10;
+    if (formData.projects.length > 0) score += 10;
+    if (formData.certifications.length > 0) score += 10;
+    if (formData.linkedin || formData.github) score += 10;
     return Math.min(score, 100);
   };
 
@@ -243,7 +323,7 @@ const Profile = () => {
             <button className="btn-edit" onClick={() => setIsEditing(true)}>Edit Profile</button>
           ) : (
             <div className="edit-actions">
-              <button className="btn-cancel" onClick={() => setIsEditing(false)}>Cancel</button>
+              <button className="btn-cancel" onClick={handleCancel}>Cancel</button>
               <button className="btn-save" onClick={handleSubmit} disabled={isSaving}>
                 {isSaving ? 'Saving...' : 'Save Changes'}
               </button>
@@ -260,13 +340,23 @@ const Profile = () => {
           ) : (
             <>
               <p>Want to save time? Upload your resume and we'll autofill your profile.</p>
-              <label className="resume-upload-label">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" />
-                </svg>
-                Upload Resume (PDF)
-                <input type="file" accept=".pdf,text/plain" style={{ display: 'none' }} onChange={handleResumeUpload} />
-              </label>
+              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+                <label className="resume-upload-label">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" />
+                  </svg>
+                  Upload Resume (PDF)
+                  <input type="file" accept=".pdf,text/plain" style={{ display: 'none' }} onChange={handleResumeUpload} />
+                </label>
+                {formData.resumeURL && (
+                  <button type="button" className="btn-edit" onClick={handleDownloadResume} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
+                    </svg>
+                    Download CV
+                  </button>
+                )}
+              </div>
             </>
           )}
         </div>
@@ -304,6 +394,20 @@ const Profile = () => {
               <label>Summary</label>
               <textarea name="summary" value={formData.summary} onChange={handleChange} disabled={!isEditing} rows="5" placeholder="Highlight your key achievements..."></textarea>
             </div>
+            <div className="form-grid">
+              <div className="form-group">
+                <label>LinkedIn URL</label>
+                <input type="text" name="linkedin" value={formData.linkedin} onChange={handleChange} disabled={!isEditing} placeholder="https://linkedin.com/in/username" />
+              </div>
+              <div className="form-group">
+                <label>GitHub URL</label>
+                <input type="text" name="github" value={formData.github} onChange={handleChange} disabled={!isEditing} placeholder="https://github.com/username" />
+              </div>
+              <div className="form-group">
+                <label>Portfolio / Website</label>
+                <input type="text" name="portfolio" value={formData.portfolio} onChange={handleChange} disabled={!isEditing} placeholder="https://yourportfolio.com" />
+              </div>
+            </div>
           </div>
 
           <div className="form-section">
@@ -312,19 +416,92 @@ const Profile = () => {
               {isEditing && <button type="button" className="btn-add" onClick={addExperience}>+ Add Role</button>}
             </div>
             {formData.experience.map((exp) => (
-              <div key={exp.id} className="experience-item">
+              <div key={exp.id || exp._id} className="experience-item">
                 {isEditing && formData.experience.length > 1 && (
-                  <button type="button" className="remove-btn" onClick={() => removeExperience(exp.id)}>×</button>
+                  <button type="button" className="remove-btn" onClick={() => removeExperience(exp.id || exp._id)}>×</button>
                 )}
                 <div className="form-grid">
-                  <div className="form-group"><label>Job Title</label><input type="text" value={exp.title} onChange={(e) => handleExpChange(exp.id, 'title', e.target.value)} disabled={!isEditing} /></div>
-                  <div className="form-group"><label>Company</label><input type="text" value={exp.company} onChange={(e) => handleExpChange(exp.id, 'company', e.target.value)} disabled={!isEditing} /></div>
-                  <div className="form-group"><label>From</label><input type="text" value={exp.from} onChange={(e) => handleExpChange(exp.id, 'from', e.target.value)} disabled={!isEditing} placeholder="Month Year" /></div>
-                  <div className="form-group"><label>To</label><input type="text" value={exp.to} onChange={(e) => handleExpChange(exp.id, 'to', e.target.value)} disabled={!isEditing || exp.current} placeholder="Present / Month Year" /></div>
+                  <div className="form-group">
+                    <label>Job Title</label>
+                    <input type="text" value={exp.title} onChange={(e) => handleExpChange(exp.id || exp._id, 'title', e.target.value)} disabled={!isEditing} />
+                  </div>
+                  <div className="form-group">
+                    <label>Company</label>
+                    <input type="text" value={exp.company} onChange={(e) => handleExpChange(exp.id || exp._id, 'company', e.target.value)} disabled={!isEditing} />
+                  </div>
+                  <div className="form-group">
+                    <label>From</label>
+                    <input type="text" value={exp.from} onChange={(e) => handleExpChange(exp.id || exp._id, 'from', e.target.value)} disabled={!isEditing} placeholder="Month Year" />
+                  </div>
+                  <div className="form-group">
+                    <label>To</label>
+                    <input type="text" value={exp.to} onChange={(e) => handleExpChange(exp.id || exp._id, 'to', e.target.value)} disabled={!isEditing || exp.current} placeholder="Present / Month Year" />
+                  </div>
                 </div>
                 <div className="form-group">
                   <label>Role Description</label>
-                  <textarea value={exp.description} onChange={(e) => handleExpChange(exp.id, 'description', e.target.value)} disabled={!isEditing} rows="3"></textarea>
+                  <textarea value={exp.description} onChange={(e) => handleExpChange(exp.id || exp._id, 'description', e.target.value)} disabled={!isEditing} rows="3"></textarea>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="form-section">
+            <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <h4>Education</h4>
+              {isEditing && <button type="button" className="btn-add" onClick={addEducation}>+ Add Education</button>}
+            </div>
+            {formData.education.map((edu) => (
+              <div key={edu.id || edu._id} className="experience-item">
+                {isEditing && formData.education.length > 1 && (
+                  <button type="button" className="remove-btn" onClick={() => removeEducation(edu.id || edu._id)}>×</button>
+                )}
+                <div className="form-grid">
+                  <div className="form-group"><label>School/University</label><input type="text" value={edu.school} onChange={(e) => handleEduChange(edu.id || edu._id, 'school', e.target.value)} disabled={!isEditing} /></div>
+                  <div className="form-group"><label>Degree</label><input type="text" value={edu.degree} onChange={(e) => handleEduChange(edu.id || edu._id, 'degree', e.target.value)} disabled={!isEditing} /></div>
+                  <div className="form-group"><label>From</label><input type="text" value={edu.from} onChange={(e) => handleEduChange(edu.id || edu._id, 'from', e.target.value)} disabled={!isEditing} /></div>
+                  <div className="form-group"><label>To</label><input type="text" value={edu.to} onChange={(e) => handleEduChange(edu.id || edu._id, 'to', e.target.value)} disabled={!isEditing} /></div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="form-section">
+            <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <h4>Key Projects</h4>
+              {isEditing && <button type="button" className="btn-add" onClick={addProject}>+ Add Project</button>}
+            </div>
+            {formData.projects.map((proj) => (
+              <div key={proj.id || proj._id} className="experience-item">
+                {isEditing && (
+                  <button type="button" className="remove-btn" onClick={() => removeProject(proj.id || proj._id)}>×</button>
+                )}
+                <div className="form-grid">
+                  <div className="form-group"><label>Project Title</label><input type="text" value={proj.title} onChange={(e) => handleProjectChange(proj.id || proj._id, 'title', e.target.value)} disabled={!isEditing} /></div>
+                  <div className="form-group"><label>Project Link</label><input type="text" value={proj.link} onChange={(e) => handleProjectChange(proj.id || proj._id, 'link', e.target.value)} disabled={!isEditing} placeholder="GitHub / Live Link" /></div>
+                </div>
+                <div className="form-group">
+                  <label>Project Description</label>
+                  <textarea value={proj.description} onChange={(e) => handleProjectChange(proj.id || proj._id, 'description', e.target.value)} disabled={!isEditing} rows="2"></textarea>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="form-section">
+            <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <h4>Certifications</h4>
+              {isEditing && <button type="button" className="btn-add" onClick={addCert}>+ Add Certification</button>}
+            </div>
+            {formData.certifications.map((cert) => (
+              <div key={cert.id || cert._id} className="experience-item">
+                {isEditing && (
+                  <button type="button" className="remove-btn" onClick={() => removeCert(cert.id || cert._id)}>×</button>
+                )}
+                <div className="form-grid">
+                  <div className="form-group"><label>Certification Name</label><input type="text" value={cert.name} onChange={(e) => handleCertChange(cert.id || cert._id, 'name', e.target.value)} disabled={!isEditing} /></div>
+                  <div className="form-group"><label>Issuer</label><input type="text" value={cert.issuer} onChange={(e) => handleCertChange(cert.id || cert._id, 'issuer', e.target.value)} disabled={!isEditing} /></div>
+                  <div className="form-group"><label>Date Received</label><input type="text" value={cert.date} onChange={(e) => handleCertChange(cert.id || cert._id, 'date', e.target.value)} disabled={!isEditing} /></div>
                 </div>
               </div>
             ))}

@@ -1,5 +1,7 @@
 const User = require('../models/User');
 const pdfParse = require('pdf-parse');
+const fs = require('fs');
+const path = require('path');
 
 // @desc    Update user profile
 // @route   PUT /api/users/:id/profile
@@ -24,8 +26,10 @@ exports.updateProfile = async (req, res) => {
           'profile.location': updates.location,
           'profile.headline': updates.headline,
           'profile.summary': updates.summary,
-          'profile.experience': updates.experience,
-          'profile.education': updates.education,
+          'profile.experience': updates.experience || [],
+          'profile.education': updates.education || [],
+          'profile.projects': updates.projects || [],
+          'profile.certifications': updates.certifications || [],
           'profile.skills': updates.skills || [],
           'profile.company': updates.company,
           'profile.bio': updates.bio,
@@ -109,6 +113,33 @@ const extractPhone = (text) => {
   // Matches various formats: +91 9999999999, (123) 456-7890, etc.
   const match = text.match(/(\+?\d{1,3}[-.\s]?)?(\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4})/);
   return match ? match[0] : '';
+};
+
+const extractSocialLinks = (text) => {
+  const links = {
+    linkedin: '',
+    github: '',
+    portfolio: ''
+  };
+
+  const lines = text.split('\n').map(l => l.trim());
+
+  lines.forEach(line => {
+    if (/linkedin\.com\/in\/[a-zA-Z0-9_-]+/i.test(line)) {
+      const match = line.match(/linkedin\.com\/in\/[a-zA-Z0-9_-]+/i);
+      if (match) links.linkedin = 'https://' + match[0];
+    }
+    if (/github\.com\/[a-zA-Z0-9_-]+/i.test(line)) {
+      const match = line.match(/github\.com\/[a-zA-Z0-9_-]+/i);
+      if (match) links.github = 'https://' + match[0];
+    }
+    if (/(portfolio|website|blog).*https?:\/\/[^\s]+/i.test(line)) {
+      const match = line.match(/https?:\/\/[^\s]+/i);
+      if (match) links.portfolio = match[0];
+    }
+  });
+
+  return links;
 };
 
 const extractName = (text) => {
@@ -354,15 +385,55 @@ const parseEducation = (eduText) => {
 
   if (lines.length > 0) {
     return [{
-      id: Date.now() + 1,
-      school: lines[0].slice(0, 50),
-      degree: lines[1] ? lines[1].slice(0, 50) : '',
+      school: lines[0].slice(0, 100),
+      degree: lines[1] ? lines[1].slice(0, 100) : '',
       field: '',
       from: '',
       to: '',
     }];
   }
   return [];
+};
+
+const parseProjects = (projText) => {
+  if (!projText) return [];
+  const lines = projText.split('\n').map(l => l.trim()).filter(Boolean);
+  const projects = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    // Skip section headers
+    if (/^(projects|personal projects|key projects)/i.test(line)) continue;
+
+    // Bullet points are usually project names or descriptions
+    if (!line.startsWith('•') && !line.startsWith('-')) {
+      const title = line;
+      let description = '';
+      let j = i + 1;
+      while (j < lines.length && (lines[j].startsWith('•') || lines[j].startsWith('-'))) {
+        description += ' ' + lines[j].replace(/^[•\-]\s*/, '');
+        j++;
+      }
+      i = j - 1;
+      projects.push({ title, description: description.trim() });
+    }
+    if (projects.length >= 5) break;
+  }
+  return projects;
+};
+
+const parseCertifications = (certText) => {
+  if (!certText) return [];
+  const lines = certText.split('\n').map(l => l.trim()).filter(Boolean);
+  const certs = [];
+
+  lines.forEach(line => {
+    if (line.toLowerCase().includes('certificat')) {
+      certs.push({ name: line.replace(/^[•\-]|\bcertificate|\bcertification/gi, '').trim(), issuer: '', date: '' });
+    }
+  });
+
+  return certs.slice(0, 5);
 };
 
 exports.uploadResume = async (req, res) => {
@@ -440,10 +511,26 @@ exports.uploadResume = async (req, res) => {
     console.log('💼 Extracted experience text length:', expText.length);
 
     const eduText = extractSectionText(text, ['education', 'academic background', 'qualification']);
-    console.log('🎓 Extracted education text length:', eduText.length);
+    const projText = extractSectionText(text, ['projects', 'personal projects', 'key projects']);
+    const certText = extractSectionText(text, ['certifications', 'certificates', 'certification']);
 
     const experience = parseExperience(expText);
     const education = parseEducation(eduText);
+    const projects = parseProjects(projText);
+    const certifications = parseCertifications(certText);
+    const socials = extractSocialLinks(text);
+
+    // Save physical file
+    let resumeURL = '';
+    try {
+      const fileName = `resume_${req.params.id}_${Date.now()}.pdf`;
+      const filePath = path.join(__dirname, '..', 'uploads', fileName);
+      fs.writeFileSync(filePath, req.file.buffer);
+      resumeURL = `/uploads/${fileName}`;
+      console.log('💾 Resume file saved to:', filePath);
+    } catch (saveError) {
+      console.error('❌ Error saving resume file:', saveError);
+    }
 
     const profileSuggestions = {
       name,
@@ -455,33 +542,24 @@ exports.uploadResume = async (req, res) => {
       location: '',
       experience,
       education,
+      projects,
+      certifications,
+      ...socials,
+      resumeURL
     };
 
     console.log('✅ Profile suggestions generated:', {
       hasName: !!name,
-      hasEmail: !!email,
-      hasPhone: !!phone,
-      skillsCount: skills.length,
-      hasSummary: !!profileSuggestions.summary,
       experienceCount: experience.length,
-      educationCount: education.length
+      projectsCount: projects.length,
+      certificationsCount: certifications.length,
+      hasResumeURL: !!resumeURL
     });
 
     res.status(200).json({
       success: true,
-      message: 'Resume parsed successfully',
-      profile: profileSuggestions,
-      debug: {
-        textLength: text.length,
-        extractedFields: {
-          name: !!name,
-          email: !!email,
-          phone: !!phone,
-          skills: skills.length,
-          experience: experience.length,
-          education: education.length
-        }
-      }
+      message: 'Resume parsed and uploaded successfully',
+      profile: profileSuggestions
     });
   } catch (error) {
     console.error('❌ Error parsing resume:', error);
@@ -490,6 +568,25 @@ exports.uploadResume = async (req, res) => {
       message: 'Failed to parse resume. Please try again or contact support.',
       error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
+  }
+};
+
+exports.downloadResume = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user || !user.profile.resumeURL) {
+      return res.status(404).json({ success: false, message: 'Resume not found' });
+    }
+
+    const filePath = path.join(__dirname, '..', user.profile.resumeURL);
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ success: false, message: 'Resume file not found on server' });
+    }
+
+    res.download(filePath);
+  } catch (error) {
+    console.error('❌ Error downloading resume:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
   }
 };
 // @desc    Get employer dashboard stats

@@ -44,6 +44,14 @@ const userSchema = new mongoose.Schema({
       type: String,
       maxlength: 1000 // Increased from 500 for more detailed bios
     },
+    headline: {
+      type: String,
+      trim: true
+    },
+    summary: {
+      type: String,
+      maxlength: 2000
+    },
     company: {
       type: String,
       trim: true
@@ -73,14 +81,31 @@ const userSchema = new mongoose.Schema({
       type: String,
       trim: true
     }],
-    experience: {
-      type: String,
-      trim: true // e.g., "3-5 years"
-    },
-    education: {
-      type: String,
-      trim: true
-    },
+    experience: [{
+      title: String,
+      company: String,
+      from: String,
+      to: String,
+      current: Boolean,
+      description: String
+    }],
+    education: [{
+      school: String,
+      degree: String,
+      field: String,
+      from: String,
+      to: String
+    }],
+    projects: [{
+      title: String,
+      description: String,
+      link: String
+    }],
+    certifications: [{
+      name: String,
+      issuer: String,
+      date: String
+    }],
     // Social links (for both)
     linkedin: {
       type: String,
