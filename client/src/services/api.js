@@ -119,6 +119,8 @@ export const jobs = {
   save: (jobId) => api.post(`/jobs/${jobId}/save`),
   unsave: (jobId) => api.delete(`/jobs/${jobId}/save`),
   getSaved: () => api.get('/jobs/saved'),
+  // Get AI Job Recommendations
+  getAIRecommendations: () => api.get('/jobs/recommendations/ai'),
 };
 
 export const applications = {

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { check } = require('express-validator');
 const jobController = require('../controllers/jobController');
+const aiController = require('../controllers/aiController');
 const applicationController = require('../controllers/applicationController');
 const { authenticateToken, authorizeRole } = require('../middleware/auth');
 
@@ -13,6 +14,7 @@ router.use(authenticateToken);
 
 // Specific routes before generic :id routes!
 router.get('/saved', authorizeRole('job_seeker', 'admin'), jobController.getSavedJobs);
+router.get('/recommendations/ai', authorizeRole('job_seeker', 'admin'), aiController.getAIRecommendations);
 router.get('/employer/my-jobs', authorizeRole('employer', 'admin'), jobController.getEmployerJobs);
 router.post('/:id/save', authorizeRole('job_seeker', 'admin'), jobController.saveJob);
 router.delete('/:id/save', authorizeRole('job_seeker', 'admin'), jobController.unsaveJob);

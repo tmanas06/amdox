@@ -28,6 +28,8 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
   const [recommendedJobs, setRecommendedJobs] = useState([]);
+  const [aiRecommendedJobs, setAiRecommendedJobs] = useState([]);
+  const [loadingAIJobs, setLoadingAIJobs] = useState(false);
   const [loadingJobs, setLoadingJobs] = useState(false);
   const [totalJobsCount, setTotalJobsCount] = useState(0);
 
@@ -80,11 +82,26 @@ const Dashboard = () => {
   useEffect(() => {
     if (isJobSeeker) {
       fetchRecommendedJobs();
+      fetchAIRecommendedJobs();
       fetchMyApplications();
     } else if (isEmployer) {
       fetchEmployerStats();
     }
   }, [isJobSeeker, isEmployer]);
+
+  const fetchAIRecommendedJobs = async () => {
+    try {
+      setLoadingAIJobs(true);
+      const res = await jobService.getAIRecommendations();
+      if (res.data && res.data.success) {
+        setAiRecommendedJobs(res.data.data || []);
+      }
+    } catch (error) {
+      console.error('Error fetching AI recommended jobs:', error);
+    } finally {
+      setLoadingAIJobs(false);
+    }
+  };
 
   const fetchRecommendedJobs = async () => {
     try {
@@ -320,6 +337,44 @@ const Dashboard = () => {
               <div className="content-grid">
                 {isJobSeeker ? (
                   <>
+                    <div className="content-card">
+                      <div className="card-header">
+                        <h3 className="card-title">AI Picks for You ✨</h3>
+                        <span style={{ fontSize: '0.75rem', color: 'var(--primary-color)', background: 'rgba(59, 130, 246, 0.1)', padding: '2px 8px', borderRadius: '12px' }}>Groq AI</span>
+                      </div>
+                      <div className="card-content">
+                        {loadingAIJobs ? (
+                          <div style={{ textAlign: 'center', padding: '2rem' }}>
+                            <div className="loading-spinner" style={{ margin: '0 auto 10px' }}></div>
+                            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>AI is analyzing your profile...</p>
+                          </div>
+                        ) : aiRecommendedJobs.length > 0 ? (
+                          aiRecommendedJobs.map((job) => (
+                            <div className="job-item ai-pick" key={`ai-${job._id}`} style={{ borderLeft: '3px solid var(--primary-color)' }}>
+                              <div className="job-item-header">
+                                <h4 className="job-item-title">{job.title}</h4>
+                                <span className="job-item-badge">{job.isRemote ? 'Remote' : 'On-site'}</span>
+                              </div>
+                              <p className="job-item-company">{job.company}</p>
+                              <div className="job-item-meta">
+                                <span>{job.location}</span>
+                                <span>•</span>
+                                <span>{job.type}</span>
+                              </div>
+                              <div className="job-item-actions">
+                                <button className="btn-primary" onClick={() => navigate(`/jobs/${job._id}`)}>View Match</button>
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="empty-state">
+                            <p className="empty-state-text" style={{ fontSize: '0.9rem' }}>No AI picks yet</p>
+                            <p className="empty-state-subtext" style={{ fontSize: '0.8rem' }}>Complete your profile for better matches</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
                     <div className="content-card">
                       <div className="card-header">
                         <h3 className="card-title">Recommended Jobs</h3>
