@@ -455,8 +455,8 @@ const Dashboard = () => {
                                   {activity.type === 'Application' ? '📝' : '🔔'}
                                 </div>
                                 <div style={{ flex: 1 }}>
-                                  <div style={{ fontWeight: 600, color: '#f8fafc' }}>{activity.description}</div>
-                                  <div style={{ fontSize: '0.85rem', color: '#94a3b8' }}>{activity.candidate} • {new Date(activity.time).toLocaleDateString()}</div>
+                                  <div style={{ fontWeight: 600, color: '#1659a1ff' }}>{activity.description}</div>
+                                  <div style={{ fontSize: '0.85rem', color: '#27a8d7ff' }}>{activity.candidate} • {new Date(activity.time).toLocaleDateString()}</div>
                                 </div>
                               </div>
                             ))}
