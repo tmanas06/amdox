@@ -22,7 +22,8 @@ const Profile = () => {
     linkedin: '',
     github: '',
     portfolio: '',
-    resumeURL: ''
+    resumeURL: '',
+    cvURL: ''
   });
 
   const [isEditing, setIsEditing] = useState(false);
@@ -52,7 +53,8 @@ const Profile = () => {
         linkedin: user.profile?.linkedin || '',
         github: user.profile?.github || '',
         portfolio: user.profile?.portfolio || '',
-        resumeURL: user.profile?.resumeURL || ''
+        resumeURL: user.profile?.resumeURL || '',
+        cvURL: user.profile?.cvURL || ''
       });
       setIsLoading(false);
     }
@@ -181,18 +183,91 @@ const Profile = () => {
     }));
   };
 
-  const handleDownloadResume = () => {
-    if (!formData.resumeURL) {
-      toast.error('No resume uploaded yet');
+  const handleDownloadFile = (type) => {
+    const url = type === 'cv' ? formData.cvURL : formData.resumeURL;
+    if (!url) {
+      toast.error(`No ${type === 'cv' ? 'CV' : 'Resume'} uploaded yet`);
       return;
     }
-    const downloadUrl = `/api/users/${user.id}/resume/download`;
+    const downloadUrl = `/api/users/${user.id}/download/${type}`;
     const link = document.createElement('a');
     link.href = downloadUrl;
-    link.download = `resume_${formData.name}.pdf`;
+    link.download = `${type}_${formData.name || 'document'}.pdf`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  const handleFileUpload = async (e, type) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.type !== 'application/pdf' && !file.type.startsWith('text/')) {
+      toast.error(`Please upload a PDF or text ${type}`);
+      return;
+    }
+
+    setIsParsingResume(true);
+    const loadingToast = toast.loading(`Reading your ${type} and extracting details...`);
+
+    try {
+      const parsed = await uploadResume(file, type);
+
+      const hasData = parsed.name || parsed.phone || parsed.skills?.length > 0 ||
+        parsed.experience?.length > 0 || parsed.education?.length > 0 || parsed.projects?.length > 0;
+
+      if (!hasData) {
+        toast.update(loadingToast, {
+          render: `Could not extract information from ${type}. File uploaded successfully anyway.`,
+          type: 'info',
+          isLoading: false,
+          autoClose: 3000
+        });
+        return;
+      }
+
+      // Merge logic: prefer newly extracted data but keep basics if already filled
+      setFormData(prev => ({
+        ...prev,
+        name: parsed.name || prev.name,
+        phone: parsed.phone || prev.phone,
+        headline: parsed.headline || prev.headline,
+        summary: parsed.summary || prev.summary,
+        skills: parsed.skills?.length ? [...new Set([...prev.skills, ...parsed.skills])] : prev.skills,
+        // For lists, we append if small or replace if empty
+        experience: parsed.experience?.length ?
+          (prev.experience.some(e => e.title) ? [...prev.experience, ...parsed.experience.map(e => ({ ...e, id: Date.now() + Math.random() }))] : parsed.experience.map(e => ({ ...e, id: Date.now() + Math.random() })))
+          : prev.experience,
+        education: parsed.education?.length ?
+          (prev.education.some(e => e.school) ? [...prev.education, ...parsed.education.map(e => ({ ...e, id: Date.now() + Math.random() }))] : parsed.education.map(e => ({ ...e, id: Date.now() + Math.random() })))
+          : prev.education,
+        projects: parsed.projects?.length ? [...prev.projects, ...parsed.projects.map(p => ({ ...p, id: Date.now() + Math.random() }))] : prev.projects,
+        certifications: parsed.certifications?.length ? [...prev.certifications, ...parsed.certifications.map(c => ({ ...c, id: Date.now() + Math.random() }))] : prev.certifications,
+        linkedin: parsed.linkedin || prev.linkedin,
+        github: parsed.github || prev.github,
+        portfolio: parsed.portfolio || prev.portfolio,
+        resumeURL: parsed.resumeURL || prev.resumeURL,
+        cvURL: parsed.cvURL || prev.cvURL
+      }));
+
+      setIsEditing(true);
+      toast.update(loadingToast, {
+        render: `${type === 'cv' ? 'CV' : 'Resume'} parsed! Review and save your updated profile.`,
+        type: 'success',
+        isLoading: false,
+        autoClose: 5000
+      });
+    } catch (err) {
+      toast.update(loadingToast, {
+        render: err.message || `Failed to parse ${type}.`,
+        type: 'error',
+        isLoading: false,
+        autoClose: 5000
+      });
+    } finally {
+      setIsParsingResume(false);
+      e.target.value = '';
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -206,71 +281,6 @@ const Profile = () => {
       toast.error(err.message || 'Failed to update profile');
     } finally {
       setIsSaving(false);
-    }
-  };
-
-  const handleResumeUpload = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (file.type !== 'application/pdf' && !file.type.startsWith('text/')) {
-      toast.error('Please upload a PDF or text resume');
-      return;
-    }
-
-    setIsParsingResume(true);
-    const loadingToast = toast.loading('Reading your resume and autofilling details...');
-
-    try {
-      const parsed = await uploadResume(file);
-
-      const hasData = parsed.name || parsed.phone || parsed.skills?.length > 0 ||
-        parsed.experience?.length > 0 || parsed.education?.length > 0 || parsed.projects?.length > 0;
-
-      if (!hasData) {
-        toast.update(loadingToast, {
-          render: 'Could not extract information from resume. Please try a different file or fill in manually.',
-          type: 'warning',
-          isLoading: false,
-          autoClose: 5000
-        });
-        return;
-      }
-
-      setFormData(prev => ({
-        ...prev,
-        name: parsed.name || prev.name,
-        phone: parsed.phone || prev.phone,
-        headline: parsed.headline || prev.headline,
-        summary: parsed.summary || prev.summary,
-        skills: parsed.skills?.length ? [...new Set([...prev.skills, ...parsed.skills])] : prev.skills,
-        experience: parsed.experience?.length ? parsed.experience.map(e => ({ ...e, id: e.id || Date.now() + Math.random() })) : prev.experience,
-        education: parsed.education?.length ? parsed.education.map(e => ({ ...e, id: e.id || Date.now() + Math.random() })) : prev.education,
-        projects: parsed.projects?.length ? parsed.projects.map(p => ({ ...p, id: p.id || Date.now() + Math.random() })) : prev.projects,
-        certifications: parsed.certifications?.length ? parsed.certifications.map(c => ({ ...c, id: c.id || Date.now() + Math.random() })) : prev.certifications,
-        linkedin: parsed.linkedin || prev.linkedin,
-        github: parsed.github || prev.github,
-        portfolio: parsed.portfolio || prev.portfolio,
-        resumeURL: parsed.resumeURL || prev.resumeURL
-      }));
-
-      setIsEditing(true);
-      toast.update(loadingToast, {
-        render: 'Resume parsed! Review and save your updated profile.',
-        type: 'success',
-        isLoading: false,
-        autoClose: 5000
-      });
-    } catch (err) {
-      toast.update(loadingToast, {
-        render: err.message || 'Failed to parse resume.',
-        type: 'error',
-        isLoading: false,
-        autoClose: 5000
-      });
-    } finally {
-      setIsParsingResume(false);
-      e.target.value = '';
     }
   };
 
@@ -335,29 +345,43 @@ const Profile = () => {
           {isParsingResume ? (
             <div className="parsing-loader">
               <div className="loading-spinner"></div>
-              <span>AI is analyzing your resume...</span>
+              <span>AI is analyzing your documents...</span>
             </div>
           ) : (
-            <>
-              <p>Want to save time? Upload your resume and we'll autofill your profile.</p>
-              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-                <label className="resume-upload-label">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" />
-                  </svg>
-                  Upload Resume (PDF)
-                  <input type="file" accept=".pdf,text/plain" style={{ display: 'none' }} onChange={handleResumeUpload} />
-                </label>
-                {formData.resumeURL && (
-                  <button type="button" className="btn-edit" onClick={handleDownloadResume} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
+            <div style={{ textAlign: 'center' }}>
+              <p>Upload your <strong>Resume</strong> and <strong>CV</strong> for better extraction and recruiter visibility.</p>
+              <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', flexWrap: 'wrap', marginTop: '1rem' }}>
+                <div className="upload-box">
+                  <label className="resume-upload-label" style={{ backgroundColor: formData.resumeURL ? 'var(--bg-light)' : 'var(--primary)', color: formData.resumeURL ? 'var(--text-main)' : 'white' }}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" />
                     </svg>
-                    Download CV
-                  </button>
-                )}
+                    {formData.resumeURL ? 'Update Resume' : 'Upload Resume'}
+                    <input type="file" accept=".pdf,text/plain" style={{ display: 'none' }} onChange={(e) => handleFileUpload(e, 'resume')} />
+                  </label>
+                  {formData.resumeURL && (
+                    <button type="button" className="btn-download-mini" onClick={() => handleDownloadFile('resume')}>
+                      Download Resume
+                    </button>
+                  )}
+                </div>
+
+                <div className="upload-box">
+                  <label className="resume-upload-label" style={{ backgroundColor: formData.cvURL ? 'var(--bg-light)' : 'var(--primary)', color: formData.cvURL ? 'var(--text-main)' : 'white' }}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" />
+                    </svg>
+                    {formData.cvURL ? 'Update CV' : 'Upload CV'}
+                    <input type="file" accept=".pdf,text/plain" style={{ display: 'none' }} onChange={(e) => handleFileUpload(e, 'cv')} />
+                  </label>
+                  {formData.cvURL && (
+                    <button type="button" className="btn-download-mini" onClick={() => handleDownloadFile('cv')}>
+                      Download CV
+                    </button>
+                  )}
+                </div>
               </div>
-            </>
+            </div>
           )}
         </div>
 

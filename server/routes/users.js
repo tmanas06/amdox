@@ -24,11 +24,11 @@ router.put('/:id/profile', userController.updateProfile);
 // Profile picture upload (placeholder)
 router.post('/:id/profile/picture', upload.single('profilePicture'), userController.uploadProfilePicture);
 
-// Resume upload + parsing
-router.post('/:id/resume', upload.single('resume'), userController.uploadResume);
+// Upload + parsing (supports both 'resume' and 'cv' via :type)
+router.post('/:id/upload/:type', upload.single('file'), userController.uploadResume);
 
-// Resume download
-router.get('/:id/resume/download', userController.downloadResume);
+// Download (supports both 'resume' and 'cv' via :type)
+router.get('/:id/download/:type', userController.downloadResume);
 
 module.exports = router;
 

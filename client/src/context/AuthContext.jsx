@@ -220,17 +220,17 @@ export const AuthProvider = ({ children }) => {
   };
 
   /**
-   * Upload resume and get parsed profile suggestions
+   * Upload resume or CV and get parsed profile suggestions
    */
-  const uploadResume = async (file) => {
+  const uploadResume = async (file, type = 'resume') => {
     if (!user?.id) {
       throw new Error('User not loaded');
     }
 
     try {
-      console.log('📤 Uploading resume file:', file.name, file.type, file.size);
-      const response = await userApi.uploadResume(user.id, file);
-      console.log('📥 Resume upload response:', response.data);
+      console.log(`📤 Uploading ${type}:`, file.name, file.type, file.size);
+      const response = await userApi.uploadResume(user.id, file, type);
+      console.log(`📥 ${type} upload response:`, response.data);
 
       const profile = response.data?.profile;
 
@@ -242,7 +242,7 @@ export const AuthProvider = ({ children }) => {
       console.log('✅ Parsed profile data:', profile);
       return profile;
     } catch (error) {
-      console.error('❌ Resume upload error:', error);
+      console.error(`❌ ${type} upload error:`, error);
       throw error;
     }
   };

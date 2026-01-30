@@ -163,12 +163,11 @@ export const user = {
     });
   },
 
-  // Upload resume and get parsed profile suggestions
-  uploadResume: (userId, file) => {
+  // Modified to support generic file upload (type: 'resume' or 'cv')
+  uploadResume: (userId, file, type = 'resume') => {
     const formData = new FormData();
-    formData.append('resume', file);
-
-    return api.post(`/users/${userId}/resume`, formData, {
+    formData.append('file', file);
+    return api.post(`/users/${userId}/upload/${type}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },

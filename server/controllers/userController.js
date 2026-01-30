@@ -17,6 +17,22 @@ exports.updateProfile = async (req, res) => {
 
     const updates = req.body || {};
 
+    const cleanList = (list) => {
+      if (!list || !Array.isArray(list)) return [];
+      return list.map(item => {
+        const newItem = { ...item };
+        // Remove frontend-only numeric IDs or string IDs that aren't ObjectIds
+        if (newItem.id && (typeof newItem.id === 'number' || (typeof newItem.id === 'string' && newItem.id.length !== 24))) {
+          delete newItem.id;
+        }
+        // If _id is present but invalid, remove it
+        if (newItem._id && (typeof newItem._id === 'number' || (typeof newItem._id === 'string' && newItem._id.length !== 24))) {
+          delete newItem._id;
+        }
+        return newItem;
+      });
+    };
+
     const user = await User.findByIdAndUpdate(
       req.params.id,
       {
@@ -26,10 +42,10 @@ exports.updateProfile = async (req, res) => {
           'profile.location': updates.location,
           'profile.headline': updates.headline,
           'profile.summary': updates.summary,
-          'profile.experience': updates.experience || [],
-          'profile.education': updates.education || [],
-          'profile.projects': updates.projects || [],
-          'profile.certifications': updates.certifications || [],
+          'profile.experience': cleanList(updates.experience),
+          'profile.education': cleanList(updates.education),
+          'profile.projects': cleanList(updates.projects),
+          'profile.certifications': cleanList(updates.certifications),
           'profile.skills': updates.skills || [],
           'profile.company': updates.company,
           'profile.bio': updates.bio,
@@ -38,6 +54,9 @@ exports.updateProfile = async (req, res) => {
           'profile.companySize': updates.companySize,
           'profile.photoURL': updates.photoURL,
           'profile.resumeURL': updates.resumeURL,
+          'profile.resumeFile': updates.resumeFile,
+          'profile.cvURL': updates.cvURL,
+          'profile.cvFile': updates.cvFile,
           'profile.linkedin': updates.linkedin,
           'profile.github': updates.github,
           'profile.portfolio': updates.portfolio,
@@ -353,7 +372,8 @@ const parseCertifications = (certText) => {
 
 exports.uploadResume = async (req, res) => {
   try {
-    if (!req.file) return res.status(400).json({ success: false, message: 'Resume file is required' });
+    const { type } = req.params; // 'resume' or 'cv'
+    if (!req.file) return res.status(400).json({ success: false, message: 'File is required' });
     if (req.user._id.toString() !== req.params.id && req.user.id !== req.params.id) return res.status(403).json({ success: false, message: 'Not authorized' });
 
     let text = '';
@@ -375,28 +395,47 @@ exports.uploadResume = async (req, res) => {
     const certifications = parseCertifications(extractSectionText(text, ['certifications', 'certificates']));
     const socials = extractSocialLinks(text);
 
-    let resumeURL = '';
-    const fileName = `resume_${req.params.id}_${Date.now()}.pdf`;
+    let fileURL = '';
+    const fileName = `${type}_${req.params.id}_${Date.now()}.pdf`;
     const filePath = path.join(__dirname, '..', 'uploads', fileName);
     fs.writeFileSync(filePath, req.file.buffer);
-    resumeURL = `/uploads/${fileName}`;
+    fileURL = `/uploads/${fileName}`;
+
+    // Prepare response with specific field for the uploaded type
+    const profileData = {
+      name, email, phone, skills, summary,
+      headline: name ? `${name} | Tech Professional` : '',
+      experience, education, projects, certifications, ...socials
+    };
+
+    if (type === 'cv') {
+      profileData.cvURL = fileURL;
+      profileData.cvFile = { name: req.file.originalname, uploadedAt: new Date() };
+    } else {
+      profileData.resumeURL = fileURL;
+      profileData.resumeFile = { name: req.file.originalname, uploadedAt: new Date() };
+    }
 
     res.status(200).json({
       success: true,
-      profile: { name, email, phone, skills, summary, headline: name ? `${name} | Tech Professional` : '', experience, education, projects, certifications, ...socials, resumeURL }
+      message: `${type === 'cv' ? 'CV' : 'Resume'} parsed and uploaded successfully`,
+      profile: profileData
     });
   } catch (error) {
-    console.error('Error parsing resume:', error);
-    res.status(500).json({ success: false, message: 'Failed to parse resume.' });
+    console.error('Error parsing file:', error);
+    res.status(500).json({ success: false, message: 'Failed to parse file.' });
   }
 };
 
 exports.downloadResume = async (req, res) => {
   try {
+    const { type } = req.params;
     const user = await User.findById(req.params.id);
-    if (!user || !user.profile.resumeURL) return res.status(404).json({ success: false, message: 'Resume not found' });
-    const filePath = path.join(__dirname, '..', user.profile.resumeURL);
-    if (!fs.existsSync(filePath)) return res.status(404).json({ success: false, message: 'Resume file not found' });
+    const fileURL = type === 'cv' ? user?.profile?.cvURL : user?.profile?.resumeURL;
+
+    if (!user || !fileURL) return res.status(404).json({ success: false, message: `${type === 'cv' ? 'CV' : 'Resume'} not found` });
+    const filePath = path.join(__dirname, '..', fileURL);
+    if (!fs.existsSync(filePath)) return res.status(404).json({ success: false, message: 'File not found' });
     res.download(filePath);
   } catch (error) {
     res.status(500).json({ success: false, message: 'Internal server error' });

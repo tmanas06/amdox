@@ -74,8 +74,18 @@ const userSchema = new mongoose.Schema({
     },
     // Job Seeker specific fields
     resumeURL: {
-      type: String,
-      trim: true // URL to uploaded resume (PDF/DOC)
+      type: String
+    },
+    resumeFile: {
+      name: String,
+      uploadedAt: Date
+    },
+    cvURL: {
+      type: String
+    },
+    cvFile: {
+      name: String,
+      uploadedAt: Date
     },
     skills: [{
       type: String,
