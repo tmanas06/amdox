@@ -1,22 +1,81 @@
-# AMDox Jobs - Modern Job Portal Platform
+<div align="center">
+  <img src="client/logo/logo.png" alt="AMDox Jobs Logo" width="120" height="120">
+  
+  # AMDox Jobs
+  
+  ### Modern Job Portal Platform
+  
+  *Connecting talent with opportunity through innovative technology*
+  
+  [![React](https://img.shields.io/badge/React-18.x-61DAFB?style=for-the-badge&logo=react&logoColor=white)](https://reactjs.org/)
+  [![Node.js](https://img.shields.io/badge/Node.js-16.x-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
+  [![MongoDB](https://img.shields.io/badge/MongoDB-6.x-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
+  [![Firebase](https://img.shields.io/badge/Firebase-Auth-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com/)
+  
+  [Live Demo](#) • [Documentation](#) • [Report Bug](#) • [Request Feature](#)
+  
+</div>
 
-AMDox Jobs is a comprehensive job listing platform that connects talented professionals with exciting career opportunities. Built with modern web technologies, it offers a seamless experience for both job seekers and employers.
+---
 
-## 🌟 What Makes AMDox Special
+## 📸 Screenshots
 
-**For Job Seekers:**
-- Browse thousands of job opportunities across various industries
-- Save interesting positions for later review
-- Apply to jobs with a single click
-- Track your application status in real-time
-- Create a professional profile that stands out
+<div align="center">
+  
+### Dashboard Overview
+![Dashboard](screenshots/dashboard.png)
+*Modern, intuitive dashboard with real-time job statistics and quick actions*
 
-**For Employers:**
-- Post job openings with detailed descriptions
-- Manage applications efficiently
-- Find the perfect candidates for your team
-- Access a pool of qualified professionals
-- Streamline your hiring process
+### Job Listings
+![Job Listings](screenshots/job-listings.png)
+*Advanced search and filtering with beautiful card-based layout*
+
+### Dark Mode
+![Dark Mode](screenshots/dark-mode.png)
+*Seamless dark/light theme switching for comfortable viewing*
+
+### Mobile Experience
+![Mobile View](screenshots/mobile-view.png)
+*Fully responsive design optimized for all devices*
+
+</div>
+
+---
+
+## 🌟 Overview
+
+AMDox Jobs is a full-stack job portal platform that revolutionizes the way job seekers and employers connect. Built with cutting-edge technologies and modern design principles, it provides an exceptional user experience for both candidates searching for their dream job and companies looking to hire top talent.
+
+## ✨ Key Features
+
+### For Job Seekers 🎯
+
+- **Smart Job Discovery** - Browse thousands of curated job opportunities with intelligent recommendations
+- **Advanced Search & Filters** - Find exactly what you're looking for with powerful filtering options
+- **One-Click Applications** - Apply to jobs instantly with your saved profile
+- **Application Tracking** - Monitor your application status in real-time
+- **Save & Compare Jobs** - Bookmark interesting positions and compare them side-by-side
+- **Personalized Dashboard** - Track your job search progress with visual analytics
+- **Job Alerts** - Get notified when new jobs match your preferences
+
+### For Employers 💼
+
+- **Easy Job Posting** - Create and publish job listings in minutes
+- **Applicant Management** - Review, filter, and manage candidates efficiently
+- **Company Profile** - Showcase your company culture and values
+- **Analytics Dashboard** - Track job performance and application metrics
+- **Candidate Search** - Find and reach out to potential candidates
+- **Team Collaboration** - Manage hiring pipeline with your team
+
+### Platform Features 🚀
+
+- **Modern UI/UX** - Beautiful, intuitive interface with glassmorphism design
+- **Dark/Light Themes** - Seamless theme switching for comfortable viewing
+- **Fully Responsive** - Perfect experience on desktop, tablet, and mobile
+- **Real-time Updates** - Live notifications and instant data synchronization
+- **Secure Authentication** - Firebase Auth with Google OAuth and email/password
+- **Accessibility First** - WCAG compliant with keyboard navigation and screen reader support
+- **Performance Optimized** - Fast loading with code splitting and lazy loading
 
 ## 🚀 Key Features
 
@@ -40,97 +99,219 @@ AMDox Jobs is a comprehensive job listing platform that connects talented profes
 
 ## 🛠 Technology Stack
 
-### Frontend (React Application)
-- **React 18** - Modern UI library with hooks and context
-- **Firebase Authentication** - Secure Google OAuth integration
-- **Responsive Design** - Mobile-first approach with CSS Grid and Flexbox
-- **Modern CSS** - Custom design system with CSS variables and animations
+### Frontend
+| Technology | Purpose | Version |
+|-----------|---------|---------|
+| **React** | UI Framework | 18.x |
+| **React Router** | Navigation | 6.x |
+| **Firebase Auth** | Authentication | Latest |
+| **Axios** | HTTP Client | Latest |
+| **React Toastify** | Notifications | Latest |
+| **CSS3** | Styling | - |
 
-### Backend (Node.js API)
-- **Express.js** - Fast and minimal web framework
-- **MongoDB** - Flexible NoSQL database for user and job data
-- **JWT Authentication** - Secure token-based authentication
-- **RESTful API** - Clean and predictable API endpoints
+### Backend
+| Technology | Purpose | Version |
+|-----------|---------|---------|
+| **Node.js** | Runtime Environment | 16.x+ |
+| **Express.js** | Web Framework | 4.x |
+| **MongoDB** | Database | 6.x |
+| **Mongoose** | ODM | Latest |
+| **JWT** | Authentication | Latest |
+| **bcrypt** | Password Hashing | Latest |
 
-### Infrastructure
-- **Vercel Deployment** - Fast and reliable hosting for both frontend and backend
-- **MongoDB Atlas** - Cloud database with automatic scaling
-- **GitHub Actions** - Automated testing and deployment pipeline
+### DevOps & Tools
+| Technology | Purpose |
+|-----------|---------|
+| **Vercel** | Hosting & Deployment |
+| **MongoDB Atlas** | Cloud Database |
+| **Git** | Version Control |
+| **npm** | Package Management |
+
+### Design System
+- **Custom CSS Variables** - Consistent theming
+- **Glassmorphism** - Modern UI aesthetic
+- **Responsive Grid** - Mobile-first layout
+- **CSS Animations** - Smooth transitions
+- **Accessibility** - WCAG 2.1 AA compliant
 
 ## 📁 Project Structure
 
 ```
 amdox-jobs/
-├── client/                    # React Frontend Application
-│   ├── src/
-│   │   ├── components/        # Reusable UI components
-│   │   ├── pages/            # Main application pages
-│   │   ├── context/          # React context for state management
-│   │   ├── services/         # API communication services
-│   │   ├── styles/           # CSS and styling files
-│   │   └── firebase/         # Firebase configuration
-│   └── public/               # Static assets
+├── 📂 client/                    # React Frontend
+│   ├── 📂 public/               # Static assets
+│   │   ├── favicon.ico
+│   │   ├── index.html
+│   │   └── manifest.json
+│   ├── 📂 src/
+│   │   ├── 📂 components/       # Reusable components
+│   │   │   ├── dashboard/      # Dashboard-specific components
+│   │   │   ├── SkeletonLoader.jsx
+│   │   │   ├── ThemeToggle.jsx
+│   │   │   └── MotionSafe.jsx
+│   │   ├── 📂 pages/           # Page components
+│   │   │   ├── Dashboard.jsx
+│   │   │   ├── LoginPage.jsx
+│   │   │   └── RegisterPage.jsx
+│   │   ├── 📂 context/         # React Context
+│   │   │   ├── AuthContext.jsx
+│   │   │   └── ThemeContext.jsx
+│   │   ├── 📂 services/        # API services
+│   │   │   ├── api.js
+│   │   │   ├── authService.js
+│   │   │   └── mockData.js
+│   │   ├── 📂 styles/          # Global styles
+│   │   │   ├── tokens.css      # Design tokens
+│   │   │   ├── typography.css
+│   │   │   ├── animations.css
+│   │   │   └── accessibility.css
+│   │   ├── 📂 hooks/           # Custom hooks
+│   │   ├── 📂 utils/           # Utility functions
+│   │   ├── 📂 firebase/        # Firebase config
+│   │   └── 📂 __tests__/       # Test files
+│   └── package.json
 │
-├── server/                   # Node.js Backend API
-│   ├── controllers/          # Business logic handlers
-│   ├── models/              # Database schemas
-│   ├── routes/              # API route definitions
-│   ├── middleware/          # Authentication and validation
-│   └── index.js             # Server entry point
+├── 📂 server/                   # Node.js Backend
+│   ├── 📂 controllers/         # Business logic
+│   │   ├── authController.js
+│   │   └── jobController.js
+│   ├── 📂 models/              # Database models
+│   │   ├── User.js
+│   │   └── Job.js
+│   ├── 📂 routes/              # API routes
+│   │   ├── auth.js
+│   │   └── jobs.js
+│   ├── 📂 middleware/          # Custom middleware
+│   │   └── auth.js
+│   ├── index.js                # Server entry point
+│   └── package.json
 │
-└── docs/                    # Documentation and guides
+├── 📂 screenshots/             # Application screenshots
+├── 📂 .kiro/                   # Development specs
+│   └── specs/
+│       ├── modern-ui-redesign/
+│       └── enhanced-job-features/
+├── .gitignore
+├── README.md
+└── package.json
 ```
 
-## 🚀 Quick Start Guide
+## 🚀 Getting Started
 
 ### Prerequisites
-- **Node.js** (version 16 or higher)
-- **npm** or **yarn** package manager
-- **MongoDB** database (local or cloud)
-- **Firebase** project for authentication
 
-### 1. Clone the Repository
+Before you begin, ensure you have the following installed:
+
+- **Node.js** (v16.0.0 or higher) - [Download](https://nodejs.org/)
+- **npm** (v7.0.0 or higher) or **yarn** (v1.22.0 or higher)
+- **MongoDB** (v6.0 or higher) - [Download](https://www.mongodb.com/try/download/community) or use [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
+- **Git** - [Download](https://git-scm.com/downloads)
+- **Firebase Account** - [Create Account](https://firebase.google.com/)
+
+### Installation
+
+#### 1. Clone the Repository
+
 ```bash
 git clone https://github.com/yourusername/amdox-jobs.git
 cd amdox-jobs
 ```
 
-### 2. Set Up the Backend
+#### 2. Backend Setup
+
 ```bash
+# Navigate to server directory
 cd server
+
+# Install dependencies
 npm install
 
-# Create environment configuration
-cp .env.example .env
-# Edit .env with your MongoDB URI and JWT secret
+# Create environment file
+cp env.example.txt .env
 
+# Configure your .env file with:
+# - MongoDB connection string
+# - JWT secret key
+# - Port number (default: 5000)
+```
+
+**Environment Variables (.env)**
+```env
+MONGODB_URI=mongodb://localhost:27017/amdox-jobs
+# Or use MongoDB Atlas:
+# MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/amdox-jobs
+
+JWT_SECRET=your-super-secure-jwt-secret-key-change-this
+PORT=5000
+NODE_ENV=development
+```
+
+```bash
 # Start the development server
 npm run dev
+
+# Server will run on http://localhost:5000
 ```
 
-### 3. Set Up the Frontend
+#### 3. Frontend Setup
+
 ```bash
+# Open a new terminal and navigate to client directory
 cd client
+
+# Install dependencies
 npm install
 
-# Create environment configuration
-cp .env.example .env
-# Edit .env with your Firebase credentials and API URL
+# Create environment file
+cp env.example.txt .env
 
-# Start the development server
-npm start
+# Configure your .env file with Firebase credentials
 ```
 
-### 4. Configure Firebase Authentication
+**Environment Variables (.env)**
+```env
+REACT_APP_API_URL=http://localhost:5000/api
 
-1. Visit the [Firebase Console](https://console.firebase.google.com/)
-2. Create a new project or select an existing one
-3. Enable Authentication with Google sign-in
-4. Copy your Firebase configuration to the `.env` file
+# Firebase Configuration
+REACT_APP_FIREBASE_API_KEY=your-firebase-api-key
+REACT_APP_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+REACT_APP_FIREBASE_PROJECT_ID=your-project-id
+REACT_APP_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
+REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
+REACT_APP_FIREBASE_APP_ID=your-app-id
+```
 
-Your application will be running at:
-- **Frontend**: http://localhost:3000
-- **Backend API**: http://localhost:5000
+```bash
+# Start the development server
+npm start
+
+# Application will open at http://localhost:3000
+```
+
+### 4. Firebase Configuration
+
+1. Go to [Firebase Console](https://console.firebase.google.com/)
+2. Create a new project or select existing one
+3. Navigate to **Authentication** → **Sign-in method**
+4. Enable **Google** and **Email/Password** authentication
+5. Copy your Firebase configuration to the `.env` file
+
+### 5. Database Setup (Optional)
+
+If using local MongoDB:
+
+```bash
+# Start MongoDB service
+mongod
+
+# Or use MongoDB Compass for GUI management
+```
+
+If using MongoDB Atlas:
+1. Create a cluster at [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
+2. Create a database user
+3. Whitelist your IP address
+4. Copy the connection string to your `.env` file
 
 ## 🔧 Configuration
 
@@ -155,65 +336,224 @@ REACT_APP_FIREBASE_PROJECT_ID=your-project-id
 
 ## 📚 API Documentation
 
+### Base URL
+```
+Development: http://localhost:5000/api
+Production: https://your-domain.com/api
+```
+
 ### Authentication Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/auth/firebase-login` | Authenticate with Firebase/Google |
-| POST | `/api/auth/register` | Register with email and password |
-| POST | `/api/auth/login` | Login with email and password |
-| GET | `/api/auth/me` | Get current user profile |
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `POST` | `/auth/register` | Register new user | No |
+| `POST` | `/auth/login` | Login with email/password | No |
+| `POST` | `/auth/firebase-login` | Login with Firebase/Google | No |
+| `GET` | `/auth/me` | Get current user profile | Yes |
+| `POST` | `/auth/logout` | Logout user | Yes |
 
-### Job Management Endpoints
+### Job Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/jobs` | Get all job listings |
-| POST | `/api/jobs` | Create a new job posting |
-| GET | `/api/jobs/:id` | Get specific job details |
-| PUT | `/api/jobs/:id` | Update job posting |
-| DELETE | `/api/jobs/:id` | Delete job posting |
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `GET` | `/jobs` | Get all jobs (with filters) | No |
+| `GET` | `/jobs/:id` | Get job by ID | No |
+| `POST` | `/jobs` | Create new job | Yes (Employer) |
+| `PUT` | `/jobs/:id` | Update job | Yes (Employer) |
+| `DELETE` | `/jobs/:id` | Delete job | Yes (Employer) |
+| `GET` | `/jobs/employer/my-jobs` | Get employer's jobs | Yes (Employer) |
+| `POST` | `/jobs/:id/apply` | Apply to job | Yes (Job Seeker) |
 
-## 🎨 Using the Application
+### Application Endpoints
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `GET` | `/applications/me` | Get user's applications | Yes |
+| `GET` | `/jobs/:id/applications` | Get job applications | Yes (Employer) |
+| `PATCH` | `/applications/:id/status` | Update application status | Yes (Employer) |
+
+### Query Parameters (GET /jobs)
+
+```javascript
+{
+  search: "developer",        // Search in title, company, skills
+  location: "San Francisco",  // Filter by location
+  type: "Full-time",         // Filter by job type
+  remote: "true",            // Filter remote jobs
+  page: 1,                   // Pagination page number
+  limit: 10                  // Results per page
+}
+```
+
+### Request Examples
+
+**Register User**
+```bash
+POST /api/auth/register
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "password": "securePassword123",
+  "role": "job_seeker"
+}
+```
+
+**Create Job Posting**
+```bash
+POST /api/jobs
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "title": "Senior Frontend Developer",
+  "company": "TechCorp",
+  "location": "San Francisco, CA",
+  "type": "Full-time",
+  "salary": "$120k - $160k",
+  "description": "We are looking for...",
+  "requirements": ["React", "TypeScript", "5+ years experience"],
+  "isRemote": true
+}
+```
+
+**Search Jobs**
+```bash
+GET /api/jobs?search=react&location=remote&type=Full-time&page=1&limit=10
+```
+
+## � Usage Guide
 
 ### For Job Seekers
 
-1. **Sign Up**: Create an account using Google or email
-2. **Complete Profile**: Add your skills, experience, and preferences
-3. **Browse Jobs**: Explore available opportunities
-4. **Apply**: Submit applications with one click
-5. **Track Progress**: Monitor your application status
+1. **Create Account**
+   - Sign up using Google OAuth or email/password
+   - Complete your profile with skills and experience
+
+2. **Browse Jobs**
+   - Navigate to the Jobs tab
+   - Use search and filters to find relevant positions
+   - View detailed job descriptions
+
+3. **Apply to Jobs**
+   - Click "Apply Now" on any job listing
+   - Track application status in the Applications tab
+   - Save interesting jobs for later review
+
+4. **Manage Applications**
+   - View all your applications in one place
+   - Track application status (Applied, Under Review, Interview, etc.)
+   - Receive notifications for updates
 
 ### For Employers
 
-1. **Create Account**: Sign up as an employer
-2. **Company Profile**: Set up your company information
-3. **Post Jobs**: Create detailed job descriptions
-4. **Manage Applications**: Review and respond to candidates
-5. **Find Talent**: Connect with qualified professionals
+1. **Company Setup**
+   - Register as an employer
+   - Complete your company profile
+   - Add company logo and description
 
-## 🚀 Deployment
+2. **Post Jobs**
+   - Click "Post a Job" from the dashboard
+   - Fill in job details (title, description, requirements)
+   - Set salary range and job type
+   - Publish immediately or save as draft
 
-### Production Deployment on Vercel
+3. **Manage Applications**
+   - Review candidate applications
+   - Filter and sort applicants
+   - Update application status
+   - Contact candidates directly
 
-1. **Prepare for Production**
+4. **Analytics**
+   - View job posting performance
+   - Track application metrics
+   - Monitor hiring pipeline
+
+## � Deployment
+
+### Deploy to Vercel (Recommended)
+
+#### Frontend Deployment
+
+1. **Push to GitHub**
    ```bash
-   # Build the frontend
-   cd client && npm run build
-   
-   # Test the backend
-   cd server && npm test
+   git add .
+   git commit -m "Ready for deployment"
+   git push origin main
+   ```
+
+2. **Connect to Vercel**
+   - Go to [Vercel](https://vercel.com/)
+   - Import your GitHub repository
+   - Select the `client` directory as root
+   - Configure environment variables
+
+3. **Environment Variables**
+   ```
+   REACT_APP_API_URL=https://your-api-domain.com/api
+   REACT_APP_FIREBASE_API_KEY=your-key
+   REACT_APP_FIREBASE_AUTH_DOMAIN=your-domain
+   REACT_APP_FIREBASE_PROJECT_ID=your-id
+   REACT_APP_FIREBASE_STORAGE_BUCKET=your-bucket
+   REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
+   REACT_APP_FIREBASE_APP_ID=your-app-id
+   ```
+
+4. **Deploy**
+   - Click "Deploy"
+   - Vercel will automatically build and deploy your app
+
+#### Backend Deployment
+
+1. **Prepare Backend**
+   ```bash
+   cd server
+   npm run build  # If you have a build script
    ```
 
 2. **Deploy to Vercel**
-   - Connect your GitHub repository to Vercel
-   - Configure environment variables in Vercel dashboard
-   - Deploy with automatic CI/CD pipeline
+   - Create a new project for the backend
+   - Select the `server` directory
+   - Add environment variables:
+     ```
+     MONGODB_URI=your-mongodb-atlas-uri
+     JWT_SECRET=your-production-secret
+     NODE_ENV=production
+     ```
 
-3. **Database Setup**
-   - Use MongoDB Atlas for production database
-   - Configure connection string in environment variables
-   - Set up database indexes for optimal performance
+3. **Alternative: Deploy to Heroku**
+   ```bash
+   # Install Heroku CLI
+   heroku login
+   heroku create amdox-jobs-api
+   
+   # Set environment variables
+   heroku config:set MONGODB_URI=your-uri
+   heroku config:set JWT_SECRET=your-secret
+   
+   # Deploy
+   git push heroku main
+   ```
+
+### MongoDB Atlas Setup
+
+1. Create a cluster at [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
+2. Create a database user
+3. Whitelist IP addresses (0.0.0.0/0 for all IPs)
+4. Get connection string
+5. Add to environment variables
+
+### Post-Deployment Checklist
+
+- [ ] Test all authentication flows
+- [ ] Verify API endpoints are working
+- [ ] Check database connections
+- [ ] Test job posting and application features
+- [ ] Verify email notifications (if configured)
+- [ ] Test on multiple devices and browsers
+- [ ] Set up monitoring and error tracking
+- [ ] Configure custom domain (optional)
 
 ## 🔒 Security Best Practices
 
