@@ -555,24 +555,169 @@ GET /api/jobs?search=react&location=remote&type=Full-time&page=1&limit=10
 - [ ] Set up monitoring and error tracking
 - [ ] Configure custom domain (optional)
 
-## 🔒 Security Best Practices
+## 🧪 Testing
 
-- **Authentication**: Secure JWT tokens with proper expiration
-- **Data Validation**: Input validation on both client and server
-- **HTTPS Only**: All production traffic uses SSL/TLS encryption
-- **Environment Variables**: Sensitive data stored securely
-- **Rate Limiting**: API endpoints protected against abuse
-- **CORS Configuration**: Proper cross-origin resource sharing setup
+### Running Tests
+
+```bash
+# Frontend tests
+cd client
+npm test                    # Run all tests
+npm test -- --coverage     # Run with coverage report
+npm test -- --watch        # Run in watch mode
+
+# Backend tests
+cd server
+npm test                    # Run all tests
+npm run test:watch         # Run in watch mode
+```
+
+### Test Structure
+
+```
+client/src/
+├── __tests__/
+│   ├── integration/       # Integration tests
+│   ├── visual/           # Visual regression tests
+│   └── unit/             # Unit tests
+└── styles/__tests__/     # Style validation tests
+```
+
+### Writing Tests
+
+```javascript
+// Example component test
+import { render, screen } from '@testing-library/react';
+import Jobs from './Jobs';
+
+test('renders job listings', () => {
+  render(<Jobs />);
+  const heading = screen.getByText(/Find Your Dream Job/i);
+  expect(heading).toBeInTheDocument();
+});
+```
+
+## 🔒 Security
+
+### Best Practices Implemented
+
+- ✅ **JWT Authentication** - Secure token-based auth with expiration
+- ✅ **Password Hashing** - bcrypt with salt rounds
+- ✅ **Input Validation** - Server-side validation for all inputs
+- ✅ **CORS Configuration** - Restricted cross-origin requests
+- ✅ **Environment Variables** - Sensitive data stored securely
+- ✅ **HTTPS Only** - All production traffic encrypted
+- ✅ **Rate Limiting** - Protection against brute force attacks
+- ✅ **SQL Injection Prevention** - Mongoose ODM protection
+- ✅ **XSS Protection** - Input sanitization
+
+### Security Recommendations
+
+1. **Never commit `.env` files** to version control
+2. **Use strong JWT secrets** (minimum 32 characters)
+3. **Enable 2FA** for admin accounts
+4. **Regular dependency updates** to patch vulnerabilities
+5. **Monitor logs** for suspicious activity
+6. **Implement rate limiting** on authentication endpoints
+7. **Use HTTPS** in production
+8. **Regular security audits**
+
+```bash
+# Check for vulnerabilities
+npm audit
+npm audit fix
+
+# Update dependencies
+npm update
+```
 
 ## 🤝 Contributing
 
-We welcome contributions from the community! Here's how you can help:
+We welcome contributions from the community! Here's how you can help make AMDox Jobs better:
+
+### How to Contribute
 
 1. **Fork the Repository**
-2. **Create a Feature Branch**: `git checkout -b feature/amazing-feature`
-3. **Make Your Changes**: Follow our coding standards
-4. **Test Thoroughly**: Ensure all tests pass
-5. **Submit a Pull Request**: Describe your changes clearly
+   ```bash
+   # Click the 'Fork' button on GitHub
+   git clone https://github.com/your-username/amdox-jobs.git
+   cd amdox-jobs
+   ```
+
+2. **Create a Feature Branch**
+   ```bash
+   git checkout -b feature/amazing-feature
+   # or
+   git checkout -b fix/bug-fix
+   ```
+
+3. **Make Your Changes**
+   - Write clean, readable code
+   - Follow the existing code style
+   - Add comments for complex logic
+   - Update documentation if needed
+
+4. **Test Your Changes**
+   ```bash
+   # Run tests
+   npm test
+   
+   # Check for linting errors
+   npm run lint
+   ```
+
+5. **Commit Your Changes**
+   ```bash
+   git add .
+   git commit -m "feat: add amazing feature"
+   ```
+   
+   **Commit Message Convention:**
+   - `feat:` New feature
+   - `fix:` Bug fix
+   - `docs:` Documentation changes
+   - `style:` Code style changes (formatting)
+   - `refactor:` Code refactoring
+   - `test:` Adding or updating tests
+   - `chore:` Maintenance tasks
+
+6. **Push to Your Fork**
+   ```bash
+   git push origin feature/amazing-feature
+   ```
+
+7. **Create a Pull Request**
+   - Go to the original repository
+   - Click "New Pull Request"
+   - Select your branch
+   - Describe your changes in detail
+   - Link any related issues
+
+### Development Guidelines
+
+- **Code Style**: Follow the existing code style and conventions
+- **Testing**: Write tests for new features
+- **Documentation**: Update README and comments
+- **Commits**: Use clear, descriptive commit messages
+- **Pull Requests**: Keep PRs focused on a single feature/fix
+
+### Areas for Contribution
+
+- 🐛 Bug fixes
+- ✨ New features
+- 📝 Documentation improvements
+- 🎨 UI/UX enhancements
+- ♿ Accessibility improvements
+- 🌐 Internationalization
+- 🧪 Test coverage
+- ⚡ Performance optimizations
+
+### Code of Conduct
+
+- Be respectful and inclusive
+- Provide constructive feedback
+- Focus on the code, not the person
+- Help others learn and grow
 
 ## 📄 License
 
