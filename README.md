@@ -719,21 +719,151 @@ We welcome contributions from the community! Here's how you can help make AMDox 
 - Focus on the code, not the person
 - Help others learn and grow
 
-## 📄 License
+## � Troubleshooting
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+### Common Issues and Solutions
 
-## 🆘 Support
+#### Frontend Issues
 
-Need help? We're here for you:
+**Issue: App won't start**
+```bash
+# Clear node_modules and reinstall
+rm -rf node_modules package-lock.json
+npm install
+npm start
+```
 
-- **Documentation**: Check our comprehensive guides
-- **Issues**: Report bugs on GitHub Issues
-- **Discussions**: Join community discussions
-- **Email**: Contact us at support@amdoxjobs.com
+**Issue: Firebase authentication not working**
+- Verify Firebase configuration in `.env`
+- Check if authentication methods are enabled in Firebase Console
+- Ensure API keys are correct
+
+**Issue: API calls failing**
+- Check if backend server is running
+- Verify `REACT_APP_API_URL` in `.env`
+- Check browser console for CORS errors
+
+#### Backend Issues
+
+**Issue: MongoDB connection failed**
+```bash
+# Check MongoDB is running
+mongod --version
+
+# Verify connection string in .env
+# For local: mongodb://localhost:27017/amdox-jobs
+# For Atlas: mongodb+srv://username:password@cluster.mongodb.net/amdox-jobs
+```
+
+**Issue: JWT authentication errors**
+- Ensure `JWT_SECRET` is set in `.env`
+- Check token expiration settings
+- Verify Authorization header format: `Bearer <token>`
+
+**Issue: Port already in use**
+```bash
+# Find process using port 5000
+lsof -i :5000  # Mac/Linux
+netstat -ano | findstr :5000  # Windows
+
+# Kill the process or change PORT in .env
+```
+
+### Getting Help
+
+- 📖 Check the [Documentation](#)
+- 💬 Join our [Discord Community](#)
+- 🐛 Report bugs in [GitHub Issues](https://github.com/yourusername/amdox-jobs/issues)
+- 📧 Email: support@amdoxjobs.com
+
+## 📝 License
+
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+
+```
+MIT License
+
+Copyright (c) 2024 AMDox Jobs
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+```
+
+## 👥 Authors & Contributors
+
+### Core Team
+
+- **Your Name** - *Lead Developer* - [@yourusername](https://github.com/yourusername)
+
+### Contributors
+
+Thanks to all the amazing people who have contributed to this project! 🎉
+
+<a href="https://github.com/yourusername/amdox-jobs/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=yourusername/amdox-jobs" />
+</a>
+
+## 🙏 Acknowledgments
+
+- **React Team** - For the amazing framework
+- **Firebase** - For authentication services
+- **MongoDB** - For the flexible database
+- **Vercel** - For seamless deployment
+- **Open Source Community** - For inspiration and support
+
+## 📞 Contact & Support
+
+- **Website**: [amdoxjobs.com](#)
+- **Email**: support@amdoxjobs.com
+- **Twitter**: [@amdoxjobs](#)
+- **LinkedIn**: [AMDox Jobs](#)
+- **Discord**: [Join our community](#)
+
+## 🗺 Roadmap
+
+### Q1 2024
+- [ ] Advanced job filters (salary range, experience level)
+- [ ] Job detail pages with apply functionality
+- [ ] Company profile pages
+- [ ] Job comparison feature
+
+### Q2 2024
+- [ ] Resume builder
+- [ ] Application tracking with visual pipeline
+- [ ] Chat/messaging system
+- [ ] Mobile app (React Native)
+
+### Q3 2024
+- [ ] AI-powered job recommendations
+- [ ] Video interview integration
+- [ ] Skill assessments
+- [ ] Analytics dashboard
+
+### Q4 2024
+- [ ] Multi-language support
+- [ ] Advanced search with Elasticsearch
+- [ ] Social features (referrals, reviews)
+- [ ] Enterprise features
 
 ---
 
-**Built with ❤️ by the AMDox Team**
-
-*Connecting talent with opportunity, one job at a time.*
+<div align="center">
+  
+  ### ⭐ Star us on GitHub — it motivates us a lot!
+  
+  Made with ❤️ by the AMDox Team
+  
+  **[⬆ Back to Top](#amdox-jobs)**
+  
+</div>
