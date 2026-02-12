@@ -12,7 +12,7 @@
   [![MongoDB](https://img.shields.io/badge/MongoDB-6.x-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
   [![Firebase](https://img.shields.io/badge/Firebase-Auth-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com/)
   
-  [Documentation](#-getting-started) • [Report Bug](https://github.com/aryannten/amdox/issues) • [Request Feature](https://github.com/aryannten/amdox/issues)
+  [Report Bug](https://github.com/aryannten/amdox/issues) • [Request Feature](https://github.com/aryannten/amdox/issues)
   
 </div>
 
@@ -606,75 +606,6 @@ npm audit fix
 npm update
 ```
 
-## 🤝 Contributing
-
-We welcome contributions from the community! Here's how you can help make AMDox Jobs better:
-
-### How to Contribute
-
-1. **Fork the Repository**
-   ```bash
-   # Click the 'Fork' button on GitHub
-   git clone https://github.com/your-username/amdox-jobs.git
-   cd amdox-jobs
-   ```
-
-2. **Create a Feature Branch**
-   ```bash
-   git checkout -b feature/amazing-feature
-   # or
-   git checkout -b fix/bug-fix
-   ```
-
-3. **Make Your Changes**
-   - Write clean, readable code
-   - Follow the existing code style
-   - Add comments for complex logic
-   - Update documentation if needed
-
-4. **Test Your Changes**
-   ```bash
-   # Run tests
-   npm test
-   
-   # Check for linting errors
-   npm run lint
-   ```
-
-5. **Commit Your Changes**
-   ```bash
-   git add .
-   git commit -m "feat: add amazing feature"
-   ```
-   
-   **Commit Message Convention:**
-   - `feat:` New feature
-   - `fix:` Bug fix
-   - `docs:` Documentation changes
-   - `style:` Code style changes (formatting)
-   - `refactor:` Code refactoring
-   - `test:` Adding or updating tests
-   - `chore:` Maintenance tasks
-
-6. **Push to Your Fork**
-   ```bash
-   git push origin feature/amazing-feature
-   ```
-
-7. **Create a Pull Request**
-   - Go to the original repository
-   - Click "New Pull Request"
-   - Select your branch
-   - Describe your changes in detail
-   - Link any related issues
-
-### Development Guidelines
-
-- **Code Style**: Follow the existing code style and conventions
-- **Testing**: Write tests for new features
-- **Documentation**: Update README and comments
-- **Commits**: Use clear, descriptive commit messages
-- **Pull Requests**: Keep PRs focused on a single feature/fix
 
 ### Areas for Contribution
 
@@ -744,67 +675,6 @@ netstat -ano | findstr :5000  # Windows
 # Kill the process or change PORT in .env
 ```
 
-### Getting Help
-
-- 📖 Check the [Documentation](#)
-- 💬 Join our [Discord Community](#)
-- 🐛 Report bugs in [GitHub Issues](https://github.com/yourusername/amdox-jobs/issues)
-- 📧 Email: support@amdoxjobs.com
-
-## 📝 License
-
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
-
-```
-MIT License
-
-Copyright (c) 2024 AMDox Jobs
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-```
-
-## 👥 Authors & Contributors
-
-### Core Team
-
-- **Your Name** - *Lead Developer* - [@yourusername](https://github.com/yourusername)
-
-### Contributors
-
-Thanks to all the amazing people who have contributed to this project! 🎉
-
-<a href="https://github.com/yourusername/amdox-jobs/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=yourusername/amdox-jobs" />
-</a>
-
-## 🙏 Acknowledgments
-
-- **React Team** - For the amazing framework
-- **Firebase** - For authentication services
-- **MongoDB** - For the flexible database
-- **Vercel** - For seamless deployment
-- **Open Source Community** - For inspiration and support
-
-## 📞 Contact & Support
-
-- **Website**: [amdoxjobs.com](#)
-- **Email**: support@amdoxjobs.com
-- **Twitter**: [@amdoxjobs](#)
-- **LinkedIn**: [AMDox Jobs](#)
-- **Discord**: [Join our community](#)
-
 ## 🗺 Roadmap
 
 ### Q1 2024
@@ -835,9 +705,6 @@ Thanks to all the amazing people who have contributed to this project! 🎉
 
 <div align="center">
   
-  ### ⭐ Star us on GitHub — it motivates us a lot!
-  
-  Made with ❤️ by the AMDox Team
   
   **[⬆ Back to Top](#amdox-jobs)**
   
