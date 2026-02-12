@@ -12,32 +12,8 @@
   [![MongoDB](https://img.shields.io/badge/MongoDB-6.x-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
   [![Firebase](https://img.shields.io/badge/Firebase-Auth-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com/)
   
-  [Live Demo](#) • [Documentation](#) • [Report Bug](#) • [Request Feature](#)
+  [Documentation](#-getting-started) • [Report Bug](https://github.com/aryannten/amdox/issues) • [Request Feature](https://github.com/aryannten/amdox/issues)
   
-</div>
-
----
-
-## 📸 Screenshots
-
-<div align="center">
-  
-### Dashboard Overview
-![Dashboard](screenshots/dashboard.png)
-*Modern, intuitive dashboard with real-time job statistics and quick actions*
-
-### Job Listings
-![Job Listings](screenshots/job-listings.png)
-*Advanced search and filtering with beautiful card-based layout*
-
-### Dark Mode
-![Dark Mode](screenshots/dark-mode.png)
-*Seamless dark/light theme switching for comfortable viewing*
-
-### Mobile Experience
-![Mobile View](screenshots/mobile-view.png)
-*Fully responsive design optimized for all devices*
-
 </div>
 
 ---
@@ -186,7 +162,6 @@ amdox-jobs/
 │   ├── index.js                # Server entry point
 │   └── package.json
 │
-├── 📂 screenshots/             # Application screenshots
 ├── 📂 .kiro/                   # Development specs
 │   └── specs/
 │       ├── modern-ui-redesign/
