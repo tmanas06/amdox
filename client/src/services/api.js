@@ -1,6 +1,10 @@
 import axios from 'axios';
+import { mockJobs, mockApplications, filterJobs, paginateJobs } from './mockData';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+
+// Mock mode flag - set to true to use mock data
+const USE_MOCK_DATA = true;
 
 // Create axios instance
 const api = axios.create({
@@ -77,6 +81,26 @@ export const auth = {
 export const jobs = {
   // Get all jobs with optional filters
   getAll: (params = {}) => {
+    if (USE_MOCK_DATA) {
+      // Simulate API delay
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          const filtered = filterJobs(mockJobs, params);
+          const paginated = paginateJobs(filtered, params.page, params.limit);
+          
+          resolve({
+            data: {
+              success: true,
+              data: paginated.data,
+              total: paginated.total,
+              page: paginated.page,
+              totalPages: paginated.totalPages
+            }
+          });
+        }, 500);
+      });
+    }
+    
     const queryParams = new URLSearchParams();
     
     // Add optional parameters if they exist
@@ -91,7 +115,22 @@ export const jobs = {
   },
   
   // Get a single job by ID
-  getById: (id) => api.get(`/jobs/${id}`),
+  getById: (id) => {
+    if (USE_MOCK_DATA) {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          const job = mockJobs.find(j => j.id === id || j.jobId === id);
+          resolve({
+            data: {
+              success: true,
+              data: job
+            }
+          });
+        }, 300);
+      });
+    }
+    return api.get(`/jobs/${id}`);
+  },
   
   // Create a new job (employer only)
   create: (jobData) => api.post('/jobs', jobData),
@@ -103,7 +142,21 @@ export const jobs = {
   delete: (id) => api.delete(`/jobs/${id}`),
   
   // Get jobs posted by current employer
-  getEmployerJobs: () => api.get('/jobs/employer/my-jobs'),
+  getEmployerJobs: () => {
+    if (USE_MOCK_DATA) {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve({
+            data: {
+              success: true,
+              data: mockJobs.slice(0, 3) // Return first 3 jobs as employer's jobs
+            }
+          });
+        }, 500);
+      });
+    }
+    return api.get('/jobs/employer/my-jobs');
+  },
   
   // Toggle job status (active/inactive)
   toggleStatus: (id) => api.patch(`/jobs/${id}/status`),
@@ -118,7 +171,21 @@ export const jobs = {
 
 export const applications = {
   // Get all applications for current user (job seeker)
-  getMyApplications: () => api.get('/applications/me'),
+  getMyApplications: () => {
+    if (USE_MOCK_DATA) {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve({
+            data: {
+              success: true,
+              data: mockApplications
+            }
+          });
+        }, 500);
+      });
+    }
+    return api.get('/applications/me');
+  },
   
   // Update application status (employer only)
   updateStatus: (applicationId, status) => 
